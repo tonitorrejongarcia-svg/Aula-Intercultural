@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@utility animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@utility animate-scaleUp {
+  animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* custom scrollbar for pre files or div overflow scroll */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f6f4eb;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Accessibility overrides */
+.font-scale-large p, .font-scale-large span, .font-scale-large li, .font-scale-large text, .font-scale-large label, .font-scale-large option, .font-scale-large select {
+  font-size: 1.08rem !important;
+}
+.font-scale-large h4, .font-scale-large h5 {
+  font-size: 1.25rem !important;
+}
+.font-scale-large h2, .font-scale-large h3 {
+  font-size: 2.1rem !important;
+}
+
+.font-scale-xl p, .font-scale-xl span, .font-scale-xl li, .font-scale-xl text, .font-scale-xl label, .font-scale-xl option, .font-scale-xl select {
+  font-size: 1.18rem !important;
+}
+.font-scale-xl h4, .font-scale-xl h5 {
+  font-size: 1.38rem !important;
+}
+.font-scale-xl h2, .font-scale-xl h3 {
+  font-size: 2.4rem !important;
+}
+
+/* High Contrast Override forces bright white, deep blacks and absolute contrast standards */
+.theme-high-contrast {
+  background: #fcfcfc !important;
+  color: #000000 !important;
+}
+.theme-high-contrast select, .theme-high-contrast input {
+  background: #ffffff !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
+}
+.theme-high-contrast button {
+  border-color: #000000 !important;
+}
+

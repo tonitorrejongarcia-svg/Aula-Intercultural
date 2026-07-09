@@ -1,0 +1,6 @@
+{
+  "name": "Educación Intercultural",
+  "description": "Recursos didácticos, dinámicas de aula interactivas y material conceptual sobre Educación Intercultural para docentes de secundaria.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
