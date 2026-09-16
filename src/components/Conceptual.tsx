@@ -147,10 +147,18 @@ export default function Conceptual() {
   ];
 
   const toggleMyth = (id: number) => {
-    setRevealedMyths((prev) => ({
-      ...prev,
-      [id]: !prev[id]
-    }));
+    setRevealedMyths((prev) => {
+      const isOpening = !prev[id];
+      if (isOpening && window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById(`myth-card-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+      return {
+        ...prev,
+        [id]: isOpening
+      };
+    });
   };
 
   return (
@@ -229,13 +237,13 @@ export default function Conceptual() {
               return (
                 <button 
                   key={item.id} 
+                  id={`myth-card-${item.id}`}
                   onClick={() => toggleMyth(item.id)}
-                  className="min-h-[300px] flex flex-col justify-between border rounded-2xl p-6 transition-all duration-300 relative overflow-hidden bg-white text-left outline-none cursor-pointer select-none"
+                  className="min-h-[300px] flex flex-col justify-between border rounded-2xl p-6 transition-all duration-300 relative overflow-hidden bg-white text-left outline-none cursor-pointer select-none scroll-mt-24"
                   style={{
                     borderColor: isRevealed ? '#0d9488' : '#e2e8f0',
                     boxShadow: isRevealed ? '0 12px 20px -8px rgba(13, 148, 136, 0.2)' : '0 1px 3px 0 rgba(0,0,0,0.02)'
                   }}
-                  id={`btn-toggle-myth-${item.id}`}
                 >
                   <div className="space-y-4 w-full">
                     {/* Header */}

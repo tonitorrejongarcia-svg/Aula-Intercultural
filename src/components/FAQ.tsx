@@ -16,7 +16,14 @@ export default function FAQ({ faqs = [], onGoToContact }: FAQProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleAccordion = (idx: number) => {
-    setOpenIndex((prev) => (prev === idx ? null : idx));
+    const isOpening = openIndex !== idx;
+    setOpenIndex(isOpening ? idx : null);
+    
+    if (isOpening && window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById(`faq-item-${idx}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
   };
 
   return (
@@ -44,7 +51,8 @@ export default function FAQ({ faqs = [], onGoToContact }: FAQProps) {
             return (
               <div
                 key={index}
-                className="bg-white border rounded-3xl overflow-hidden transition-all duration-300 shadow-2xs"
+                id={`faq-item-${index}`}
+                className="bg-white border rounded-3xl overflow-hidden transition-all duration-300 shadow-2xs scroll-mt-24"
                 style={{
                   borderColor: isOpen ? '#0d9488' : '#e2e8f0',
                 }}

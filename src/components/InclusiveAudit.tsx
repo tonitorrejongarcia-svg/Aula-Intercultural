@@ -148,8 +148,18 @@ export default function InclusiveAudit() {
     setAnswers({ ...answers, [currentStep]: score });
     if (currentStep < activeQuestions.length - 1) {
       setCurrentStep(currentStep + 1);
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('inclusive-audit-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
     } else {
       setShowResults(true);
+      if (window.innerWidth < 1024) {
+        setTimeout(() => {
+          document.getElementById('inclusive-audit-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
     }
   };
 
@@ -193,7 +203,7 @@ export default function InclusiveAudit() {
   const currentResult = getEvaluationRange();
 
   return (
-    <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-lg transition-all" id="inclusive-audit-box">
+    <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-lg transition-all scroll-mt-24" id="inclusive-audit-box">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3.5">
           <div className="p-2.5 bg-orange-600 text-white rounded-xl shadow-xs shrink-0">
@@ -260,7 +270,14 @@ export default function InclusiveAudit() {
             <span className="text-[10px] font-mono text-slate-400 italic">Respuestas anónimas recopiladas localmente</span>
             {currentStep > 0 && (
               <button 
-                onClick={() => setCurrentStep(currentStep - 1)}
+                onClick={() => {
+                  setCurrentStep(currentStep - 1);
+                  if (window.innerWidth < 1024) {
+                    setTimeout(() => {
+                      document.getElementById('inclusive-audit-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                  }
+                }}
                 className="text-xs font-sans font-bold text-orange-600 hover:underline"
               >
                 ← Volver atrás

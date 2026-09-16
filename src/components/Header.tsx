@@ -47,12 +47,12 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
               <img src={logo4} alt="Logo Aula Intercultural" className="w-full h-full object-contain drop-shadow-sm" />
             </div>
           </div>
-          <div className="hidden sm:block">
-            <h1 className="font-sans font-black text-xl tracking-tight leading-none">
+          <div className="flex flex-col justify-center">
+            <h1 className="font-sans font-black text-base sm:text-xl tracking-tight leading-none">
               <span className="text-slate-900">Aula</span>{" "}
               <span className="text-slate-800 group-hover:text-orange-600 transition-colors duration-250">Intercultural</span>
             </h1>
-            <p className="font-mono text-[9px] text-slate-450 uppercase tracking-widest font-extrabold mt-1">Pedagogía • Inclusión • Diversidad</p>
+            <p className="font-mono text-[7px] sm:text-[9px] text-slate-450 uppercase tracking-[0.15em] sm:tracking-widest font-extrabold mt-0.5 sm:mt-1">Pedagogía • Inclusión • Diversidad</p>
           </div>
         </button>
 

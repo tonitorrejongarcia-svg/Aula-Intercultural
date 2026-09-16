@@ -33,6 +33,11 @@ export default function Resources({ activities }: ResourcesProps) {
 
   const handleSelectActivity = (act: Activity) => {
     setSelectedActivity(act);
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById('activity-detail-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
   };
 
   // Filter and Search Logic
@@ -246,7 +251,7 @@ export default function Resources({ activities }: ResourcesProps) {
           </div>
 
           {/* Main Activity Detail Panel */}
-          <div className="w-full lg:w-2/3 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div id="activity-detail-panel" className="w-full lg:w-2/3 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col scroll-mt-24">
             {selectedActivity ? (
               <div className="flex flex-col h-full relative">
                 

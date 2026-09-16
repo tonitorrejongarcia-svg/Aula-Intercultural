@@ -33,7 +33,13 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
   });
 
   const handleToggleExpand = (word: string) => {
-    setExpandedTerm((prev) => (prev === word ? null : word));
+    const isOpening = expandedTerm !== word;
+    setExpandedTerm(isOpening ? word : null);
+    if (isOpening && window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById(`term-card-${word}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
   };
 
   return (
@@ -110,7 +116,8 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
               return (
                 <div 
                   key={term.word}
-                  className="bg-white border border-slate-200 hover:border-orange-500/40 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-3xs"
+                  id={`term-card-${term.word}`}
+                  className="bg-white border border-slate-200 hover:border-orange-500/40 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-3xs scroll-mt-24"
                 >
                   <div className="space-y-3">
                     <div className="flex flex-col items-start gap-2">

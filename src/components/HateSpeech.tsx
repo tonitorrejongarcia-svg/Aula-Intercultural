@@ -481,12 +481,6 @@ export default function HateSpeech() {
               <p className="text-xs text-slate-300 leading-relaxed">
                 ¿Qué hacer exactamente cuando detectamos un hilo, un vídeo o una publicación que atenta contra un colectivo o compañero de forma sistemática?
               </p>
-              <div className="p-4 bg-slate-800 rounded-xl border border-slate-700 text-xs">
-                <span className="font-bold text-slate-400 block mb-1">📞 Teléfono de Asistencia Oficial (España)</span>
-                <p className="text-slate-300 leading-relaxed">
-                  Oficina Nacional de Lucha contra los Delitos de Odio (ONDOD): llama al <strong className="text-white">091 o 062</strong>, o contacta con el teléfono de atención a víctimas del racismo: <strong className="text-white">021</strong>.
-                </p>
-              </div>
             </div>
 
             <div className="lg:col-span-7 space-y-3">
@@ -547,6 +541,11 @@ export default function HateSpeech() {
                   key={item.id}
                   onClick={() => {
                     setSelectedPhrase(item.id);
+                    if (window.innerWidth < 1024) {
+                      setTimeout(() => {
+                        document.getElementById('analysis-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 100);
+                    }
                   }}
                   className={`w-full p-4 rounded-2xl font-sans text-left transition-all border outline-none cursor-pointer text-xs sm:text-sm ${
                     selectedPhrase === item.id
@@ -597,7 +596,7 @@ export default function HateSpeech() {
             </div>
 
             {/* Right analysis detail panel */}
-            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-xs relative overflow-hidden">
+            <div id="analysis-panel" className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-xs relative overflow-hidden scroll-mt-24">
               {selectedPhrase === null ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
                   <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 animate-pulse">
