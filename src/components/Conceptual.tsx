@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { Award, ShieldAlert, Sparkles, HelpCircle, ArrowRightLeft, BookOpenCheck, BrainCircuit, Users, Eye, HelpCircle as HelpIcon } from 'lucide-react';
+import icebergTheoryImg from '../assets/images/iceberg_theory_1789554406116.jpg';
 
 const ALL_MYTHS = [
   {
@@ -215,8 +216,8 @@ export default function Conceptual() {
 
           <div className="lg:col-span-5 h-80 rounded-2xl overflow-hidden shadow-md border border-slate-200 relative group">
             <img
-              src="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=700&q=80"
-              alt="Prístino iceberg azul en el océano polar helado"
+              src={icebergTheoryImg}
+              alt="Prístino iceberg azul en el océano polar helado mostrando la base sumergida"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               referrerPolicy="no-referrer"
             />

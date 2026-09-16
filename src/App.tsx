@@ -19,11 +19,13 @@ import AccessibleReader from './components/AccessibleReader';
 import AdminPanel from './components/AdminPanel';
 import { Activity, GlossaryTerm, FAQItem } from './types';
 import { INITIAL_ACTIVITIES, GLOSSARY_TERMS, FAQS } from './data';
+import { ArrowUp } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('inicio');
   const [fontSizeScale, setFontSizeScale] = useState<'normal' | 'large' | 'xl'>('normal');
   const [highContrast, setHighContrast] = useState<boolean>(false);
+  const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
 
   // Unified States for Dynamic Content
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -229,6 +231,24 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
 
+  // Listen to scroll to toggle scroll to top button
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollTop(true);
+      } else {
+        setShowScrollTop(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className={`min-h-screen text-[#1f2937] flex flex-col font-sans transition-all selection:bg-orange-600 selection:text-white ${fontSizeScale === 'large' ? 'font-scale-large' : fontSizeScale === 'xl' ? 'font-scale-xl' : ''} ${highContrast ? 'theme-high-contrast' : 'bg-[#fbfbfa]'}`}>
       {/* Dynamic Header navigation */}
@@ -384,6 +404,17 @@ export default function App() {
         highContrast={highContrast}
         setHighContrast={setHighContrast}
       />
+
+      {/* Scroll to Top Button (Mobile & Tablet mostly) */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-24 right-4 md:right-6 p-3 bg-orange-600 text-white rounded-full shadow-lg hover:bg-orange-700 hover:scale-105 transition-all duration-300 z-50 flex items-center justify-center lg:hidden ${
+          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+        }`}
+        aria-label="Volver arriba"
+      >
+        <ArrowUp className="w-5 h-5" />
+      </button>
 
       {/* Global Footer component */}
       <Footer setActiveTab={setActiveTab} />
