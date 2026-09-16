@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { Globe, Menu, X, GraduationCap, Compass, BookOpen, HelpCircle, MessageSquare, Sparkles, Lock, ExternalLink, ShieldAlert } from 'lucide-react';
 import logo4 from '../assets/4-removebg-preview.png';
+import { PWAInstallButton } from './PWAInstallButton';
 
 interface HeaderProps {
   activeTab: string;
@@ -47,14 +48,29 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
               <img src={logo4} alt="Logo Aula Intercultural" className="w-full h-full object-contain drop-shadow-sm" />
             </div>
           </div>
-          <div className="flex flex-col justify-center">
+          <div className="flex flex-col justify-center hidden sm:flex">
             <h1 className="font-sans font-black text-base sm:text-xl tracking-tight leading-none">
               <span className="text-slate-900">Aula</span>{" "}
               <span className="text-slate-800 group-hover:text-orange-600 transition-colors duration-250">Intercultural</span>
             </h1>
-            <p className="font-mono text-[7px] sm:text-[9px] text-slate-450 uppercase tracking-[0.15em] sm:tracking-widest font-extrabold mt-0.5 sm:mt-1">Pedagogía • Inclusión • Diversidad</p>
+            <p className="font-mono text-[7px] sm:text-[9px] text-slate-450 uppercase tracking-[0.15em] sm:tracking-widest font-extrabold mt-0.5 sm:mt-1">Pedagogía • Inclusión</p>
           </div>
         </button>
+
+        {/* Action Buttons (Install & Menu) */}
+        <div className="flex items-center gap-2 sm:gap-4 xl:hidden">
+          <PWAInstallButton />
+          
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
+            aria-label="Toggle Menu"
+            id="mobile-menu-toggle"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden xl:flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar flex-nowrap">
@@ -88,17 +104,10 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
             <ExternalLink className="w-3.5 h-3.5" />
             Pantalla Completa
           </a>
+          <div className="ml-2 pl-3 border-l border-slate-200 flex xl:hidden 2xl:flex">
+             <PWAInstallButton />
+          </div>
         </nav>
-
-        {/* Mobile menu button */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="xl:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-orange-500/30"
-          aria-label="Toggle Menu"
-          id="mobile-menu-toggle"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
       </div>
 
       {/* Mobile Drawer */}
