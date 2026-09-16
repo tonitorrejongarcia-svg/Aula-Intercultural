@@ -222,6 +222,20 @@ export default function HateSpeech() {
   const handleSelectOption = (optionId: number) => {
     setSelectedOption(optionId);
     setShowFeedback(true);
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById('workshop-feedback-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  };
+
+  const handleSelectPyramidLevel = (level: number) => {
+    setActivePyramidLevel(level);
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById('pyramid-detail-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
   };
 
   const handleNextExercise = () => {
@@ -697,7 +711,7 @@ export default function HateSpeech() {
                 return (
                   <button
                     key={lvl.level}
-                    onClick={() => setActivePyramidLevel(lvl.level)}
+                    onClick={() => handleSelectPyramidLevel(lvl.level)}
                     className={`${widthClass} ${bgClass} text-white font-sans font-black text-xs sm:text-sm py-4 px-3 rounded-xl transition-all duration-300 shadow-sm cursor-pointer outline-none relative overflow-hidden flex flex-col items-center justify-center text-center`}
                     id={`pyramid-level-btn-${lvl.level}`}
                   >
@@ -715,7 +729,7 @@ export default function HateSpeech() {
             </div>
 
             {/* Right: The analysis block for selected level */}
-            <div className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-xs min-h-[340px] flex flex-col justify-between">
+            <div id="pyramid-detail-panel" className="lg:col-span-6 bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-xs min-h-[340px] flex flex-col justify-between scroll-mt-24">
               {activePyramidLevel === null ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
                   <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400">
@@ -839,7 +853,7 @@ export default function HateSpeech() {
 
             {/* Feedback Detail */}
             {showFeedback && selectedOption !== null && (
-              <div className="animate-fadeIn p-4 rounded-xl border space-y-2 bg-white"
+              <div id="workshop-feedback-panel" className="animate-fadeIn p-4 rounded-xl border space-y-2 bg-white scroll-mt-24"
                 style={{
                   borderColor: exercises[activeExercise].options.find(o => o.id === selectedOption)?.correct ? '#14b8a6' : '#f43f5e'
                 }}

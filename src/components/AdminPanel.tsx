@@ -1106,7 +1106,10 @@ export default function AdminPanel({
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="text-[10px] text-slate-400 font-sans italic mb-1 lg:hidden flex items-center justify-end gap-1 px-2">
+                <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" /> Desliza para ver más columnas
+              </div>
+              <div className="overflow-x-auto shadow-[inset_-12px_0_12px_-12px_rgba(0,0,0,0.1)] pr-2">
                 <table className="w-full text-left font-sans text-xs sm:text-sm text-slate-650 [align-items:stretch]">
                   <thead>
                     <tr className="border-b border-slate-150 text-slate-400 uppercase tracking-wider font-extrabold text-[10px]">
@@ -1321,7 +1324,10 @@ export default function AdminPanel({
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="text-[10px] text-slate-400 font-sans italic mb-1 lg:hidden flex items-center justify-end gap-1 px-2">
+                <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" /> Desliza para ver más columnas
+              </div>
+              <div className="overflow-x-auto shadow-[inset_-12px_0_12px_-12px_rgba(0,0,0,0.1)] pr-2">
                 <table className="w-full text-left font-sans text-xs sm:text-sm text-slate-650 [align-items:stretch]">
                   <thead>
                     <tr className="border-b border-slate-150 text-slate-400 uppercase tracking-wider font-extrabold text-[10px]">
@@ -1457,7 +1463,10 @@ export default function AdminPanel({
                 </button>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="text-[10px] text-slate-400 font-sans italic mb-1 lg:hidden flex items-center justify-end gap-1 px-2">
+                <ArrowRight className="w-3 h-3 text-slate-400 shrink-0" /> Desliza para ver más columnas
+              </div>
+              <div className="overflow-x-auto shadow-[inset_-12px_0_12px_-12px_rgba(0,0,0,0.1)] pr-2">
                 <table className="w-full text-left font-sans text-xs sm:text-sm text-slate-650 [align-items:stretch]">
                   <thead>
                     <tr className="border-b border-slate-150 text-slate-400 uppercase tracking-wider font-extrabold text-[10px]">
