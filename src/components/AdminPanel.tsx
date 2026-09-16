@@ -8,7 +8,7 @@ import { Activity, GlossaryTerm, FAQItem, ActivityCategory } from '../types';
 import { 
   Lock, KeyRound, LayoutDashboard, BookOpen, Globe, HelpCircle, 
   Settings, LogOut, Plus, Trash2, Edit3, Save, RefreshCw, Check, AlertCircle,
-  Eye, EyeOff, ShieldAlert, Mail, Send, Inbox, CheckCircle, FileText
+  Eye, EyeOff, ShieldAlert, Mail, Send, Inbox, CheckCircle, FileText, ArrowRight
 } from 'lucide-react';
 
 interface AdminPanelProps {
