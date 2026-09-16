@@ -94,6 +94,15 @@ export default function Conceptual() {
     setDisplayMyths(shuffleAndPick(ALL_MYTHS, 3));
   }, []);
 
+  const handleSelectPillar = (idx: number) => {
+    setActivePillar(idx);
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        document.getElementById('pillar-detail-panel')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
+  };
+
   const handleGenerateAI = async () => {
     setIsGenerating(true);
     setErrorAI(null);
@@ -342,7 +351,7 @@ export default function Conceptual() {
                 return (
                   <button
                     key={idx}
-                    onClick={() => setActivePillar(idx)}
+                    onClick={() => handleSelectPillar(idx)}
                     className={`w-full flex items-center gap-3.5 p-4 rounded-xl font-sans font-bold text-left transition-all cursor-pointer ${
                       isSelected 
                         ? 'bg-orange-600 text-white shadow-md transform translate-x-1' 
@@ -360,7 +369,7 @@ export default function Conceptual() {
             </div>
 
             {/* Display panel (Interactive details) */}
-            <div className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col justify-between shadow-xs">
+            <div id="pillar-detail-panel" className="lg:col-span-8 bg-white border border-slate-200 rounded-2xl p-6 md:p-8 flex flex-col justify-between shadow-xs scroll-mt-24">
               <div className="space-y-6">
                 <div>
                   <span className="font-mono text-[10px] uppercase tracking-wider text-rose-500 font-bold">
