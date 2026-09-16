@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Activity, ActivityCategory } from '../types';
-import { Filter, Clock, BookOpen, Search, Layers, Play, Pause, RotateCcw, AlertTriangle, CheckSquare, Plus, Bell, Volume2, Sparkles, HelpCircle, Image as ImageIcon } from 'lucide-react';
+import { Filter, Clock, BookOpen, Search, Layers, CheckSquare, Sparkles } from 'lucide-react';
 
 interface ResourcesProps {
   activities: Activity[];
@@ -20,16 +20,6 @@ export default function Resources({ activities }: ResourcesProps) {
   const [durationFilter, setDurationFilter] = useState<string>('todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Interactive Timer State
-  const [timerSeconds, setTimerSeconds] = useState<number>(0);
-  const [timerMaxSeconds, setTimerMaxSeconds] = useState<number>(0);
-  const [timerRunning, setTimerRunning] = useState<boolean>(false);
-  const [activeStepIndex, setActiveStepIndex] = useState<number>(-1);
-  const [flashAlert, setFlashAlert] = useState<boolean>(false);
-  
-  // Auditory Alert Config
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
   // Set first activity as default selected on load if not selected or if previous selected is gone
   useEffect(() => {
     if (activities.length > 0) {
@@ -41,160 +31,39 @@ export default function Resources({ activities }: ResourcesProps) {
     }
   }, [activities, selectedActivity]);
 
-  // Sync timer when selectedActivity changes
-  useEffect(() => {
-    if (selectedActivity) {
-      const defaultDuration = selectedActivity.steps[0]?.duration || selectedActivity.duration || 10;
-      const secs = defaultDuration * 60;
-      setTimerSeconds(secs);
-      setTimerMaxSeconds(secs);
-      setActiveStepIndex(0);
-      setTimerRunning(false);
-      setFlashAlert(false);
-    }
-  }, [selectedActivity]);
-
-  // Timer Ticker Loop
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    if (timerRunning && timerSeconds > 0) {
-      interval = setInterval(() => {
-        setTimerSeconds((prev) => prev - 1);
-      }, 1000);
-    } else if (timerRunning && timerSeconds === 0) {
-      setTimerRunning(false);
-      triggerTimerAlert();
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [timerRunning, timerSeconds]);
-
-  // Synthesize custom chime using Web Audio API to prevent external file loads
-  const playChimeAlert = () => {
-    try {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      }
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-      
-      const now = ctx.currentTime;
-      
-      // Arpeggio chord synthesis
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, now + idx * 0.12);
-        
-        gain.gain.setValueAtTime(0, now + idx * 0.12);
-        gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.12 + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.12 + 0.45);
-        
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now + idx * 0.12);
-        osc.stop(now + idx * 0.12 + 0.5);
-      });
-    } catch (e) {
-      console.warn('Audio Context API blocked by security policies', e);
-    }
-  };
-
-  const triggerTimerAlert = () => {
-    playChimeAlert();
-    setFlashAlert(true);
-    
-    // Auto clear alert state after 6 seconds
-    setTimeout(() => {
-      setFlashAlert(false);
-    }, 6000);
-  };
-
   const handleSelectActivity = (act: Activity) => {
     setSelectedActivity(act);
-    setTimerRunning(false);
-    setFlashAlert(false);
-  };
-
-  const adjustTimer = (amountSeconds: number) => {
-    setTimerSeconds((prev) => {
-      const newSecs = Math.max(0, prev + amountSeconds);
-      if (newSecs > timerMaxSeconds) {
-        setTimerMaxSeconds(newSecs);
-      }
-      return newSecs;
-    });
-    setFlashAlert(false);
-  };
-
-  const handleLoadStepTime = (mins: number, stepIdx: number) => {
-    const secs = mins * 60;
-    setTimerSeconds(secs);
-    setTimerMaxSeconds(secs);
-    setActiveStepIndex(stepIdx);
-    setTimerRunning(true);
-    setFlashAlert(false);
-    
-    // Small click confirmation beep
-    try {
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      }
-      const ctx = audioCtxRef.current;
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(659.25, ctx.currentTime);
-      gain.gain.setValueAtTime(0.08, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.15);
-    } catch (e) {}
-  };
-
-  const toggleTimer = () => {
-    setTimerRunning(!timerRunning);
-    setFlashAlert(false);
-  };
-
-  const resetTimer = () => {
-    setTimerSeconds(timerMaxSeconds);
-    setTimerRunning(false);
-    setFlashAlert(false);
   };
 
   // Filter and Search Logic
   const filteredActivities = activities.filter((act) => {
-    // Search query match
+    const targetGradeSafe = (act.targetGrade || '').toLowerCase();
+    const titleSafe = (act.title || '').toLowerCase();
+    const objectiveSafe = (act.objective || '').toLowerCase();
+    const querySafe = (searchQuery || '').trim().toLowerCase();
+
     const matchesSearch = 
-      searchQuery.trim() === '' ||
-      act.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      act.objective.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      act.targetGrade.toLowerCase().includes(searchQuery.toLowerCase());
+      querySafe === '' ||
+      titleSafe.includes(querySafe) ||
+      objectiveSafe.includes(querySafe) ||
+      targetGradeSafe.includes(querySafe);
 
-    // Course Match
-    const matchesStage =
+    const matchesStage = 
       stageFilter === 'todos' ||
-      (stageFilter === '1_2_eso' && (act.targetGrade.includes('1º') || act.targetGrade.includes('2º'))) ||
-      (stageFilter === '3_4_eso' && (act.targetGrade.includes('3º') || act.targetGrade.includes('4º'))) ||
-      (stageFilter === 'bach' && (act.targetGrade.toLowerCase().includes('bach') || act.targetGrade.toLowerCase().includes('bachillerato')));
+      targetGradeSafe.includes('todos') ||
+      (stageFilter === 'infantil' && (targetGradeSafe.includes('infantil') || targetGradeSafe.includes('3-6'))) ||
+      (stageFilter === 'primaria' && (targetGradeSafe.includes('primaria') || targetGradeSafe.includes('6-12'))) ||
+      (stageFilter === 'eso' && targetGradeSafe.includes('eso')) ||
+      (stageFilter === 'bachillerato' && targetGradeSafe.includes('bach'));
 
-    // Category
     const matchesCategory =
       categoryFilter === 'todos' || act.category === categoryFilter;
 
-    // Duration
     let matchesDuration = true;
-    if (durationFilter === 'short') matchesDuration = act.duration < 25;
-    else if (durationFilter === 'med') matchesDuration = act.duration >= 25 && act.duration <= 45;
-    else if (durationFilter === 'long') matchesDuration = act.duration > 45;
+    const dur = Number(act.duration) || 0;
+    if (durationFilter === 'short') matchesDuration = dur <= 30;
+    else if (durationFilter === 'med') matchesDuration = dur > 30 && dur <= 50;
+    else if (durationFilter === 'long') matchesDuration = dur > 50;
 
     return matchesSearch && matchesStage && matchesCategory && matchesDuration;
   });
@@ -205,6 +74,13 @@ export default function Resources({ activities }: ResourcesProps) {
       case 'reflexion': return 'Reflexión Profunda';
       case 'debate': return 'Debate Activo';
       case 'artistico': return 'Expresión Artística';
+      case 'cooperativo': return 'Trabajo Cooperativo';
+      case 'resolucion-conflictos': return 'Resolución de Conflictos';
+      case 'analisis-medios': return 'Análisis de Medios';
+      case 'juego-de-roles': return 'Role-playing y Empatía';
+      case 'literatura-cine': return 'Cine y Narrativas';
+      case 'empatia': return 'Empatía y Emociones';
+      case 'cohesion': return 'Cohesión Grupal';
       default: return 'Recurso de Aula';
     }
   };
@@ -214,429 +90,321 @@ export default function Resources({ activities }: ResourcesProps) {
       case 'rompehielos': return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'reflexion': return 'bg-violet-50 text-violet-800 border-violet-200/60';
       case 'debate': return 'bg-rose-50 text-rose-800 border-rose-200/60';
-      case 'artistico': return 'bg-teal-50 text-teal-800 border-teal-200/60';
+      case 'artistico': return 'bg-orange-50 text-orange-800 border-orange-200/60';
+      case 'cooperativo': return 'bg-blue-50 text-blue-800 border-blue-200/60';
+      case 'resolucion-conflictos': return 'bg-emerald-50 text-emerald-800 border-emerald-200/60';
+      case 'analisis-medios': return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200/60';
+      case 'juego-de-roles': return 'bg-indigo-50 text-indigo-800 border-indigo-200/60';
+      case 'literatura-cine': return 'bg-cyan-50 text-cyan-800 border-cyan-200/60';
       default: return 'bg-slate-50 text-slate-800 border-slate-200';
     }
   };
 
-  // Map category to a gorgeous free Unsplash support photo to address the 'supporting images' goal
   const getCategoryPhoto = (cat: ActivityCategory) => {
     switch (cat) {
       case 'rompehielos': 
-        return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&h=300&q=80'; // collaborative digital table
+        return 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&h=300&q=80';
       case 'reflexion': 
-        return 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=700&h=300&q=80'; // focused study/books
+        return 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=700&h=300&q=80';
       case 'debate': 
-        return 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=700&h=300&q=80'; // laughing diverse students
+        return 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=700&h=300&q=80';
       case 'artistico': 
-        return 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=700&h=300&q=80'; // color templates
+        return 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=700&h=300&q=80';
       default: 
         return 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=700&h=300&q=80';
     }
   };
 
-  const formatTimeMinutes = (totalSecs: number) => {
-    const mins = Math.floor(totalSecs / 60);
-    const secs = totalSecs % 60;
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
-
   return (
-    <section className="py-12 px-4 md:px-8 bg-gradient-to-b from-white via-slate-50/55 to-slate-100/50" id="resources-section">
-      <div className="max-w-7xl mx-auto space-y-10">
+    <section id="resources" className="py-24 bg-slate-50 border-t border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Section Title */}
-        <div className="space-y-3">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold font-sans uppercase tracking-wide border border-indigo-200">
-            <BookOpen className="w-3.5 h-3.5 text-indigo-600" />
-            Catálogo Didáctico Activo
-          </span>
-          <h2 className="font-sans font-extrabold text-3xl md:text-5xl text-slate-900 tracking-tight leading-none">
+        {/* Header */}
+        <div className="max-w-3xl mb-12">
+          <h2 className="text-3xl font-serif text-slate-900 tracking-tight sm:text-4xl mb-4">
             Recursos y Dinámicas de Aula
           </h2>
-          <p className="font-sans text-slate-500 text-sm md:text-base max-w-3xl leading-relaxed">
-            Fichas metodológicas interactivas, desglosadas cronológicamente para facilitar su aplicación inmediata en el aula. Utiliza el **cronómetro integrado** para liderar cada fase de juego sin desviar el compás escolar.
+          <p className="text-lg text-slate-600 font-sans leading-relaxed">
+            Explora nuestro banco de actividades interactivas. Fichas metodológicas desglosadas para facilitar su aplicación inmediata en el aula. Sigue los pasos detallados para liderar cada fase de juego.
           </p>
         </div>
 
-        {/* Filters and Live Search Panel (Beautifully interactive) */}
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 grid grid-cols-1 md:grid-cols-12 gap-5 shadow-xs items-center" id="filter-and-search-form">
-          
-          {/* Live Search */}
-          <div className="md:col-span-4 relative">
-            <label className="block text-[10px] font-bold font-sans text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-              <Search className="w-3 h-3" /> Buscar en catálogo
-            </label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Escribe título o palabra clave..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50/50 hover:bg-slate-50 text-xs sm:text-sm text-slate-800 font-medium border border-slate-200 focus:border-teal-500 rounded-xl pl-9 pr-4 py-2.5 outline-none focus:ring-2 focus:ring-teal-500/10 transition-all"
-                id="search-input-catalog"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+        {/* Filters */}
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-slate-200 mb-8 flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div className="relative w-full lg:w-96 shrink-0">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-slate-400" />
             </div>
+            <input
+              type="text"
+              placeholder="Buscar por objetivo, título o curso..."
+              className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl leading-5 bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 sm:text-sm font-sans transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-
-          {/* Filter 1: Curso */}
-          <div className="md:col-span-3">
-            <label className="block text-[10px] font-bold font-sans text-slate-400 uppercase tracking-widest mb-1.5">Curso / Etapa</label>
+          
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-slate-400" />
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-sans">Filtros:</span>
+            </div>
             <select
+              className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-orange-500/20 focus:border-orange-500 block p-2 font-sans outline-none"
               value={stageFilter}
               onChange={(e) => setStageFilter(e.target.value)}
-              className="w-full bg-slate-50/50 hover:bg-slate-50 text-xs sm:text-sm text-slate-700 font-bold border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-              id="filter-stage"
             >
-              <option value="todos">Todos los niveles</option>
-              <option value="1_2_eso">1º y 2º ESO</option>
-              <option value="3_4_eso">3º y 4º ESO</option>
-              <option value="bach">4º ESO y Bachillerato</option>
+              <option value="todos">Todos los Niveles</option>
+              <option value="infantil">Infantil</option>
+              <option value="primaria">Primaria</option>
+              <option value="eso">ESO</option>
+              <option value="bachillerato">Bachillerato</option>
             </select>
-          </div>
-
-          {/* Filter 2: Categoría */}
-          <div className="md:col-span-3">
-            <label className="block text-[10px] font-bold font-sans text-slate-400 uppercase tracking-widest mb-1.5">Tipo de Dinámica</label>
             <select
+              className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-orange-500/20 focus:border-orange-500 block p-2 font-sans outline-none"
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full bg-slate-50/50 hover:bg-slate-50 text-xs sm:text-sm text-slate-700 font-bold border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-              id="filter-category"
             >
-              <option value="todos">Todas las categorías</option>
-              <option value="rompehielos">Rompehielos Dinámicos</option>
-              <option value="reflexion">Reflexión Profunda</option>
-              <option value="debate">Debates Activos</option>
-              <option value="artistico">Expresión Artística</option>
+              <option value="todos">Todas las Temáticas</option>
+              <option value="empatia">Empatía</option>
+              <option value="cohesion">Cohesión</option>
+              <option value="rompehielos">Rompehielos</option>
+              <option value="reflexion">Reflexión</option>
+              <option value="debate">Debate</option>
+              <option value="artistico">Artístico</option>
+              <option value="cooperativo">Cooperativo</option>
+              <option value="resolucion-conflictos">Resolución de Conflictos</option>
+              <option value="analisis-medios">Análisis de Medios</option>
+              <option value="juego-de-roles">Role-playing</option>
+              <option value="literatura-cine">Cine y Literatura</option>
             </select>
-          </div>
-
-          {/* Filter 3: Duración */}
-          <div className="md:col-span-2">
-            <label className="block text-[10px] font-bold font-sans text-slate-400 uppercase tracking-widest mb-1.5">Minutos libres</label>
             <select
+              className="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-orange-500/20 focus:border-orange-500 block p-2 font-sans outline-none"
               value={durationFilter}
               onChange={(e) => setDurationFilter(e.target.value)}
-              className="w-full bg-slate-50/50 hover:bg-slate-50 text-xs sm:text-sm text-slate-700 font-bold border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
-              id="filter-duration"
             >
-              <option value="todos">Cualquiera</option>
-              <option value="short">Corta (&lt; 25 min)</option>
-              <option value="med">Media (25 - 45 min)</option>
-              <option value="long">Larga (&gt; 45 min)</option>
+              <option value="todos">Cualquier Duración</option>
+              <option value="short">Corta (hasta 30 min)</option>
+              <option value="med">Media (de 35 a 50 min)</option>
+              <option value="long">Larga (más de 50 min)</option>
             </select>
           </div>
         </div>
 
-        {/* Main Work Area: Left grid cards / Right detail plan */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Content Layout */}
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* LEFT COLUMN: Grid of filtered activities */}
-          <div className="lg:col-span-5 space-y-4">
-            <h3 className="font-sans font-extrabold text-xs text-slate-400 uppercase tracking-widest flex items-center justify-between pl-1">
-              <span>Dinámicas coincidentes ({filteredActivities.length})</span>
-              {(stageFilter !== 'todos' || categoryFilter !== 'todos' || durationFilter !== 'todos' || searchQuery !== '') ? (
+          {/* Sidebar List */}
+          <div className="w-full lg:w-1/3 flex flex-col gap-3 shrink-0 lg:sticky lg:top-24 max-h-[80vh] overflow-y-auto pr-2 pb-8 custom-scrollbar">
+            {filteredActivities.length > 0 ? (
+              filteredActivities.map((act) => (
+                <button
+                  key={act.id}
+                  onClick={() => handleSelectActivity(act)}
+                  className={`text-left p-5 rounded-2xl border transition-all duration-300 group ${
+                    selectedActivity?.id === act.id
+                      ? 'bg-white border-orange-500 shadow-md ring-1 ring-orange-500/20'
+                      : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md ${getCategoryColor(act.category)}`}>
+                      {getCategoryLabel(act.category)}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-400 font-sans flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {act.duration} min
+                    </span>
+                  </div>
+                  <h3 className={`font-serif text-lg font-medium leading-tight mb-1.5 transition-colors ${
+                    selectedActivity?.id === act.id ? 'text-orange-900' : 'text-slate-900 group-hover:text-orange-600'
+                  }`}>
+                    {act.title}
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 font-sans">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>Nivel: {act.targetGrade}</span>
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 border-dashed">
+                <Search className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                <p className="text-sm text-slate-500 font-sans">No hay actividades que coincidan con estos filtros.</p>
                 <button 
-                  onClick={() => {setStageFilter('todos'); setCategoryFilter('todos'); setDurationFilter('todos'); setSearchQuery('');}}
-                  className="text-xs text-teal-600 hover:underline cursor-pointer font-extrabold font-sans"
-                  id="reset-filters"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setStageFilter('todos');
+                    setCategoryFilter('todos');
+                    setDurationFilter('todos');
+                  }}
+                  className="mt-4 text-orange-600 font-semibold text-xs hover:underline"
                 >
                   Limpiar filtros
                 </button>
-              ) : null}
-            </h3>
-
-            {filteredActivities.length === 0 ? (
-              <div className="bg-white border border-slate-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
-                <AlertTriangle className="w-12 h-12 text-rose-500 mx-auto animate-bounce" />
-                <p className="font-sans text-sm text-slate-700 font-extrabold">No se encontraron dinámicas.</p>
-                <p className="font-sans text-xs text-slate-400">Intenta reescribir la palabra clave o restablecer el panel.</p>
-                <button
-                  onClick={() => { setStageFilter('todos'); setCategoryFilter('todos'); setDurationFilter('todos'); setSearchQuery(''); }}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all cursor-pointer"
-                  id="reset-filters-empty"
-                >
-                  Restablecer filtros globales
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-3.5 max-h-[850px] overflow-y-auto pr-2" id="filtered-cards-scroller">
-                {filteredActivities.map((act) => {
-                  const isSelected = selectedActivity?.id === act.id;
-                  return (
-                    <button
-                      key={act.id}
-                      onClick={() => handleSelectActivity(act)}
-                      className={`w-full text-left p-5 rounded-2xl border transition-all flex flex-col justify-between cursor-pointer select-none ${
-                        isSelected
-                          ? 'bg-gradient-to-br from-teal-600 to-[#1d4ed8] text-white border-transparent shadow-md transform -translate-y-0.5'
-                          : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200 hover:border-slate-300 shadow-3xs'
-                      }`}
-                      id={`activity-card-${act.id}`}
-                    >
-                      <div className="space-y-3 w-full">
-                        {/* Tags */}
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className={`px-2.5 py-0.5 rounded-full font-sans font-bold text-[9px] border uppercase ${
-                            isSelected 
-                              ? 'bg-white/15 text-white border-white/25' 
-                              : getCategoryColor(act.category)
-                          }`}>
-                            {getCategoryLabel(act.category)}
-                          </span>
-                          <span className={`px-2.5 py-0.5 rounded-full font-mono text-[9px] uppercase border ${
-                            isSelected 
-                              ? 'bg-white/10 text-teal-100 border-white/10' 
-                              : 'bg-slate-50 border-slate-200 text-slate-500'
-                          }`}>
-                            {act.targetGrade}
-                          </span>
-                        </div>
-
-                        <h4 className="font-sans font-extrabold text-base md:text-lg tracking-tight leading-tight">
-                          {act.title}
-                        </h4>
-
-                        {/* Short objective */}
-                        <p className={`line-clamp-2 text-xs font-sans leading-relaxed ${isSelected ? 'text-teal-50/90 font-medium' : 'text-slate-500'}`}>
-                          {act.objective}
-                        </p>
-                      </div>
-
-                      {/* Footer label */}
-                      <div className="mt-4 pt-3 flex items-center justify-between border-t border-dashed w-full text-xs"
-                        style={{ borderColor: isSelected ? 'rgba(255,255,255,0.15)' : '#e2e8f0' }}>
-                        <span className="flex items-center gap-1 font-semibold font-sans">
-                          <Clock className="w-3.5 h-3.5" />
-                          {act.duration} Minutos
-                        </span>
-                        <span className={`text-[10px] font-bold uppercase tracking-wider ${isSelected ? 'text-amber-300' : 'text-teal-600 font-extrabold'}`}>
-                          Ver planificación completa →
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
               </div>
             )}
           </div>
 
-          {/* RIGHT COLUMN: Detailed Planning & Interactive Live Classroom Timer */}
-          <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-8 shadow-sm">
+          {/* Main Activity Detail Panel */}
+          <div className="w-full lg:w-2/3 bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
             {selectedActivity ? (
-              <div className="space-y-8 animate-fadeIn" key={selectedActivity.id}>
+              <div className="flex flex-col h-full relative">
                 
-                {/* Visual Header Image from Unsplash relevant database */}
-                <div className="relative h-48 sm:h-56 rounded-2xl overflow-hidden border border-slate-200 shadow-2xs group" id="selected-activity-visual-photo">
-                  <img
-                    src={getCategoryPhoto(selectedActivity.category)}
-                    alt={selectedActivity.title}
-                    className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
-                    referrerPolicy="no-referrer"
+                {/* Hero Image Block */}
+                <div className="h-48 sm:h-56 w-full relative overflow-hidden bg-slate-100">
+                  <img 
+                    src={getCategoryPhoto(selectedActivity.category)} 
+                    alt="Soporte visual dinámica" 
+                    className="w-full h-full object-cover object-center opacity-90 transition-transform duration-700 hover:scale-105"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent flex flex-col justify-end p-5">
-                    <span className="text-[9px] uppercase tracking-wider font-extrabold text-amber-200/90 font-mono mb-1 rounded-md bg-slate-950/40 px-2 py-0.5 inline-block self-start">
-                      Fotografía de apoyo educativo
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
+                  <div className="absolute bottom-4 left-6 right-6 flex items-center justify-between">
+                    <span className={`text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-sm ${getCategoryColor(selectedActivity.category)}`}>
+                      {getCategoryLabel(selectedActivity.category)}
                     </span>
-                    <h4 className="text-white font-sans font-black text-lg md:text-xl leading-tight tracking-tight shadow-text">
+                  </div>
+                </div>
+
+                {/* Content Body */}
+                <div className="p-6 sm:p-8 flex-1 space-y-8 relative">
+                  
+                  {/* Header Info */}
+                  <div className="space-y-4">
+                    <h3 className="text-2xl sm:text-3xl font-serif text-slate-900 leading-tight">
                       {selectedActivity.title}
-                    </h4>
-                  </div>
-                </div>
-
-                {/* Header info metadata */}
-                <div className="space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-[#4f46e5] font-extrabold bg-[#4f46e5]/10 px-2.5 py-1 rounded-lg">
-                      Ficha Lectiva Curricular
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-bold font-sans border border-teal-100">
-                      <Clock className="w-3.5 h-3.5 text-teal-600" />
-                      Plan completo: {selectedActivity.duration} mins
-                    </span>
-                  </div>
-
-                  <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 space-y-1.5">
-                    <h5 className="font-sans font-bold text-xs text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-teal-600" /> Objetivo Pedagógico Principal
-                    </h5>
-                    <p className="font-sans text-xs sm:text-sm text-slate-700 leading-relaxed font-semibold italic">
-                      "{selectedActivity.objective}"
-                    </p>
-                  </div>
-                </div>
-
-                {/* INTERACTIVE CRONÓMETRO - CLASSROOM TIMER WIDGET */}
-                <div className={`border-2 rounded-2xl p-6 transition-all shadow-inner ${
-                  flashAlert 
-                    ? 'border-rose-500 bg-rose-50 animate-bounce' 
-                    : 'border-teal-600 bg-teal-50/10'
-                }`} id="classroom-live-runner">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-5">
-                    <div className="space-y-1 text-center sm:text-left">
-                      <h4 className="font-sans font-extrabold text-sm text-slate-900 flex items-center justify-center sm:justify-start gap-2 leading-none">
-                        <Volume2 className="w-4 h-4 text-teal-600 animate-pulse" />
-                        Cronómetro de Aula Integrado
-                      </h4>
-                      <p className="font-sans text-[11px] text-slate-500 leading-normal">
-                        {activeStepIndex >= 0 
-                          ? `Fase ${activeStepIndex + 1}: ${selectedActivity.steps[activeStepIndex].title}` 
-                          : 'Haz clic en "Cargar e Iniciar" en cualquier fase de abajo.'
-                        }
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-3 text-xs font-sans font-semibold text-slate-500">
+                      <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-md">
+                        <BookOpen className="w-4 h-4 text-slate-400" />
+                        {selectedActivity.targetGrade}
+                      </div>
+                      <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-md">
+                        <Clock className="w-4 h-4 text-slate-400" />
+                        Tiempo total: {selectedActivity.duration} min
+                      </div>
+                      {selectedActivity.isCustom && (
+                        <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md border border-emerald-200">
+                          <CheckSquare className="w-4 h-4" />
+                          Aportación Comunitaria
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 bg-orange-50/50 rounded-xl border border-orange-100/50">
+                      <p className="font-sans text-sm text-slate-700 leading-relaxed">
+                        <strong className="text-orange-800 font-bold">Objetivo: </strong>
+                        {selectedActivity.objective}
                       </p>
                     </div>
-
-                    {/* Timer digits display with manual adjustments */}
-                    <div className="flex items-center gap-3 md:gap-4 shrink-0 bg-slate-100/50 p-2 rounded-2xl border border-slate-200/40">
-                      <div className="font-mono text-3xl sm:text-3.5xl text-teal-800 font-extrabold bg-white border border-slate-200 rounded-xl px-4 py-2 shadow-2xs min-w-[100px] sm:min-w-[120px] text-center tracking-tight leading-none">
-                        {formatTimeMinutes(timerSeconds)}
-                      </div>
-
-                      {/* Minute Adjusters */}
-                      <div className="flex flex-col gap-1 justify-center shrink-0">
-                        <button
-                          onClick={() => adjustTimer(60)}
-                          className="px-2 py-1 bg-teal-100 hover:bg-teal-200 text-teal-800 text-[10px] sm:text-[11px] font-black rounded-lg border border-teal-200 cursor-pointer hover:scale-102 transition-all duration-150 relative select-none"
-                          title="Añadir 1 minuto"
-                          id="timer-add-min"
-                        >
-                          +1 Min
-                        </button>
-                        <button
-                          onClick={() => adjustTimer(-60)}
-                          className="px-2 py-1 bg-slate-200/70 hover:bg-slate-200 text-slate-750 text-[10px] sm:text-[11px] font-black rounded-lg border border-slate-300 cursor-pointer hover:scale-102 transition-all duration-150 relative select-none"
-                          title="Restar 1 minuto"
-                          id="timer-sub-min"
-                        >
-                          -1 Min
-                        </button>
-                      </div>
-
-                      {/* Controls */}
-                      <div className="flex items-center gap-1.5 border-l border-slate-200 pl-3">
-                        <button
-                          onClick={toggleTimer}
-                          className="p-2.5 sm:p-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl transition-all cursor-pointer shadow-xs focus:ring-4 focus:ring-teal-500/10 hover:scale-105 active:scale-95"
-                          title={timerRunning ? 'Pausar' : 'Iniciar'}
-                          id="timer-play-pause"
-                        >
-                          {timerRunning ? <Pause className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
-                        </button>
-                        <button
-                          onClick={resetTimer}
-                          className="p-2.5 sm:p-3 bg-white hover:bg-slate-100 text-slate-700 rounded-xl border border-slate-200 transition-all cursor-pointer hover:scale-105 active:scale-95"
-                          title="Reiniciar"
-                          id="timer-reset"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        </button>
-                      </div>
-                    </div>
                   </div>
 
-                  {/* Flash notice */}
-                  {flashAlert && (
-                    <div className="mt-3 text-center text-rose-700 font-sans font-extrabold text-xs flex items-center justify-center gap-1.5 leading-none animate-pulse bg-white py-2 rounded-lg border border-rose-200 shadow-2xs">
-                      <Bell className="w-4 h-4 animate-shake" /> ¡FASE COMPLETADA! Es momento de pasar a la siguiente dinámica.
+                  {/* Required Materials */}
+                  <div className="space-y-3">
+                    <h4 className="font-sans font-extrabold text-sm text-slate-800 uppercase tracking-wider flex items-center gap-2 pl-1">
+                      <CheckSquare className="w-4 h-4 text-orange-600" />
+                      Materiales Requeridos para el Aula
+                    </h4>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-sans text-slate-600">
+                      {selectedActivity.materials.map((mat, idx) => (
+                        <li key={idx} className="flex items-start gap-2 bg-slate-50 border border-slate-100 p-3 rounded-xl hover:border-slate-300 transition-all">
+                          <span className="text-orange-600 font-bold">✔</span>
+                          <span>{mat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Situaciones Propuestas */}
+                  {selectedActivity.situations && selectedActivity.situations.length > 0 && (
+                    <div className="space-y-3 pt-2">
+                      <h4 className="font-sans font-extrabold text-sm text-slate-800 uppercase tracking-wider flex items-center gap-2 pl-1">
+                        <Layers className="w-4 h-4 text-blue-600" />
+                        Situaciones Propuestas de Aplicación
+                      </h4>
+                      <ul className="flex flex-col gap-2 text-xs font-sans text-slate-700">
+                        {selectedActivity.situations.map((sit, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 bg-blue-50/50 border border-blue-100 p-3.5 rounded-xl hover:border-blue-200 transition-all leading-relaxed">
+                            <span className="text-blue-600 font-bold mt-0.5">▶</span>
+                            <span>{sit}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   )}
-                </div>
 
-                {/* Required Materials */}
-                <div className="space-y-3">
-                  <h4 className="font-sans font-extrabold text-sm text-slate-800 uppercase tracking-wider flex items-center gap-2 pl-1">
-                    <CheckSquare className="w-4 h-4 text-teal-600" />
-                    Materiales Requeridos para el Aula
-                  </h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-sans text-slate-600">
-                    {selectedActivity.materials.map((mat, idx) => (
-                      <li key={idx} className="flex items-start gap-2 bg-slate-50 border border-slate-100 p-3 rounded-xl hover:border-slate-300 transition-all">
-                        <span className="text-teal-600 font-bold">✔</span>
-                        <span>{mat}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  {/* Ejemplos Prácticos sugeridos */}
+                  {selectedActivity.practicalExamples && selectedActivity.practicalExamples.length > 0 && (
+                    <div className="space-y-3 pt-2">
+                      <h4 className="font-sans font-extrabold text-sm text-slate-800 uppercase tracking-wider flex items-center gap-2 pl-1">
+                        <Sparkles className="w-4 h-4 text-emerald-600" />
+                        Ejemplos de Aplicación Práctica
+                      </h4>
+                      <ul className="flex flex-col gap-2 text-xs font-sans text-slate-700">
+                        {selectedActivity.practicalExamples.map((ex, idx) => (
+                          <li key={idx} className="flex items-start gap-2.5 bg-emerald-50/50 border border-emerald-100 p-3.5 rounded-xl hover:border-emerald-200 transition-all leading-relaxed">
+                            <span className="text-emerald-600 font-bold mt-0.5">↳</span>
+                            <span>{ex}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
-                {/* Step by Step - Paso a Paso */}
-                <div className="space-y-4">
-                  <h4 className="font-sans font-extrabold text-sm text-slate-800 uppercase tracking-wider pl-1 font-sans">
-                    Desarrollo del Paso a Paso (Cronometrado)
-                  </h4>
-                  <p className="font-sans text-xs text-slate-400 italic">
-                    💡 Haz clic en el botón <strong className="text-teal-600">"Cargar e Iniciar"</strong> al lado de cada fase para volcar de inmediato los minutos recomendados en el cronómetro de arriba.
-                  </p>
-
-                  <div className="relative border-l-2 border-slate-100 pl-5 ml-2.5 space-y-6">
-                    {selectedActivity.steps.map((step, idx) => {
-                      const isActiveStep = activeStepIndex === idx;
-                      return (
-                        <div key={idx} className="relative group/step">
-                          {/* Circle node indicator */}
-                          <div className={`absolute -left-[31px] top-1.5 w-5 h-5 rounded-full border-2 transition-colors flex items-center justify-center text-[9px] font-black ${
-                            isActiveStep 
-                              ? 'bg-teal-600 border-teal-600 text-white shadow-xs' 
-                              : 'bg-white border-slate-200 text-slate-400'
-                          }`}>
-                            {idx + 1}
-                          </div>
-
-                          <div className={`p-4 rounded-2xl border transition-all space-y-3 ${
-                            isActiveStep 
-                              ? 'bg-teal-50/20 border-teal-500' 
-                              : 'bg-white border-slate-200 hover:border-slate-300 shadow-3xs'
-                          }`}>
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                              <h5 className="font-sans font-bold text-xs sm:text-sm text-slate-900 leading-snug">
-                                {step.title}
-                              </h5>
-                              {step.duration && (
-                                <button
-                                  onClick={() => handleLoadStepTime(step.duration!, idx)}
-                                  className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer select-none shrink-0 ${
-                                    isActiveStep 
-                                      ? 'bg-teal-600 text-white border-transparent' 
-                                      : 'bg-white text-teal-700 border-teal-200 hover:bg-teal-50/50'
-                                  }`}
-                                  id={`load-step-${idx}`}
-                                >
-                                  <Clock className="w-3.5 h-3.5" />
-                                  {step.duration} min - Cargar e Iniciar
-                                </button>
-                              )}
+                  {/* Step by Step - Paso a Paso */}
+                  <div className="space-y-4">
+                    <h4 className="font-sans font-extrabold text-sm text-slate-800 uppercase tracking-wider pl-1 font-sans">
+                      Desarrollo del Paso a Paso
+                    </h4>
+                    <div className="relative border-l-2 border-slate-100 pl-5 ml-2.5 space-y-6">
+                      {selectedActivity.steps.map((step, idx) => {
+                        return (
+                          <div key={idx} className="relative group/step">
+                            {/* Circle node indicator */}
+                            <div className="absolute -left-[31px] top-1.5 w-5 h-5 rounded-full border-2 transition-colors flex items-center justify-center text-[9px] font-black bg-white border-slate-200 text-slate-400">
+                              {idx + 1}
                             </div>
-
-                            <p className="font-sans text-xs text-slate-500 leading-relaxed font-normal">
-                              {step.description}
-                            </p>
+                            <div className="p-4 rounded-2xl border transition-all space-y-3 bg-white border-slate-200 hover:border-slate-300 shadow-sm">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                <h5 className="font-sans font-bold text-xs sm:text-sm text-slate-900 leading-snug">
+                                  {step.title}
+                                </h5>
+                                {step.duration && (
+                                  <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 shrink-0">
+                                    <Clock className="w-3.5 h-3.5" />
+                                    {step.duration} min
+                                  </span>
+                                )}
+                              </div>
+                              <p className="font-sans text-xs text-slate-500 leading-relaxed font-normal">
+                                {step.description}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
 
-                {/* Teacher's Key Reflection Questions */}
-                <div className="pt-6 border-t border-slate-200 space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                  <h4 className="font-sans font-extrabold text-xs text-slate-800 uppercase tracking-widest flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-amber-500" />
-                    Preguntas Clave para el Cierre y Plenaria
-                  </h4>
-                  <p className="font-sans text-xs text-slate-400">
-                    Utiliza estas preguntas formuladas por psicopedagogos para exprimir el aprendizaje al final de la sesión grupal:
-                  </p>
-                  <ul className="space-y-2 font-sans text-xs text-slate-700">
-                    {selectedActivity.keyReflectionQuestions.map((q, idx) => (
-                      <li key={idx} className="flex items-start gap-2 bg-white border border-slate-100/50 p-2 rounded-lg">
-                        <span className="text-teal-600 font-bold shrink-0">💬</span>
-                        <span className="font-semibold">{q}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  {/* Teacher's Key Reflection Questions */}
+                  <div className="pt-6 border-t border-slate-200 space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                    <h4 className="font-sans font-extrabold text-xs text-slate-800 uppercase tracking-widest flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-slate-500" />
+                      Preguntas Clave para el Cierre y Plenaria
+                    </h4>
+                    <p className="font-sans text-xs text-slate-400">
+                      Utiliza estas preguntas formuladas por psicopedagogos para exprimir el aprendizaje al final de la sesión grupal:
+                    </p>
+                    <ul className="space-y-2 font-sans text-xs text-slate-700">
+                      {selectedActivity.keyReflectionQuestions.map((q, idx) => (
+                        <li key={idx} className="flex items-start gap-2 bg-white border border-slate-100/50 p-2 rounded-lg">
+                          <span className="text-orange-600 font-bold shrink-0">💬</span>
+                          <span className="font-semibold">{q}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
+                </div>
               </div>
             ) : (
               <div className="h-48 flex items-center justify-center text-slate-400 font-sans text-sm italic">
@@ -644,9 +412,7 @@ export default function Resources({ activities }: ResourcesProps) {
               </div>
             )}
           </div>
-
         </div>
-
       </div>
     </section>
   );

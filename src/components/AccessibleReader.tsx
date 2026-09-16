@@ -61,7 +61,7 @@ export default function AccessibleReader({
       {/* Floating Action Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-4 bg-gradient-to-tr from-teal-600 to-indigo-600 hover:from-teal-700 hover:to-indigo-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center cursor-pointer relative group-hover:rotate-12 outline-none focus:ring-4 focus:ring-teal-500/40"
+        className="p-4 bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 flex items-center justify-center cursor-pointer relative group-hover:rotate-12 outline-none focus:ring-4 focus:ring-orange-500/40"
         title="Opciones de Accesibilidad y Lectura"
         id="theme-accessibility-button"
       >
@@ -76,7 +76,7 @@ export default function AccessibleReader({
         <div className="absolute bottom-18 right-0 w-72 bg-white border border-slate-200 rounded-2xl p-5 shadow-2xl space-y-5 animate-scaleUp text-slate-800">
           <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
             <h4 className="font-extrabold text-sm flex items-center gap-1.5 text-slate-900">
-              <Accessibility className="w-4 h-4 text-teal-600" />
+              <Accessibility className="w-4 h-4 text-orange-600" />
               Asistente de Lectura
             </h4>
             <button
@@ -98,7 +98,7 @@ export default function AccessibleReader({
                 onClick={() => setFontSizeScale('normal')}
                 className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all ${
                   fontSizeScale === 'normal'
-                    ? 'bg-teal-50 text-teal-700 border-teal-500 font-extrabold'
+                    ? 'bg-orange-50 text-orange-700 border-orange-500 font-extrabold'
                     : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-600'
                 }`}
                 id="btn-font-normal"
@@ -109,7 +109,7 @@ export default function AccessibleReader({
                 onClick={() => setFontSizeScale('large')}
                 className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all ${
                   fontSizeScale === 'large'
-                    ? 'bg-teal-50 text-teal-700 border-teal-500 font-extrabold'
+                    ? 'bg-orange-50 text-orange-700 border-orange-500 font-extrabold'
                     : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-600'
                 }`}
                 id="btn-font-large"
@@ -120,7 +120,7 @@ export default function AccessibleReader({
                 onClick={() => setFontSizeScale('xl')}
                 className={`py-2 px-2 rounded-xl text-xs font-bold border transition-all ${
                   fontSizeScale === 'xl'
-                    ? 'bg-teal-50 text-teal-700 border-teal-500 font-extrabold'
+                    ? 'bg-orange-50 text-orange-700 border-orange-500 font-extrabold'
                     : 'bg-white border-slate-200 hover:bg-slate-50 text-slate-600'
                 }`}
                 id="btn-font-xl"
@@ -159,14 +159,14 @@ export default function AccessibleReader({
             </span>
             <button
               onClick={testSpeaker}
-              className="w-full py-2 bg-white border border-slate-200 hover:bg-teal-50/10 text-slate-700 hover:text-teal-700 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full py-2 bg-white border border-slate-200 hover:bg-orange-50/10 text-slate-700 hover:text-orange-700 rounded-xl text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
               id="btn-speak-test"
             >
-              <Volume2 className="w-3.5 h-3.5 text-teal-600" />
+              <Volume2 className="w-3.5 h-3.5 text-orange-600" />
               Probar Timbre de Aula
             </button>
             <p className="text-[9px] text-slate-400 leading-normal">
-              Pulsa antes de clase para verificar el altavoz para las alertas del cronómetro interactivo.
+              Pulsa antes de clase para verificar el altavoz para las dinámicas de audio.
             </p>
           </div>
         </div>

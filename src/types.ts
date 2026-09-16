@@ -9,7 +9,7 @@ export interface ActivityStep {
   duration?: number; // duration in minutes for this specific step
 }
 
-export type ActivityCategory = 'rompehielos' | 'reflexion' | 'debate' | 'artistico';
+export type ActivityCategory = 'rompehielos' | 'reflexion' | 'debate' | 'artistico' | 'cooperativo' | 'resolucion-conflictos' | 'analisis-medios' | 'juego-de-roles' | 'literatura-cine' | 'empatia' | 'cohesion';
 
 export interface Activity {
   id: string;
@@ -21,7 +21,11 @@ export interface Activity {
   materials: string[];
   steps: ActivityStep[];
   keyReflectionQuestions: string[];
+  practicalExamples?: string[]; // concrete examples of roles, texts, etc.
+  situations?: string[]; // specific scenarios or situations to act out / analyze
   isCustom?: boolean; // to differentiate user-created activities
+  isApproved?: boolean; // to require admin approval before publishing
+  author?: string; // name of the creator
 }
 
 export interface GlossaryTerm {

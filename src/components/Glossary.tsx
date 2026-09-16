@@ -37,12 +37,12 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
   };
 
   return (
-    <section className="py-12 md:py-16 px-4 md:px-8 bg-gradient-to-b from-white via-teal-50/10 to-slate-50/50" id="glossary-section">
+    <section className="py-12 md:py-16 px-4 md:px-8 bg-slate-50" id="glossary-section">
       <div className="max-w-7xl mx-auto space-y-10">
 
          {/* Section Header */}
         <div className="space-y-4 max-w-3xl">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold font-sans uppercase tracking-wide border border-teal-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold font-sans uppercase tracking-wide border border-orange-200">
             <Globe className="w-3.5 h-3.5" />
             Glosario Conceptuado A-Z
           </span>
@@ -65,14 +65,14 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
                 placeholder="Buscar término o definición..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-sans text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm font-sans text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 id="glossary-search"
               />
             </div>
             
             {/* Legend / Feedback */}
             <div className="md:col-span-7 text-xs text-slate-500 font-sans md:text-right">
-              Mostrando <strong className="text-teal-600 font-bold">{filteredTerms.length}</strong> términos críticos de educación intercultural.
+              Mostrando <strong className="text-orange-600 font-bold">{filteredTerms.length}</strong> términos críticos de educación intercultural.
             </div>
           </div>
 
@@ -86,7 +86,7 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
                   onClick={() => setSelectedLetter(letter)}
                   className={`px-3 py-1.5 rounded-lg font-sans font-bold text-xs uppercase cursor-pointer transition-all ${
                     isSelected 
-                      ? 'bg-teal-600 text-white shadow-sm' 
+                      ? 'bg-orange-600 text-white shadow-sm' 
                       : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
                   }`}
                   id={`letter-tab-${letter}`}
@@ -110,16 +110,16 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
               return (
                 <div 
                   key={term.word}
-                  className="bg-white border border-slate-200 hover:border-teal-500/40 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-3xs"
+                  className="bg-white border border-slate-200 hover:border-orange-500/40 rounded-3xl p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-3xs"
                 >
                   <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-col items-start gap-2">
                       <h3 className="font-sans font-extrabold text-lg text-slate-900 flex items-center gap-1.5">
-                        <BookOpen className="w-4 h-4 text-teal-600 shrink-0" />
+                        <BookOpen className="w-4 h-4 text-orange-600 shrink-0" />
                         {term.word}
                       </h3>
                       {term.etymology && (
-                        <span className="text-[10px] font-sans font-extrabold text-slate-400 italic leading-none shrink-0 border border-slate-200 px-2 py-1 rounded-md bg-slate-50">
+                        <span className="text-[10px] font-sans font-extrabold text-slate-500 italic leading-snug border border-slate-200 px-2 py-1.5 rounded-md bg-slate-50 max-w-full">
                           {term.etymology.split('.')[0]}
                         </span>
                       )}
@@ -133,9 +133,9 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
                   {/* Accessible Collapsible Drawer for teacher tips */}
                   <div className="space-y-2">
                     {isOpen && term.pedagogicalTip && (
-                      <div className="p-4 bg-teal-50/25 border border-teal-100 rounded-xl space-y-1.5 animate-fadeIn">
-                        <h4 className="font-sans font-extrabold text-xs text-teal-800 flex items-center gap-1.5 uppercase tracking-wide">
-                          <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+                      <div className="p-4 bg-orange-50/25 border border-orange-100 rounded-xl space-y-1.5 animate-fadeIn">
+                        <h4 className="font-sans font-extrabold text-xs text-orange-800 flex items-center gap-1.5 uppercase tracking-wide">
+                          <Lightbulb className="w-3.5 h-3.5 text-slate-500" />
                           Indicación Didáctica para Clase
                         </h4>
                         <p className="font-sans text-xs text-slate-600 leading-relaxed">
@@ -148,7 +148,7 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
                       <button
                         onClick={() => handleToggleExpand(term.word)}
                         className={`w-full flex items-center justify-between text-xs font-sans font-extrabold pb-1 pt-2 border-t border-dashed border-slate-150 cursor-pointer ${
-                          isOpen ? 'text-indigo-600' : 'text-teal-600 hover:text-teal-850'
+                          isOpen ? 'text-emerald-700' : 'text-orange-600 hover:text-teal-850'
                         }`}
                         id={`btn-expand-${term.word}`}
                       >
@@ -164,14 +164,14 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
         )}
 
         {/* Didactic Quote Section inside Glossary */}
-        <div className="p-6 md:p-8 bg-gradient-to-r from-teal-600 to-indigo-600 text-white rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
+        <div className="p-6 md:p-8 bg-orange-600 text-white rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
           <div className="space-y-2 max-w-2xl">
             <h4 className="font-sans font-extrabold text-white text-lg flex items-center gap-1.5">
               <GraduationCap className="w-5 h-5" />
               ¿Por qué cuidar la terminología?
             </h4>
-            <p className="font-sans text-xs sm:text-sm text-teal-50/90 leading-relaxed">
-              "El lenguaje no sólo nombra la realidad, la crea. Desatascar la confusión terminológica entre multiculturalidad e interculturalidad dota a los estudiantes de secundaria de herramientas reales contra las fake-news de exclusión."
+            <p className="font-sans text-xs sm:text-sm text-orange-50/90 leading-relaxed">
+              "El lenguaje no sólo nombra la realidad, la crea. Desatascar la confusión terminológica entre multiculturalidad e interculturalidad dota a el alumnado de herramientas reales contra las fake-news de exclusión."
             </p>
           </div>
         </div>

@@ -1,6 +1,8 @@
 {
-  "name": "Educación Intercultural",
-  "description": "Recursos didácticos, dinámicas de aula interactivas y material conceptual sobre Educación Intercultural para docentes de secundaria.",
+  "name": "Aula Intercultural",
+  "description": "Recursos didácticos, dinámicas interactivas y material conceptual sobre Educación Intercultural para docentes de todas las etapas (Infantil, Primaria, Secundaria).",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

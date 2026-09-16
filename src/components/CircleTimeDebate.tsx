@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, FormEvent } from 'react';
-import { Sparkles, MessageSquare, Plus, Trash2, Volume2, RotateCw } from 'lucide-react';
+import { Sparkles, MessageSquare, Plus, Trash2, Volume2, RotateCw, BrainCircuit } from 'lucide-react';
 
 export default function CircleTimeDebate() {
   const [questions, setQuestions] = useState<string[]>([
@@ -13,12 +13,18 @@ export default function CircleTimeDebate() {
     '¿Qué diferencia hay entre simplemente tolerar que otros compañeros hablen diferente y valorar activamente su lengua de origen?',
     '¿Cómo reaccionarías si en un aeropuerto te confiscaran tres objetos de gran valor afectivo o tradicional bajo el pretexto de ser "inútiles"?',
     '¿De qué manera los comentarios cotidianos humorísticos o chistes de pasillo alimentan silenciosamente "El Teléfono Estropeado de los Prejuicios"?',
-    '¿Cómo podemos ayudar a un compañero recién llegado al instituto que apenas comprende el idioma sin ser sobreprotectores ni condescendientes?'
+    '¿Cómo podemos ayudar a un compañero recién llegado al instituto que apenas comprende el idioma sin ser sobreprotectores ni condescendientes?',
+    'Si pudieras intercambiar tu "mochila cultural" con la de un compañero durante un día, ¿qué aspecto de su visión del mundo te daría más curiosidad experimentar?',
+    '¿Crees que el concepto de "normalidad" en el aula es un consenso real o una imposición de la mayoría?',
+    '¿De qué manera la música o la comida que consumimos influye en nuestros sesgos culturales sin darnos cuenta?',
+    'Imagina que se prohíben todas las referencias geográficas para presentarse. ¿Cómo definirías quién eres y de dónde vienes?',
+    '¿Es posible tener una identidad cultural "pura" en el siglo XXI, o todos somos el resultado de un constante mestizaje?'
   ]);
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('Haz clic en el botón de abajo para lanzar al aire un detonante pedagógico...');
   const [customInput, setCustomInput] = useState<string>('');
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   
   const audioCtxRef = useRef<AudioContext | null>(null);
 
@@ -53,31 +59,64 @@ export default function CircleTimeDebate() {
     }
   };
 
-  const handleSpinQuestion = () => {
-    if (isSpinning) return;
-    setIsSpinning(true);
-    let counter = 0;
+  const handleSpinQuestion = async () => {
+    if (isSpinning || isGenerating) return;
     
-    // Simulate spin visual sound effects
-    const interval = setInterval(() => {
-      const tempIdx = Math.floor(Math.random() * questions.length);
-      setCurrentQuestion(questions[tempIdx]);
-      synthesizeChime(400 + (counter * 60), 'sine', 0.1);
-      counter++;
-      
-      if (counter > 8) {
-        clearInterval(interval);
-        // Final select
-        const finalIdx = Math.floor(Math.random() * questions.length);
-        setCurrentQuestion(questions[finalIdx]);
-        setIsSpinning(false);
-        // Winning chime chord
-        setTimeout(() => {
-          synthesizeChime(587.33, 'triangle', 0.6); // D5
-          setTimeout(() => synthesizeChime(880.00, 'sine', 0.8), 100); // A5
-        }, 120);
+    // We decide randomly whether to pick an existing question or generate a new one with AI.
+    // 30% chance to generate a brand new one using AI, 70% chance to pick from the existing pool.
+    const shouldUseAI = Math.random() < 0.3;
+
+    if (shouldUseAI) {
+      // Execute the AI path silently
+      setIsGenerating(true);
+      setCurrentQuestion("Generando una nueva reflexión (unos segundos)...");
+      try {
+        const response = await fetch('/api/generate-question', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        
+        if (!response.ok) {
+          throw new Error('No se pudo generar la pregunta');
+        }
+        
+        const data = await response.json();
+        const newQuestion = data.question;
+        
+        setQuestions(prev => [newQuestion, ...prev]);
+        setCurrentQuestion(newQuestion);
+        
+        synthesizeChime(587.33, 'triangle', 0.6);
+        setTimeout(() => synthesizeChime(880.00, 'sine', 0.8), 100);
+      } catch (error) {
+        console.error("AI Error:", error);
+        setCurrentQuestion("Fallo en conexión. Por favor, gira la ruleta de nuevo.");
+        synthesizeChime(200, 'sawtooth', 0.3);
+      } finally {
+        setIsGenerating(false);
       }
-    }, 150);
+    } else {
+      // Normal roulette logic
+      setIsSpinning(true);
+      let counter = 0;
+      const interval = setInterval(() => {
+        const tempIdx = Math.floor(Math.random() * questions.length);
+        setCurrentQuestion(questions[tempIdx]);
+        synthesizeChime(400 + (counter * 60), 'sine', 0.1);
+        counter++;
+        
+        if (counter > 8) {
+          clearInterval(interval);
+          const finalIdx = Math.floor(Math.random() * questions.length);
+          setCurrentQuestion(questions[finalIdx]);
+          setIsSpinning(false);
+          setTimeout(() => {
+            synthesizeChime(587.33, 'triangle', 0.6); 
+            setTimeout(() => synthesizeChime(880.00, 'sine', 0.8), 100); 
+          }, 120);
+        }
+      }, 150);
+    }
   };
 
   const handleAddQuestion = (e: FormEvent) => {
@@ -101,9 +140,9 @@ export default function CircleTimeDebate() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50/50 via-teal-50/30 to-rose-50/25 border border-slate-200 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-lg transition-all" id="circle-debate-box">
+    <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-lg transition-all" id="circle-debate-box">
       <div className="flex items-center gap-3.5 mb-6">
-        <div className="p-2.5 bg-gradient-to-tr from-rose-500 to-amber-500 text-white rounded-xl shadow-xs">
+        <div className="p-2.5 bg-rose-500 text-white rounded-xl shadow-xs">
           <MessageSquare className="w-5 h-5" />
         </div>
         <div>
@@ -123,10 +162,12 @@ export default function CircleTimeDebate() {
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-sans">Audio Activo</span>
         </div>
         
-        {isSpinning ? (
+        {isSpinning || isGenerating ? (
           <div className="space-y-3 animate-pulse">
-            <div className="w-8 h-8 rounded-full border-4 border-slate-100 border-t-teal-600 animate-spin mx-auto" />
-            <p className="font-sans text-slate-400 text-xs italic tracking-wide">Mezclando reflexiones sociológicas...</p>
+            <div className="w-8 h-8 rounded-full border-4 border-slate-100 border-t-orange-600 animate-spin mx-auto" />
+            <p className="font-sans text-slate-400 text-xs italic tracking-wide">
+              {isGenerating ? "Generando reflexión (puede tardar unos 10-15 seg)..." : "Mezclando reflexiones sociológicas..."}
+            </p>
           </div>
         ) : (
           <p className="font-sans text-sm md:text-base text-slate-700 font-semibold leading-relaxed max-w-xl animate-fadeIn">
@@ -135,65 +176,21 @@ export default function CircleTimeDebate() {
         )}
       </div>
 
-      {/* Master Action Button */}
-      <div className="mt-6 flex justify-center">
+      {/* Master Action Buttons */}
+      <div className="mt-6 flex flex-col sm:flex-row justify-center gap-3">
         <button
           onClick={handleSpinQuestion}
-          disabled={isSpinning}
-          className="flex items-center justify-center gap-2 px-8 py-3.5 bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-700 hover:to-indigo-700 text-white font-sans font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed group"
+          disabled={isSpinning || isGenerating}
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-sans font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed group w-full sm:w-auto"
           id="btn-spin-debate"
         >
           <RotateCw className={`w-4 h-4 group-hover:rotate-45 transition-transform ${isSpinning ? 'animate-spin' : ''}`} />
           Girar Ruleta Intercultural
-          <Sparkles className="w-4 h-4 text-amber-300" />
+          <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-pulse text-white' : 'text-amber-300'}`} />
         </button>
       </div>
 
-      {/* Add / Manage own questions */}
-      <div className="mt-8 border-t border-slate-200/80 pt-6 space-y-4">
-        <h4 className="font-sans font-bold text-slate-800 text-xs uppercase tracking-wider">
-          Añade o Gestiona el Banco de Preguntas ({questions.length})
-        </h4>
 
-        <form onSubmit={handleAddQuestion} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Propón una pregunta de debate para tu aula..."
-            value={customInput}
-            onChange={(e) => setCustomInput(e.target.value)}
-            className="flex-1 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-sans text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/30"
-            id="debate-custom-input"
-          />
-          <button
-            type="submit"
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl flex items-center gap-1.5 font-sans font-bold text-xs sm:text-sm transition-colors cursor-pointer"
-            id="debate-add-btn"
-          >
-            <Plus className="w-4 h-4" />
-            Añadir
-          </button>
-        </form>
-
-        {/* Scrollable list of existing questions */}
-        <div className="max-h-[140px] overflow-y-auto pr-2 space-y-1.5">
-          {questions.map((q, idx) => (
-            <div key={idx} className="flex items-center justify-between gap-3 p-2 bg-white/60 hover:bg-white border border-slate-100 rounded-lg text-[11px] font-sans text-slate-600 transition-all">
-              <span className="line-clamp-1 flex-1 leading-normal">
-                {idx + 1}. {q}
-              </span>
-              <button
-                type="button"
-                onClick={() => handleDeleteQuestion(idx)}
-                className="p-1 text-slate-400 hover:text-red-500 rounded transition-colors shrink-0"
-                title="Eliminar pregunta"
-                id={`delete-question-${idx}`}
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

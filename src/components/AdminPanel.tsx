@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, GlossaryTerm, FAQItem, ActivityCategory } from '../types';
 import { 
   Lock, KeyRound, LayoutDashboard, BookOpen, Globe, HelpCircle, 
   Settings, LogOut, Plus, Trash2, Edit3, Save, RefreshCw, Check, AlertCircle,
-  Eye, EyeOff, ShieldAlert, Mail, Send
+  Eye, EyeOff, ShieldAlert, Mail, Send, Inbox, CheckCircle, FileText
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -45,7 +45,28 @@ export default function AdminPanel({
   const [password, setPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loginError, setLoginError] = useState('');
-  const [activeSubTab, setActiveSubTab] = useState<'stats' | 'dynamics' | 'glossary' | 'faqs' | 'texts'>('stats');
+  const [activeSubTab, setActiveSubTab] = useState<'stats' | 'dynamics' | 'glossary' | 'faqs' | 'texts' | 'inbox'>('stats');
+  const [inboxMessages, setInboxMessages] = useState<{id: string, name: string, email: string, date: string, message: string, status: string}[]>([]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const msgs = JSON.parse(localStorage.getItem('intercultural_inbox') || '[]');
+      setInboxMessages(msgs.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    }
+  }, [isAuthenticated, activeSubTab]);
+
+  const handleResolveMessage = (id) => {
+    const updated = inboxMessages.map(m => m.id === id ? {...m, status: 'resolved'} : m);
+    setInboxMessages(updated);
+    localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+  };
+
+  const handleDeleteMessage = (id) => {
+    const updated = inboxMessages.filter(m => m.id !== id);
+    setInboxMessages(updated);
+    localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+  };
+
 
   // --- Admin Security Settings ---
   const [adminPassword, setAdminPassword] = useState(() => {
@@ -277,6 +298,17 @@ export default function AdminPanel({
     cancelEditActivity();
   };
 
+  const handleToggleApproval = (id: string) => {
+    const updated = activities.map(a => {
+      if (a.id === id) {
+        return { ...a, isApproved: !a.isApproved };
+      }
+      return a;
+    });
+    setActivities(updated);
+    localStorage.setItem('intercultural_activities_all', JSON.stringify(updated));
+  };
+
   const handleDeleteActivity = (id: string) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta dinámica de aula de forma permanente?')) {
       const updated = activities.filter(a => a.id !== id);
@@ -491,7 +523,7 @@ export default function AdminPanel({
     if (window.confirm('¿Deseas restablecer TODAS las bases de datos (Dinámicas, Glosario, FAQs, Textos, Contraseña y Correo de Recuperación) a sus valores originales de fábrica? Se perderán las modificaciones locales.')) {
       onRestoreDefaults();
       // Reset variables
-      setHeroTitle('Aula Intercultural de Secundaria');
+      setHeroTitle('Aula Intercultural');
       setHeroSubtitle('Un rincón de recursos pedagógicos interactivos, dinámicas de aula y soporte terminológico para la formación docente en diversidad, equidad y convivencia.');
       setSupportEmail('contacto@aulaintercultural.es');
       setAdminPassword('aula2026');
@@ -584,16 +616,16 @@ export default function AdminPanel({
     };
 
     return (
-      <section className="py-16 px-4 md:px-8 bg-gradient-to-b from-slate-900 via-slate-850 to-slate-950 text-white min-h-[75vh] flex items-center justify-center">
+      <section className="py-16 px-4 md:px-8 bg-slate-900 text-white min-h-[75vh] flex items-center justify-center">
         <div className="max-w-md w-full bg-slate-800/80 border border-slate-700 p-8 rounded-3xl space-y-6 shadow-2xl backdrop-blur-md relative overflow-hidden">
           {/* Decorative light flare */}
-          <div className="absolute -top-10 -right-10 w-28 h-28 bg-teal-500/20 rounded-full blur-2xl" />
+          <div className="absolute -top-10 -right-10 w-28 h-28 bg-orange-500/20 rounded-full blur-2xl" />
           
           {isRecovering ? (
             // --- RECOVERY MODE VIEW ---
             <>
               <div className="text-center space-y-2">
-                <div className="p-4 bg-teal-500/10 border border-teal-500/20 text-teal-400 rounded-2xl w-fit mx-auto shadow-sm">
+                <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-2xl w-fit mx-auto shadow-sm">
                   <KeyRound className="w-8 h-8" />
                 </div>
                 <h2 className="font-sans font-black text-2xl tracking-tight">Recuperar Acceso</h2>
@@ -604,8 +636,8 @@ export default function AdminPanel({
 
               {recoverySuccess ? (
                 <div className="space-y-4">
-                  <div className="p-4 bg-teal-500/10 border border-teal-500/30 text-teal-350 rounded-2xl text-center font-sans space-y-2">
-                    <Check className="w-8 h-8 mx-auto text-teal-400" />
+                  <div className="p-4 bg-orange-500/10 border border-orange-500/30 text-teal-350 rounded-2xl text-center font-sans space-y-2">
+                    <Check className="w-8 h-8 mx-auto text-orange-400" />
                     <p className="font-bold text-sm">¡Contraseña restablecida!</p>
                     <p className="text-xs text-slate-400">Tu clave de acceso de administrador se ha actualizado con éxito. Ya puedes iniciar sesión de forma segura.</p>
                   </div>
@@ -616,7 +648,7 @@ export default function AdminPanel({
                       setRecoverySuccess(false);
                       setPassword('');
                     }}
-                    className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
+                    className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
                   >
                     Volver al Inicio de Sesión
                   </button>
@@ -625,7 +657,7 @@ export default function AdminPanel({
                 // Step 1: Request code by entering recovery email
                 <form onSubmit={handleSendRecoveryCode} className="space-y-4 text-xs font-sans">
                   <div className="p-3 bg-slate-900/60 border border-slate-750 rounded-2xl space-y-1">
-                    <span className="font-mono text-[9px] text-teal-400 font-black uppercase tracking-wider">Correo Vinculado</span>
+                    <span className="font-mono text-[9px] text-orange-400 font-black uppercase tracking-wider">Correo Vinculado</span>
                     <p className="text-slate-200 font-bold leading-relaxed tracking-wide">
                       {maskEmail(recoveryEmail)}
                     </p>
@@ -641,7 +673,7 @@ export default function AdminPanel({
                       placeholder="Introduce el correo para recibir el código..."
                       value={recoveryEmailInput}
                       onChange={(e) => setRecoveryEmailInput(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-orange-500/40"
                     />
                   </div>
 
@@ -656,7 +688,7 @@ export default function AdminPanel({
                     <button
                       type="submit"
                       disabled={isSendingCode}
-                      className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
                     >
                       <Send className="w-3.5 h-3.5" />
                       {isSendingCode ? 'Enviando código...' : 'Enviar Código de Seguridad'}
@@ -677,7 +709,7 @@ export default function AdminPanel({
               ) : (
                 // Step 2: Enter code & new password
                 <form onSubmit={handleRecoverySubmit} className="space-y-4 text-xs font-sans">
-                  <div className="p-3 bg-teal-950/40 border border-teal-900/20 text-teal-350 rounded-2xl text-center">
+                  <div className="p-3 bg-orange-950/40 border border-orange-900/20 text-teal-350 rounded-2xl text-center">
                     <p className="font-semibold text-xs leading-normal">
                       Hemos enviado un código de verificación a: <br />
                       <strong className="text-white">{recoveryEmail}</strong>
@@ -695,7 +727,7 @@ export default function AdminPanel({
                       placeholder="Ej: 123456"
                       value={recoveryCodeInput}
                       onChange={(e) => setRecoveryCodeInput(e.target.value.replace(/\D/g, ''))}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-center font-mono text-lg tracking-widest text-teal-400 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-center font-mono text-lg tracking-widest text-orange-400 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-orange-500/40"
                     />
                   </div>
 
@@ -709,7 +741,7 @@ export default function AdminPanel({
                       placeholder="Mínimo 6 caracteres..."
                       value={recoveryNewPassword}
                       onChange={(e) => setRecoveryNewPassword(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-orange-500/40"
                     />
                   </div>
 
@@ -723,7 +755,7 @@ export default function AdminPanel({
                       placeholder="Repite la contraseña..."
                       value={recoveryNewPasswordConfirm}
                       onChange={(e) => setRecoveryNewPasswordConfirm(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-orange-500/40"
                     />
                   </div>
 
@@ -737,7 +769,7 @@ export default function AdminPanel({
                   <div className="pt-2 space-y-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
+                      className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
                     >
                       💾 Guardar Nueva Contraseña y Acceder
                     </button>
@@ -750,7 +782,7 @@ export default function AdminPanel({
                         <button
                           type="button"
                           onClick={handleSendRecoveryCode}
-                          className="text-teal-400 hover:text-teal-300 font-bold hover:underline cursor-pointer"
+                          className="text-orange-400 hover:text-orange-300 font-bold hover:underline cursor-pointer"
                         >
                           Reenviar código
                         </button>
@@ -776,10 +808,10 @@ export default function AdminPanel({
 
               {/* Simulated Email Pop-up for Testing/Preview Integration */}
               {simulatedEmailPopup && (
-                <div className="mt-4 p-4 bg-slate-900 border border-amber-500/40 rounded-2xl text-xs font-sans space-y-2.5 shadow-xl relative animate-fadeIn">
+                <div className="mt-4 p-4 bg-slate-900 border border-slate-500/40 rounded-2xl text-xs font-sans space-y-2.5 shadow-xl relative animate-fadeIn">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-                    <span className="font-mono text-[10px] text-amber-400 font-black uppercase tracking-wider flex items-center gap-1.5">
-                      <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="font-mono text-[10px] text-slate-400 font-black uppercase tracking-wider flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-slate-500 animate-pulse" />
                       Simulación: Bandeja de Entrada
                     </span>
                     <button 
@@ -796,11 +828,11 @@ export default function AdminPanel({
                   </div>
                   <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
                     <p className="text-slate-300 leading-normal">
-                      Has solicitado un código para restablecer tu contraseña en el portal de Aula Intercultural de Secundaria.
+                      Has solicitado un código para restablecer tu contraseña en el portal de Aula Intercultural.
                     </p>
                     <div className="flex items-center justify-between bg-slate-900 px-3 py-2 rounded-lg border border-slate-800">
                       <span className="text-slate-400 font-bold">Código de seguridad:</span>
-                      <span className="font-mono text-base text-amber-400 font-extrabold tracking-widest bg-slate-950 px-2.5 py-1 rounded border border-amber-500/20">{simulatedEmailPopup.code}</span>
+                      <span className="font-mono text-base text-slate-400 font-extrabold tracking-widest bg-slate-950 px-2.5 py-1 rounded border border-slate-500/20">{simulatedEmailPopup.code}</span>
                     </div>
                     <p className="text-[10px] text-slate-500 italic">Este código expira en 10 minutos.</p>
                   </div>
@@ -811,7 +843,7 @@ export default function AdminPanel({
             // --- STANDARD LOGIN MODE VIEW ---
             <>
               <div className="text-center space-y-2">
-                <div className="p-4 bg-teal-500/10 border border-teal-500/20 text-teal-400 rounded-2xl w-fit mx-auto shadow-sm">
+                <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-2xl w-fit mx-auto shadow-sm">
                   {isLocked ? (
                     <ShieldAlert className="w-8 h-8 text-red-400 animate-pulse" />
                   ) : (
@@ -843,7 +875,7 @@ export default function AdminPanel({
                       placeholder={isLocked ? "Formulario bloqueado temporalmente..." : "Introduce la contraseña corporativa..."}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/40 text-slate-100 placeholder-slate-500 font-sans disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-10 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/40 text-slate-100 placeholder-slate-500 font-sans disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     <button
                       type="button"
@@ -874,7 +906,7 @@ export default function AdminPanel({
                           setRecoveryNewPassword('');
                           setRecoveryNewPasswordConfirm('');
                         }}
-                        className="text-[11px] font-semibold text-teal-400 hover:text-teal-300 hover:underline cursor-pointer ml-auto shrink-0"
+                        className="text-[11px] font-semibold text-orange-400 hover:text-orange-300 hover:underline cursor-pointer ml-auto shrink-0"
                       >
                         ¿Has olvidado tu contraseña?
                       </button>
@@ -885,7 +917,7 @@ export default function AdminPanel({
                 <button
                   type="submit"
                   disabled={isLocked}
-                  className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-teal-500/10 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   id="admin-login-submit"
                 >
                   {isLocked ? `🔒 Bloqueado (${countdown}s)` : '🔓 Iniciar Sesión Segura'}
@@ -906,7 +938,7 @@ export default function AdminPanel({
         {/* Header Dashboard */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-teal-100 text-teal-800 text-[10px] font-black uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-orange-100 text-orange-800 text-[10px] font-black uppercase tracking-wider">
               <LayoutDashboard className="w-3 h-3" /> Panel de Control
             </span>
             <h2 className="font-sans font-black text-3xl text-slate-900 tracking-tight">Panel de Administración</h2>
@@ -946,11 +978,17 @@ export default function AdminPanel({
           </button>
           <button
             onClick={() => { setActiveSubTab('dynamics'); cancelEditActivity(); }}
-            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer relative ${
               activeSubTab === 'dynamics' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
           >
             📚 Dinámicas de Aula ({activities.length})
+            {activities.filter(a => a.isCustom && !a.isApproved).length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+            )}
           </button>
           <button
             onClick={() => { setActiveSubTab('glossary'); cancelEditGlossary(); }}
@@ -976,26 +1014,40 @@ export default function AdminPanel({
           >
             ⚙ Textos y Ajustes Web
           </button>
+          <button
+            onClick={() => { setActiveSubTab('inbox'); }}
+            className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer relative ${
+              activeSubTab === 'inbox' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
+            }`}
+          >
+            📥 Bandeja de Entrada
+            {inboxMessages.filter(m => m.status === 'pending').length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+              </span>
+            )}
+          </button>
         </div>
 
         {/* SUBTAB CONTENT: STATS */}
         {activeSubTab === 'stats' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-3 shadow-xs">
-              <div className="p-3 rounded-2xl bg-teal-50 border border-teal-100 text-teal-600 w-fit">
+              <div className="p-3 rounded-2xl bg-orange-50 border border-orange-100 text-orange-600 w-fit">
                 <BookOpen className="w-6 h-6" />
               </div>
               <div>
                 <h4 className="text-2xl font-black text-slate-950">{activities.length}</h4>
                 <p className="text-xs font-sans font-bold text-slate-400 uppercase tracking-wide">Fichas Didácticas Activas</p>
                 <p className="text-[11px] text-slate-500 mt-1">
-                  Listas en la pestaña "Recursos de Aula" con todas sus secuencias cronometradas y materiales.
+                  Listas en la pestaña "Recursos de Aula" con todas sus secuencias guiadas y materiales.
                 </p>
               </div>
             </div>
 
             <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-3 shadow-xs">
-              <div className="p-3 rounded-2xl bg-indigo-50 border border-indigo-100 text-indigo-600 w-fit">
+              <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-700 w-fit">
                 <Globe className="w-6 h-6" />
               </div>
               <div>
@@ -1008,7 +1060,7 @@ export default function AdminPanel({
             </div>
 
             <div className="bg-white border border-slate-200 p-6 rounded-3xl space-y-3 shadow-xs">
-              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 w-fit">
+              <div className="p-3 rounded-2xl bg-amber-50 border border-amber-100 text-slate-600 w-fit">
                 <HelpCircle className="w-6 h-6" />
               </div>
               <div>
@@ -1021,11 +1073,11 @@ export default function AdminPanel({
             </div>
             
             {/* Quick action card */}
-            <div className="bg-gradient-to-tr from-teal-600 to-indigo-600 rounded-3xl p-6 text-white md:col-span-3 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+            <div className="bg-orange-600 rounded-3xl p-6 text-white md:col-span-3 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
               <div className="space-y-1 max-w-2xl">
                 <h4 className="font-sans font-black text-lg text-white">¿Deseas añadir un recurso didáctico rápido?</h4>
-                <p className="font-sans text-xs text-teal-50">
-                  Accede a la subpestaña de "Dinámicas de Aula" superior y pincha en "+ Añadir Nueva". Podrás dar de alta títulos de talleres, niveles, y cronometrar paso a paso de forma totalmente flexible.
+                <p className="font-sans text-xs text-orange-50">
+                  Accede a la subpestaña de "Dinámicas de Aula" superior y pincha en "+ Añadir Nueva". Podrás dar de alta títulos de talleres, niveles, y estructurar paso a paso de forma totalmente flexible.
                 </p>
               </div>
               <button
@@ -1062,6 +1114,7 @@ export default function AdminPanel({
                       <th className="py-3 px-4">Nivel</th>
                       <th className="py-3 px-4">Duración</th>
                       <th className="py-3 px-4">Categoría</th>
+                      <th className="py-3 px-4 text-center">Estado</th>
                       <th className="py-3 px-4 text-right">Acciones</th>
                     </tr>
                   </thead>
@@ -1071,11 +1124,31 @@ export default function AdminPanel({
                         <td className="py-3.5 px-4 font-bold text-slate-900">{act.title}</td>
                         <td className="py-3.5 px-4 text-xs font-medium text-slate-600">{act.targetGrade}</td>
                         <td className="py-3.5 px-4 text-xs font-semibold text-slate-700">{act.duration} min</td>
-                        <td className="py-3.5 px-4 uppercase text-[9px] font-black text-teal-600">{act.category}</td>
+                        <td className="py-3.5 px-4 uppercase text-[9px] font-black text-orange-600">{act.category}</td>
+                        <td className="py-3.5 px-4 text-center">
+                          {act.isCustom ? (
+                            <button
+                              onClick={() => handleToggleApproval(act.id)}
+                              className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer inline-flex items-center gap-1 ${
+                                act.isApproved 
+                                  ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' 
+                                  : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                              }`}
+                              title={act.isApproved ? "Publicada. Clic para ocultar" : "Pendiente. Clic para publicar"}
+                            >
+                              {act.isApproved ? <CheckCircle className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                              {act.isApproved ? 'Publicada' : 'Pendiente'}
+                            </button>
+                          ) : (
+                            <span className="px-2 py-1 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase tracking-wider inline-flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3" /> Base
+                            </span>
+                          )}
+                        </td>
                         <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
                           <button
                             onClick={() => startEditActivity(act)}
-                            className="p-1.5 bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 rounded-lg cursor-pointer transition-colors inline-block"
+                            className="p-1.5 bg-slate-100 hover:bg-orange-50 text-slate-600 hover:text-orange-700 rounded-lg cursor-pointer transition-colors inline-block"
                             title="Editar"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -1128,7 +1201,7 @@ export default function AdminPanel({
                     placeholder="Ej: El Árbol de las Familias"
                     value={actTitle}
                     onChange={(e) => setActTitle(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
                 <div>
@@ -1138,7 +1211,7 @@ export default function AdminPanel({
                     placeholder="Ej: 3º y 4º ESO"
                     value={actGrade}
                     onChange={(e) => setActGrade(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1148,12 +1221,17 @@ export default function AdminPanel({
                     <select
                       value={actCategory}
                       onChange={(e) => setActCategory(e.target.value as ActivityCategory)}
-                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-slate-700 font-medium"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-slate-700 font-medium"
                     >
                       <option value="rompehielos">Rompehielos Dinámico</option>
                       <option value="reflexion">Reflexión Profunda</option>
                       <option value="debate">Debate Activo</option>
                       <option value="artistico">Expresión Artística</option>
+                      <option value="cooperativo">Trabajo Cooperativo</option>
+                      <option value="resolucion-conflictos">Resolución de Conflictos</option>
+                      <option value="analisis-medios">Análisis de Medios</option>
+                      <option value="juego-de-roles">Role-playing y Empatía</option>
+                      <option value="literatura-cine">Cine y Narrativas</option>
                     </select>
                   </div>
                   <div>
@@ -1165,7 +1243,7 @@ export default function AdminPanel({
                       max="120"
                       value={actDuration}
                       onChange={(e) => setActDuration(e.target.value)}
-                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                     />
                   </div>
                 </div>
@@ -1178,7 +1256,7 @@ export default function AdminPanel({
                     rows={2}
                     value={actObjective}
                     onChange={(e) => setActObjective(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1189,7 +1267,7 @@ export default function AdminPanel({
                     placeholder="Ficha impresa, rotuladores"
                     value={actMaterials}
                     onChange={(e) => setActMaterials(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1201,7 +1279,7 @@ export default function AdminPanel({
                     rows={3}
                     value={actSteps}
                     onChange={(e) => setActSteps(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1212,7 +1290,7 @@ export default function AdminPanel({
                     placeholder="¿Cómo te sentiste? ¿Qué descubriste?"
                     value={actQuestions}
                     onChange={(e) => setActQuestions(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
               </div>
@@ -1262,7 +1340,7 @@ export default function AdminPanel({
                         <td className="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
                           <button
                             onClick={() => startEditGlossary(term)}
-                            className="p-1.5 bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 rounded-lg cursor-pointer transition-colors inline-block"
+                            className="p-1.5 bg-slate-100 hover:bg-orange-50 text-slate-600 hover:text-orange-700 rounded-lg cursor-pointer transition-colors inline-block"
                             title="Editar"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -1315,7 +1393,7 @@ export default function AdminPanel({
                     placeholder="Ej: Decolonialidad"
                     value={gloWord}
                     onChange={(e) => setGloWord(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
                 <div>
@@ -1325,7 +1403,7 @@ export default function AdminPanel({
                     placeholder="Ej: Del latín de- y colonus"
                     value={gloEtymology}
                     onChange={(e) => setGloEtymology(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1337,7 +1415,7 @@ export default function AdminPanel({
                     rows={3}
                     value={gloDefinition}
                     onChange={(e) => setGloDefinition(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1348,7 +1426,7 @@ export default function AdminPanel({
                     rows={2}
                     value={gloPedagogicalTip}
                     onChange={(e) => setGloPedagogicalTip(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-1.5 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
               </div>
@@ -1392,13 +1470,14 @@ export default function AdminPanel({
                   <tbody className="divide-y divide-slate-100">
                     {faqs.map((faq) => (
                       <tr key={faq.question} className={`hover:bg-slate-50/50 transition-colors ${editingFAQ && editingFAQ.question === faq.question ? 'bg-amber-50/40' : ''}`}>
-                        <td className="py-3 px-4 font-bold text-slate-900">{faq.question}</td>
-                        <td className="py-3 px-4 text-xs font-semibold text-teal-600">{faq.category}</td>
-                        <td className="py-3 px-4 text-xs max-w-sm truncate text-slate-600">{faq.answer}</td>
-                        <td className="py-3 px-4 text-right space-x-1.5 whitespace-nowrap">
+                        <td className="py-3 px-4 font-bold text-slate-900 max-w-[150px] sm:max-w-[200px] truncate" title={faq.question}>{faq.question}</td>
+                        <td className="py-3 px-4 text-xs font-semibold text-orange-600 whitespace-nowrap">{faq.category}</td>
+                        <td className="py-3 px-4 text-xs max-w-[150px] sm:max-w-[200px] truncate text-slate-600" title={faq.answer}>{faq.answer}</td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex justify-end gap-1.5">
                           <button
                             onClick={() => startEditFAQ(faq)}
-                            className="p-1.5 bg-slate-100 hover:bg-teal-50 text-slate-600 hover:text-teal-700 rounded-lg cursor-pointer transition-colors inline-block"
+                            className="p-1.5 bg-slate-100 hover:bg-orange-50 text-slate-600 hover:text-orange-700 rounded-lg cursor-pointer transition-colors inline-block"
                             title="Editar"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -1410,6 +1489,7 @@ export default function AdminPanel({
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1451,7 +1531,7 @@ export default function AdminPanel({
                     placeholder="Ej: ¿Qué hacer ante discursos de odio?"
                     value={faqQuestion}
                     onChange={(e) => setFaqQuestion(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
                 <div>
@@ -1461,7 +1541,7 @@ export default function AdminPanel({
                     placeholder="Ej: Pedagogía Aplicada"
                     value={faqCategory}
                     onChange={(e) => setFaqCategory(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
 
@@ -1473,7 +1553,7 @@ export default function AdminPanel({
                     rows={4}
                     value={faqAnswer}
                     onChange={(e) => setFaqAnswer(e.target.value)}
-                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                    className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                   />
                 </div>
               </div>
@@ -1488,16 +1568,93 @@ export default function AdminPanel({
           </div>
         )}
 
+                {/* SUBTAB CONTENT: INBOX */}
+        {activeSubTab === 'inbox' && (
+          <div className="space-y-6 animate-fadeIn">
+            <div className="flex justify-between items-end border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+                  <Inbox className="w-6 h-6 text-orange-600" /> Consultas de Docentes
+                </h3>
+                <p className="text-sm text-slate-500 mt-1">Buzón de entrada del formulario de contacto.</p>
+              </div>
+            </div>
+
+            {inboxMessages.length === 0 ? (
+              <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200 border-dashed">
+                <Mail className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <h4 className="text-slate-900 font-bold mb-1">Bandeja vacía</h4>
+                <p className="text-sm text-slate-500">No hay consultas pendientes de revisar.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {inboxMessages.map(msg => (
+                  <div key={msg.id} className={`p-5 rounded-2xl border transition-all ${msg.status === 'resolved' ? 'bg-slate-50 border-slate-200 opacity-70' : 'bg-white border-orange-200 shadow-sm border-l-4 border-l-orange-500'}`}>
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                          {msg.name} 
+                          {msg.status === 'resolved' && <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Resuelta</span>}
+                          {msg.status === 'pending' && <span className="text-[10px] bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Pendiente</span>}
+                        </h4>
+                        <a href={`mailto:${msg.email}`} className="text-xs text-blue-600 hover:underline">{msg.email}</a>
+                      </div>
+                      <span className="text-xs text-slate-400 font-mono">{new Date(msg.date).toLocaleDateString()} {new Date(msg.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                    <p className="text-sm text-slate-700 bg-slate-50 p-4 rounded-xl mb-4 italic">"{msg.message}"</p>
+                    
+                    <div className="flex justify-end gap-3 border-t pt-4">
+                       {msg.status === 'pending' && (
+                         <>
+                           <a 
+                             href={`https://mail.google.com/mail/?view=cm&fs=1&to=${msg.email}&su=Respuesta%20a%20tu%20consulta%20en%20Aula%20Intercultural&body=Hola%20${encodeURIComponent(msg.name)},%0A%0AEn%20respuesta%20a%20tu%20consulta:%0A%22${encodeURIComponent(msg.message)}%22%0A%0A%0AUn%20saludo.`} target="_blank" rel="noopener noreferrer"
+                             className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-2"
+                           >
+                             <Mail className="w-3.5 h-3.5" /> Responder por Email
+                           </a>
+                           <button 
+                              onClick={() => handleResolveMessage(msg.id)}
+                              className="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl hover:bg-emerald-200 transition-colors flex items-center gap-2"
+                           >
+                             <CheckCircle className="w-3.5 h-3.5" /> Marcar como Resuelta
+                           </button>
+                         </>
+                       )}
+                       <button 
+                          onClick={() => {
+                            setFaqQuestion(msg.message);
+                            setFaqAnswer('');
+                            setFaqCategory('Consultas');
+                            setActiveSubTab('faqs');
+                          }}
+                          className="px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-2"
+                       >
+                         <HelpCircle className="w-3.5 h-3.5" /> Convertir en FAQ
+                       </button>
+                       <button 
+                          onClick={() => handleDeleteMessage(msg.id)}
+                          className="px-3 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl hover:bg-red-100 transition-colors flex items-center gap-2"
+                       >
+                         <Trash2 className="w-3.5 h-3.5" /> Borrar
+                       </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* SUBTAB CONTENT: WEB TEXTS */}
         {activeSubTab === 'texts' && (
           <div className="space-y-8">
             <form onSubmit={handleSaveTexts} className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-6 shadow-xs font-sans text-xs">
               <h3 className="font-sans font-black text-lg text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <Settings className="w-5 h-5 text-teal-600" /> Configurar Textos Generales
+                <Settings className="w-5 h-5 text-orange-600" /> Configurar Textos Generales
               </h3>
 
               {textsSuccess && (
-                <div className="p-3 bg-teal-100 text-teal-800 rounded-2xl border border-teal-200 font-bold text-center flex items-center justify-center gap-1.5 animate-fadeIn">
+                <div className="p-3 bg-orange-100 text-orange-800 rounded-2xl border border-orange-200 font-bold text-center flex items-center justify-center gap-1.5 animate-fadeIn">
                   <Check className="w-4 h-4" />
                   ¡Cambios de textos aplicados y guardados con éxito!
                 </div>
@@ -1510,7 +1667,7 @@ export default function AdminPanel({
                   placeholder="Educar en la diferencia es construir comunidad..."
                   value={heroTitle}
                   onChange={(e) => setHeroTitle(e.target.value)}
-                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-xs"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-xs"
                 />
                 <span className="text-[10px] text-slate-400 block mt-1 leading-normal">
                   Este título preside la página de Inicio de Aula Intercultural. Puedes incluir texto simple.
@@ -1524,7 +1681,7 @@ export default function AdminPanel({
                   placeholder="Descripción detallada de la misión del portal..."
                   value={heroSubtitle}
                   onChange={(e) => setHeroSubtitle(e.target.value)}
-                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-xs"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-xs"
                 />
               </div>
 
@@ -1536,7 +1693,7 @@ export default function AdminPanel({
                   placeholder="contacto@aulaintercultural.es"
                   value={supportEmail}
                   onChange={(e) => setSupportEmail(e.target.value)}
-                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-xs"
+                  className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-xs"
                 />
                 <span className="text-[10px] text-slate-400 block mt-1">
                   Utilizado para las respuestas informativas o derivaciones de asesoría de claustros.
@@ -1555,13 +1712,13 @@ export default function AdminPanel({
             {/* NEW ACCESSIBILITY & SECURITY PANEL */}
             <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-8 shadow-xs font-sans text-xs">
               <h3 className="font-sans font-black text-lg text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-                <Lock className="w-5 h-5 text-teal-600" /> Seguridad y Control de Acceso
+                <Lock className="w-5 h-5 text-orange-600" /> Seguridad y Control de Acceso
               </h3>
 
               <div className="space-y-8">
                 {/* Change Password Form */}
                 <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
-                  <h4 className="font-sans font-black text-sm text-slate-900 uppercase tracking-wider text-[11px] text-teal-600">
+                  <h4 className="font-sans font-black text-sm text-slate-900 uppercase tracking-wider text-[11px] text-orange-600">
                     🔑 Cambiar Clave de Acceso Administrador
                   </h4>
                   <p className="text-[11px] text-slate-500">
@@ -1576,7 +1733,7 @@ export default function AdminPanel({
                   )}
 
                   {passwordChangeSuccess && (
-                    <div className="p-3 bg-teal-50 text-teal-800 rounded-xl border border-teal-100 font-bold flex items-center gap-1.5">
+                    <div className="p-3 bg-orange-50 text-orange-800 rounded-xl border border-orange-100 font-bold flex items-center gap-1.5">
                       <Check className="w-4 h-4 shrink-0" />
                       ¡Contraseña de administrador actualizada con éxito! La nueva clave ya es persistente.
                     </div>
@@ -1591,7 +1748,7 @@ export default function AdminPanel({
                         placeholder="Introduce la contraseña actual..."
                         value={currentPasswordInput}
                         onChange={(e) => setCurrentPasswordInput(e.target.value)}
-                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                       />
                     </div>
                     <div>
@@ -1602,7 +1759,7 @@ export default function AdminPanel({
                         placeholder="Mínimo 6 caracteres..."
                         value={newPasswordInput}
                         onChange={(e) => setNewPasswordInput(e.target.value)}
-                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                       />
                     </div>
                     <div>
@@ -1613,14 +1770,14 @@ export default function AdminPanel({
                         placeholder="Repite la nueva contraseña..."
                         value={newPasswordConfirm}
                         onChange={(e) => setNewPasswordConfirm(e.target.value)}
-                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="py-2.5 px-5 bg-teal-600 hover:bg-teal-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-teal-500/10"
+                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10"
                   >
                     Establecer Nueva Contraseña
                   </button>
@@ -1628,7 +1785,7 @@ export default function AdminPanel({
 
                 {/* Change Recovery Email Form */}
                 <form onSubmit={handleSaveRecoveryEmail} className="space-y-4 border-t border-slate-100 pt-6">
-                  <h4 className="font-sans font-black text-sm text-slate-900 uppercase tracking-wider text-[11px] text-teal-600 flex items-center gap-1.5">
+                  <h4 className="font-sans font-black text-sm text-slate-900 uppercase tracking-wider text-[11px] text-orange-600 flex items-center gap-1.5">
                     <Mail className="w-4 h-4" /> Correo Electrónico de Recuperación
                   </h4>
                   <p className="text-[11px] text-slate-500">
@@ -1643,7 +1800,7 @@ export default function AdminPanel({
                   )}
 
                   {securitySettingsSuccess && (
-                    <div className="p-3 bg-teal-50 text-teal-800 rounded-xl border border-teal-100 font-bold flex items-center gap-1.5">
+                    <div className="p-3 bg-orange-50 text-orange-800 rounded-xl border border-orange-100 font-bold flex items-center gap-1.5">
                       <Check className="w-4 h-4 shrink-0" />
                       ¡Correo de recuperación guardado con éxito!
                     </div>
@@ -1658,14 +1815,14 @@ export default function AdminPanel({
                         placeholder="Ej: tu-correo@ejemplo.com"
                         value={recEmailSettingsInput}
                         onChange={(e) => setRecEmailSettingsInput(e.target.value)}
-                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                        className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                       />
                     </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="py-2.5 px-5 bg-teal-600 hover:bg-teal-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-teal-500/10"
+                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10"
                   >
                     Guardar Correo de Recuperación
                   </button>

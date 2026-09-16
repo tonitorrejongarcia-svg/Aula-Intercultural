@@ -23,7 +23,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
 
   // Proposal Form State (Interactive Dynamic Creator)
   const [propTitle, setPropTitle] = useState('');
-  const [propGrade, setPropGrade] = useState('1º y 2º ESO');
+  const [propGrade, setPropGrade] = useState('ESO');
   const [propCategory, setPropCategory] = useState<ActivityCategory>('reflexion');
   const [propDuration, setPropDuration] = useState('30');
   const [propObjective, setPropObjective] = useState('');
@@ -39,12 +39,26 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
       alert('Por favor, rellena todos los campos del formulario de contacto.');
       return;
     }
+    
+    // Save to local storage for Admin Panel to read (Mocking a database/email send)
+    const storedMessages = JSON.parse(localStorage.getItem('intercultural_inbox') || '[]');
+    storedMessages.push({
+      id: Date.now().toString(),
+      name: contactName,
+      email: contactEmail,
+      date: new Date().toISOString(),
+      message: contactMessage,
+      status: 'pending'
+    });
+    localStorage.setItem('intercultural_inbox', JSON.stringify(storedMessages));
+
     setFeedbackSent(true);
     setTimeout(() => {
       // Refresh form
       setContactName('');
       setContactEmail('');
       setContactMessage('');
+      setFeedbackSent(false);
     }, 3000);
   };
 
@@ -87,6 +101,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
       steps: stepsArray,
       keyReflectionQuestions: parsedQuestions,
       isCustom: true,
+      isApproved: false,
     };
 
     onAddCustomActivity(newActivity);
@@ -105,12 +120,12 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
   };
 
   return (
-    <section className="py-12 md:py-16 px-4 md:px-8 bg-gradient-to-b from-white via-teal-50/10 to-slate-50/50" id="contact-section">
+    <section className="py-12 md:py-16 px-4 md:px-8 bg-slate-50" id="contact-section">
       <div className="max-w-7xl mx-auto space-y-16">
 
         {/* Header Section */}
         <div className="text-center max-w-2xl mx-auto space-y-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-xs font-bold font-sans uppercase tracking-wide border border-teal-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-xs font-bold font-sans uppercase tracking-wide border border-orange-200">
             <Share2 className="w-3.5 h-3.5" />
             Comunidad de Docentes Activa
           </span>
@@ -118,7 +133,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
             Intercambio de Saberes e Incidencia
           </h2>
           <p className="font-sans text-slate-600 text-sm sm:text-base leading-relaxed">
-            ¿Has probado alguna dinámica innovadora en tu centro de secundaria? Rellena el creador interactivo para subirla de inmediato o contáctanos para asesorías personalizadas de claustro.
+            ¿Has probado alguna dinámica innovadora en tu centro educativo? Rellena el creador interactivo para subirla de inmediato o contáctanos para asesorías personalizadas de claustro.
           </p>
         </div>
 
@@ -128,21 +143,21 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
           <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
             <div className="space-y-2">
               <h3 className="font-sans font-extrabold text-slate-900 text-xl flex items-center gap-2">
-                <Plus className="w-6 h-6 text-teal-600" />
+                <Plus className="w-6 h-6 text-orange-600" />
                 Creador de Dinámicas Interactivas
               </h3>
               <p className="font-sans text-xs text-slate-500 leading-normal">
-                Rellena este creador. Al proponer tu recurso, este se añadirá <strong>de inmediato y de forma persistente</strong> a la lista de "Recursos de Aula" en la cabecera, junto con todas tus fases para poder usar el cronómetro en directo.
+                Rellena este creador. Al proponer tu recurso, este se añadirá <strong>de inmediato y de forma persistente</strong> a la lista de "Recursos de Aula" en la cabecera, junto con todas tus fases.
               </p>
             </div>
 
             {proposalSent ? (
-              <div className="bg-teal-50 border border-teal-200 rounded-2xl p-8 text-center space-y-4 animate-scaleUp">
-                <CheckCircle className="w-12 h-12 text-teal-600 mx-auto animate-pulse" />
+              <div className="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center space-y-4 animate-scaleUp">
+                <CheckCircle className="w-12 h-12 text-orange-600 mx-auto animate-pulse" />
                 <div className="space-y-1">
-                  <h4 className="font-sans font-extrabold text-lg text-teal-800">¡Dinámica creada con éxito!</h4>
-                  <p className="font-sans text-xs text-teal-900 leading-normal">
-                    Tu propuesta ha sido incorporada a la base de datos local de forma inmediata. Navega a la pestaña de <strong>"Recursos de Aula"</strong> en la cabecera para verla publicada con todas sus fases y cronómetro adaptado.
+                  <h4 className="font-sans font-extrabold text-lg text-orange-800">¡Dinámica creada con éxito!</h4>
+                  <p className="font-sans text-xs text-orange-900 leading-normal">
+                    Tu propuesta ha sido enviada con éxito. Un administrador revisará la dinámica desde el panel de control antes de que sea publicada en la pestaña de <strong>"Recursos de Aula"</strong>.
                   </p>
                 </div>
               </div>
@@ -170,10 +185,11 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                       onChange={(e) => setPropGrade(e.target.value)}
                       className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-teal-550/20 font-medium text-slate-700"
                     >
-                      <option value="1º y 2º ESO font-medium">1º y 2º ESO</option>
-                      <option value="3º y 4º ESO font-medium">3º y 4º ESO</option>
-                      <option value="Bachillerato font-medium">Bachillerato</option>
-                      <option value="Cualquier curso font-medium">Todos los Cursos</option>
+                      <option value="Infantil">Infantil</option>
+                      <option value="Primaria">Primaria</option>
+                      <option value="ESO">ESO</option>
+                      <option value="Bachillerato">Bachillerato</option>
+                      <option value="Todos los Niveles">Todos los Niveles</option>
                     </select>
                   </div>
                 </div>
@@ -191,6 +207,11 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                       <option value="reflexion">Reflexión Profunda</option>
                       <option value="debate">Debate Activo</option>
                       <option value="artistico">Expresión Artística</option>
+                      <option value="cooperativo">Trabajo Cooperativo</option>
+                      <option value="resolucion-conflictos">Resolución de Conflictos</option>
+                      <option value="analisis-medios">Análisis de Medios</option>
+                      <option value="juego-de-roles">Role-playing y Empatía</option>
+                      <option value="literatura-cine">Cine y Narrativas</option>
                     </select>
                   </div>
 
@@ -261,7 +282,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer transform hover:-translate-y-0.5"
+                  className="w-full py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer transform hover:-translate-y-0.5"
                   id="submit-proposal-btn"
                 >
                   🚀 Crear y Publicar Dinámica
@@ -276,7 +297,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
             {/* Consultation Contact Form */}
             <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 space-y-4 shadow-sm">
               <h3 className="font-sans font-extrabold text-slate-900 text-lg flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-teal-600" />
+                <MessageSquare className="w-5 h-5 text-orange-600" />
                 Asesorías pedagógicas y Consultas
               </h3>
               <p className="font-sans text-xs text-slate-500 leading-relaxed">
@@ -284,9 +305,9 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
               </p>
 
               {feedbackSent ? (
-                <div className="bg-teal-50 border border-teal-200 text-teal-800 rounded-2xl p-5 text-center space-y-2 animate-fadeIn">
+                <div className="bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl p-5 text-center space-y-2 animate-fadeIn">
                   <p className="font-sans text-xs font-bold">¡Mensaje enviado con éxito!</p>
-                  <p className="font-sans text-[11px] text-teal-700">Nos pondremos en contacto contigo lo antes posible para coordinarnos.</p>
+                  <p className="font-sans text-[11px] text-orange-700">Nos pondremos en contacto contigo lo antes posible para coordinarnos.</p>
                 </div>
               ) : (
                 <form onSubmit={handleContactSubmit} className="space-y-3 font-sans text-xs">
@@ -298,7 +319,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                       placeholder="Ej: Sofía Pérez"
                       value={contactName}
                       onChange={(e) => setContactName(e.target.value)}
-                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                     />
                   </div>
 
@@ -310,7 +331,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                       placeholder="sofia@instituto.es"
                       value={contactEmail}
                       onChange={(e) => setContactEmail(e.target.value)}
-                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                     />
                   </div>
 
@@ -321,7 +342,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                       onChange={(e) => setContactRole(e.target.value)}
                       className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 font-medium text-slate-700"
                     >
-                      <option value="Profesorado font-medium">Profesor / Profesora secundaria</option>
+                      <option value="Profesorado font-medium">Docente (Infantil / Primaria / Secundaria)</option>
                       <option value="Orientacion font-medium">Departamento de Orientación</option>
                       <option value="Equipo Directivo font-medium">Equipo de Dirección</option>
                       <option value="Alumno font-medium">Alumno / Alumna</option>
@@ -337,13 +358,13 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                       placeholder="Escribe aquí de qué formas podemos apoyarte..."
                       value={contactMessage}
                       onChange={(e) => setContactMessage(e.target.value)}
-                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                      className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer transform hover:-translate-y-0.5"
+                    className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer transform hover:-translate-y-0.5"
                     id="submit-contact-btn"
                   >
                     Enviar Mensaje
@@ -384,7 +405,7 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                           <span>{act.targetGrade}</span>
                         </div>
                       </div>
-                      <span className="bg-teal-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full shrink-0">
+                      <span className="bg-orange-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full shrink-0">
                         {act.category.toUpperCase()}
                       </span>
                     </div>

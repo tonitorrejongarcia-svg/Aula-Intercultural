@@ -3,23 +3,89 @@
  * SPDX-License-Identifier: Apache-2.5
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
-  ShieldAlert, AlertTriangle, HeartHandshake, Sparkles, 
+  ShieldAlert, RefreshCw, AlertTriangle, HeartHandshake, Sparkles, 
   Check, X, ArrowRight, MessageSquare, Info, ShieldCheck, 
   HelpCircle, Scale, Share2, FileText, Shield, Users, 
-  ExternalLink, Smartphone, ChevronRight, Eye, Flag, Copy
+  ExternalLink, Phone, Smartphone, ChevronRight, Eye, Flag, Copy
 } from 'lucide-react';
 
 interface HateSpeechPhrase {
   id: number;
   phrase: string;
-  source: 'Físico' | 'Redes Sociales';
+  source: string;
   category: string;
   mechanism: string;
   impact: string;
   teacherResponse: string;
 }
+
+const ALL_PHRASES = [
+  {
+    id: 1,
+    phrase: "«Es solo un meme, eres de cristal, no aguantas nada de humor negro.»",
+    source: "Redes Sociales",
+    category: "Minimización y humor hostil online",
+    mechanism: "Normalización de la violencia verbal mediante el formato meme. Se traslada la responsabilidad de la ofensa a la víctima tachándola de intolerante al humor.",
+    impact: "Crea cámaras de eco de hostilidad en grupos de WhatsApp o TikTok, donde la empatía hacia colectivos vulnerabilizados se penaliza socialmente.",
+    teacherResponse: "Desmonta el escudo humorístico: «El límite del humor es el daño. Si para reírnos necesitamos humillar o deshumanizar la identidad de un compañero, deja de ser un chiste y se convierte en acoso coordinado digital. En este grupo y en esta aula no participamos en viralizar la burla.»"
+  },
+  {
+    id: 2,
+    phrase: "«Vienen a quitarnos los recursos y a vivir de las ayudas que pagamos nosotros.»",
+    source: "Redes Sociales",
+    category: "Bulocracia económica / Chivo expiatorio",
+    mechanism: "Falsa generalización y desinformación distributiva viralizada en redes mediante infografías sesgadas o vídeos descontextualizados.",
+    impact: "Genera desconfianza y xenofobia estructural. El alumnado asume que sus dificultades socioeconómicas familiares están directamente causadas por la población migrante.",
+    teacherResponse: "Utiliza datos verificados e interactivos: «Analicemos juntos los informes del INE y de la Seguridad Social en la pantalla. Las personas migrantes aportan más en cotizaciones e impuestos de lo que reciben en prestaciones. Cuestionar de dónde viene un bulo antes de compartirlo es de ser un ciudadano inteligente.»"
+  },
+  {
+    id: 3,
+    phrase: "«No soy racista, pero la cultura de esa gente es simplemente incompatible con los derechos humanos básicos.»",
+    source: "Físico",
+    category: "Xenofobia de apariencia respetable",
+    mechanism: "Prejuicio cortés. Comienza con una exención moral ('No soy racista...') para introducir una descalificación total y esencialista de un colectivo cultural completo.",
+    impact: "Legitima la exclusión sutil. Provoca que el alumnado perteneciente a minorías sienta que su aceptación está condicionada a la asimilación absoluta y la renuncia de sus raíces.",
+    teacherResponse: "Introduce el matiz crítico: «Hablar de 'esa gente' de forma homogénea borra la diversidad real. En esta aula, el límite infranqueable es el respeto a los Derechos Humanos; dentro de ese marco, la pluralidad de costumbres no es incompatible, sino enriquecedora.»"
+  },
+  {
+    id: 4,
+    phrase: "«Ese perfil de TikTok solo sube vídeos diciendo que hay que limpiar el barrio de maleantes extranjeros.»",
+    source: "Redes Sociales",
+    category: "Incitación y ciberodio extremo",
+    mechanism: "Uso de discursos conspirativos de invasión o inseguridad. Algoritmos de recomendación que premian la crispación y atraen al alumnado adolescente hacia narrativas de odio.",
+    impact: "Genera pánico moral, polarización extrema y puede inducir a comportamientos de acoso grupal o agresiones físicas coordinadas a través de redes sociales.",
+    teacherResponse: "Enseña higiene digital y reporte: «El algoritmo de TikTok premia el odio porque genera más interacciones y comentarios. No le des 'me gusta', no comentes para discutir (eso solo aumenta su alcance). Denuncia el vídeo en la plataforma y reportémoslo en el aula.»"
+  },
+  {
+    id: 5,
+    phrase: "«Yo no veo colores, para mí todos mis alumnos son exactamente iguales, los trato igual a todos.»",
+    source: "Físico",
+    category: "Daltonismo racial docente",
+    mechanism: "Invisibilización de las desigualdades sistémicas. Al fingir que la raza o el origen no existen, el docente se exime de tratar las barreras estructurales.",
+    impact: "Deja a los estudiantes vulnerabilizados sin apoyo real, ya que sus problemas específicos son ignorados bajo el manto de una falsa 'igualdad' que solo beneficia al grupo mayoritario.",
+    teacherResponse: "Fomentar la equidad real: «Tratar por igual no siempre es justo. Ver el color y el origen es necesario para ver las desigualdades de partida y poder ofrecer a cada estudiante exactamente el tipo de apoyo que necesita para prosperar.»"
+  },
+  {
+    id: 6,
+    phrase: "«Para ser de fuera, habla sorprendentemente bien y es muy educado, no como los demás de su país.»",
+    source: "Físico",
+    category: "Microagresión de baja intensidad (Elogio condicionado)",
+    mechanism: "El elogio se formula desde un prejuicio profundamente arraigado sobre la inferioridad de un grupo. El cumplido hacia el individuo confirma el estereotipo negativo hacia el resto de su cultura.",
+    impact: "Genera el 'síndrome del impostor' y alienación. El estudiante siente que su pertenencia está condicionada a ser 'la excepción' perfecta a una regla racista inaceptable.",
+    teacherResponse: "Interrumpir el sesgo sutil: «Ese comentario asume que lo normal en su país es no tener educación o no saber hablar. Valoremos el talento del alumno sin necesidad de menospreciar sus raíces o usar estereotipos dañinos.»"
+  },
+  {
+    id: 7,
+    phrase: "«En mi clase los grupos de trabajo los hacen ellos, es normal que los extranjeros se junten solos, es naturaleza.»",
+    source: "Físico",
+    category: "Segregación pasiva",
+    mechanism: "Justificación biológica o 'natural' para no intervenir en un problema de exclusión social que se está produciendo dentro del aula por sesgos endogámicos.",
+    impact: "Perpetúa guetos escolares, impidiendo la verdadera cohesión social. Los alumnos minorizados pierden oportunidades de capital social, integración lingüística y desarrollo de empatía.",
+    teacherResponse: "Pedagogía de la mezcla: «La escuela es el último espacio donde podemos diseñar la convivencia. Como docentes, es nuestra responsabilidad forzar metodologías cooperativas heterogéneas para romper esas burbujas y construir puentes.»"
+  }
+];
 
 export default function HateSpeech() {
   const [selectedPhrase, setSelectedPhrase] = useState<number | null>(null);
@@ -32,44 +98,46 @@ export default function HateSpeech() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [copiedText, setCopiedText] = useState<string | null>(null);
 
-  const phrases: HateSpeechPhrase[] = [
-    {
-      id: 1,
-      phrase: "«Es solo un meme, eres un cristal, no aguantas nada de humor negro.»",
-      source: "Redes Sociales",
-      category: "Minimización y humor hostil online",
-      mechanism: "Normalización de la violencia verbal mediante el formato meme. Se traslada la responsabilidad de la ofensa a la víctima tachándola de intolerante al humor.",
-      impact: "Crea cámaras de eco de hostilidad en grupos de WhatsApp o TikTok, donde la empatía hacia colectivos vulnerabilizados se penaliza socialmente.",
-      teacherResponse: "Desmonta el escudo humorístico: «El límite del humor es el daño. Si para reírnos necesitamos humillar o deshumanizar la identidad de un compañero, deja de ser un chiste y se convierte en acoso coordinado digital. En este grupo y en esta aula no participamos en viralizar la burla.»"
-    },
-    {
-      id: 2,
-      phrase: "«Vienen a quitarnos los recursos y a vivir de las ayudas que pagamos nosotros.»",
-      source: "Redes Sociales",
-      category: "Bulocracia económica / Chivo expiatorio",
-      mechanism: "Falsa generalización y desinformación distributiva viralizada en redes mediante infografías sesgadas o vídeos descontextualizados.",
-      impact: "Genera desconfianza y xenofobia estructural. El alumnado asume que sus dificultades socioeconómicas familiares están directamente causadas por la población migrante.",
-      teacherResponse: "Utiliza datos verificados e interactivos: «Analicemos juntos los informes del INE y de la Seguridad Social en la pantalla. Las personas migrantes aportan más en cotizaciones e impuestos de lo que reciben en prestaciones. Cuestionar de dónde viene un bulo antes de compartirlo es de ser un ciudadano inteligente.»"
-    },
-    {
-      id: 3,
-      phrase: "«No soy racista, pero la cultura de esa gente es simplemente incompatible con los derechos humanos básicos.»",
-      source: "Físico",
-      category: "Xenofobia de apariencia respetable",
-      mechanism: "Prejuicio cortés. Comienza con una exención moral ('No soy racista...') para introducir una descalificación total y esencialista de un colectivo cultural completo.",
-      impact: "Legitima la exclusión sutil. Provoca que el alumnado perteneciente a minorías sienta que su aceptación está condicionada a la asimilación absoluta y la renuncia de sus raíces.",
-      teacherResponse: "Introduce el matiz crítico: «Hablar de 'esa gente' de forma homogénea borra la diversidad real. En esta aula, el límite infranqueable es el respeto a los Derechos Humanos; dentro de ese marco, la pluralidad de costumbres no es incompatible, sino enriquecedora.»"
-    },
-    {
-      id: 4,
-      phrase: "«Ese perfil de TikTok solo sube vídeos diciendo que hay que limpiar el barrio de maleantes extranjeros.»",
-      source: "Redes Sociales",
-      category: "Incitación y ciberodio extremo",
-      mechanism: "Uso de discursos conspirativos de invasión o inseguridad. Algoritmos de recomendación que premian la crispación y atraen al alumnado adolescente hacia narrativas de odio.",
-      impact: "Genera pánico moral, polarización extrema y puede inducir a comportamientos de acoso grupal o agresiones físicas coordinadas a través de redes sociales.",
-      teacherResponse: "Enseña higiene digital y reporte: «El algoritmo de TikTok premia el odio porque genera más interacciones y comentarios. No le des 'me gusta', no comentes para discutir (eso solo aumenta su alcance). Denuncia el vídeo en la plataforma y reportémoslo en el aula.»"
+    const [displayPhrases, setDisplayPhrases] = useState<HateSpeechPhrase[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [errorAI, setErrorAI] = useState<string | null>(null);
+
+  const shuffleAndPick = (array: HateSpeechPhrase[], n: number) => {
+    const shuffled = [...array].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, n);
+  };
+
+  useEffect(() => {
+    setDisplayPhrases(shuffleAndPick(ALL_PHRASES, 4));
+  }, []);
+
+  const handleGenerateAI = async () => {
+    setIsGenerating(true);
+    setErrorAI(null);
+    setSelectedPhrase(null);
+    try {
+      const response = await fetch('/api/generate-microviolences', { method: 'POST' });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      
+      const newPhrases = data.map((m: any, i: number) => ({
+        id: Date.now() + i,
+        phrase: m.phrase,
+        source: m.source,
+        category: m.category,
+        mechanism: m.mechanism,
+        impact: m.impact,
+        teacherResponse: m.teacherResponse
+      }));
+      setDisplayPhrases(newPhrases);
+    } catch (err: any) {
+      console.error(err);
+      setErrorAI("Hubo un fallo temporal al conectar con la IA. Se han cargado otras frases de reserva.");
+      setDisplayPhrases(shuffleAndPick(ALL_PHRASES, 4));
+    } finally {
+      setIsGenerating(false);
     }
-  ];
+  };
 
   const pyramidLevels = [
     {
@@ -168,8 +236,12 @@ export default function HateSpeech() {
     setTimeout(() => setCopiedText(null), 2000);
   };
 
+  
+
+  const selected = displayPhrases.find(p => p.id === selectedPhrase);
+
   return (
-    <section className="py-12 md:py-16 px-4 md:px-8 bg-gradient-to-b from-white via-slate-50/50 to-teal-50/10" id="hate-speech-section">
+    <section className="py-12 md:py-16 px-4 md:px-8 bg-slate-50" id="hate-speech-section">
       <div className="max-w-7xl mx-auto space-y-16">
         
         {/* Header Block */}
@@ -190,7 +262,7 @@ export default function HateSpeech() {
         <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-xs">
           <div className="p-6 md:p-8 border-b border-slate-100 bg-slate-900 text-white flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-400 text-[10px] font-mono uppercase tracking-wider border border-amber-500/20">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-500/10 text-slate-400 text-[10px] font-mono uppercase tracking-wider border border-slate-500/20">
                 <Scale className="w-3.5 h-3.5" /> Clave Jurídica y Social
               </span>
               <h3 className="font-sans font-black text-xl md:text-2xl text-white">
@@ -201,19 +273,19 @@ export default function HateSpeech() {
             <div className="flex bg-slate-800 p-1 rounded-xl self-start md:self-center">
               <button
                 onClick={() => setActiveTab('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'all' ? 'bg-teal-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'all' ? 'bg-orange-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
               >
                 Ver Ambos
               </button>
               <button
                 onClick={() => setActiveTab('speech')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'speech' ? 'bg-teal-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'speech' ? 'bg-orange-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
               >
                 Discurso de Odio
               </button>
               <button
                 onClick={() => setActiveTab('crime')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'crime' ? 'bg-teal-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'crime' ? 'bg-orange-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
               >
                 Delito de Odio
               </button>
@@ -225,7 +297,7 @@ export default function HateSpeech() {
             {(activeTab === 'all' || activeTab === 'speech') && (
               <div className="space-y-6 flex flex-col justify-between p-6 rounded-2xl bg-slate-50 border border-slate-150 animate-fadeIn">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-amber-600">
+                  <div className="flex items-center gap-2 text-slate-600">
                     <MessageSquare className="w-5 h-5 shrink-0" />
                     <h4 className="font-sans font-black text-lg text-slate-900 uppercase tracking-tight text-[15px]">
                       Discurso de Odio (Hate Speech)
@@ -236,7 +308,7 @@ export default function HateSpeech() {
                   </p>
                   
                   <div className="space-y-2 pt-2">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-amber-700 font-extrabold block">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-slate-700 font-extrabold block">
                       Ejemplos Comunes
                     </span>
                     <ul className="text-xs text-slate-600 space-y-1.5 list-disc pl-4 leading-normal">
@@ -248,7 +320,7 @@ export default function HateSpeech() {
                   </div>
 
                   <div className="bg-white border border-slate-200 rounded-xl p-4 space-y-2">
-                    <span className="font-mono text-[9px] uppercase tracking-wider text-teal-600 font-extrabold block">
+                    <span className="font-mono text-[9px] uppercase tracking-wider text-orange-600 font-extrabold block">
                       Ámbito de Resolución
                     </span>
                     <p className="text-xs text-slate-600 leading-relaxed">
@@ -258,7 +330,7 @@ export default function HateSpeech() {
                 </div>
 
                 <div className="pt-4 border-t border-slate-150 space-y-3">
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-teal-700 font-bold block">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-orange-700 font-bold block">
                     ⚡ ¿Cómo proceder paso a paso?
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px] text-slate-700">
@@ -351,8 +423,8 @@ export default function HateSpeech() {
         <div className="space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold font-sans uppercase tracking-wide border border-indigo-200">
-                <Smartphone className="w-4 h-4 text-indigo-600" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wide border border-emerald-200">
+                <Smartphone className="w-4 h-4 text-emerald-700" />
                 La Cámara de Eco Algorítmica
               </span>
               <h3 className="font-sans font-black text-2xl md:text-3xl text-slate-900 tracking-tight">
@@ -367,7 +439,7 @@ export default function HateSpeech() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold font-mono">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-orange-400 flex items-center justify-center font-bold font-mono">
                 01
               </div>
               <h4 className="font-sans font-extrabold text-sm text-slate-900 uppercase tracking-tight">Desinhibición Tóxica</h4>
@@ -377,7 +449,7 @@ export default function HateSpeech() {
             </div>
 
             <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold font-mono">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-orange-400 flex items-center justify-center font-bold font-mono">
                 02
               </div>
               <h4 className="font-sans font-extrabold text-sm text-slate-900 uppercase tracking-tight">Mecanización del Algoritmo</h4>
@@ -387,7 +459,7 @@ export default function HateSpeech() {
             </div>
 
             <div className="bg-white border border-slate-200 p-6 rounded-2xl space-y-3 shadow-xs">
-              <div className="w-10 h-10 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold font-mono">
+              <div className="w-10 h-10 rounded-xl bg-slate-900 text-orange-400 flex items-center justify-center font-bold font-mono">
                 03
               </div>
               <h4 className="font-sans font-extrabold text-sm text-slate-900 uppercase tracking-tight">Humorización del Prejuicio</h4>
@@ -400,7 +472,7 @@ export default function HateSpeech() {
           {/* Social Media Interactive Guide Checklist */}
           <div className="bg-slate-900 text-white rounded-3xl p-6 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-5 space-y-4">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-teal-400 font-extrabold">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-orange-400 font-extrabold">
                 Guía Práctica para Menores y Docentes
               </span>
               <h4 className="font-sans font-black text-2xl text-white leading-tight">
@@ -410,7 +482,7 @@ export default function HateSpeech() {
                 ¿Qué hacer exactamente cuando detectamos un hilo, un vídeo o una publicación que atenta contra un colectivo o compañero de forma sistemática?
               </p>
               <div className="p-4 bg-slate-800 rounded-xl border border-slate-700 text-xs">
-                <span className="font-bold text-amber-400 block mb-1">📞 Teléfono de Asistencia Oficial (España)</span>
+                <span className="font-bold text-slate-400 block mb-1">📞 Teléfono de Asistencia Oficial (España)</span>
                 <p className="text-slate-300 leading-relaxed">
                   Oficina Nacional de Lucha contra los Delitos de Odio (ONDOD): llama al <strong className="text-white">091 o 062</strong>, o contacta con el teléfono de atención a víctimas del racismo: <strong className="text-white">021</strong>.
                 </p>
@@ -442,7 +514,7 @@ export default function HateSpeech() {
                 }
               ].map((item, idx) => (
                 <div key={idx} className="flex items-start gap-4 p-3 bg-slate-800/50 rounded-xl border border-slate-750">
-                  <div className="w-6 h-6 rounded-md bg-teal-500/10 text-teal-400 font-mono text-xs font-black flex items-center justify-center shrink-0 border border-teal-500/20">
+                  <div className="w-6 h-6 rounded-md bg-orange-500/10 text-orange-400 font-mono text-xs font-black flex items-center justify-center shrink-0 border border-orange-500/20">
                     {item.step}
                   </div>
                   <div className="space-y-0.5">
@@ -458,9 +530,9 @@ export default function HateSpeech() {
         {/* Section 3: Interactive Phrase Dissector (Físico vs Online) */}
         <div className="space-y-6">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="w-6 h-6 text-amber-500" />
+            <AlertTriangle className="w-6 h-6 text-slate-500" />
             <h3 className="font-sans font-extrabold text-xl md:text-2xl text-slate-900">
-              Disector de Microviolencias (Aula y Redes)
+              Decodificador de Microviolencias (Aula y Redes)
             </h3>
           </div>
           <p className="font-sans text-xs sm:text-sm text-slate-500 max-w-3xl leading-relaxed">
@@ -470,7 +542,7 @@ export default function HateSpeech() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-2">
             {/* Left list of phrases */}
             <div className="lg:col-span-5 flex flex-col gap-3">
-              {phrases.map((item) => (
+              {displayPhrases.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => {
@@ -485,13 +557,13 @@ export default function HateSpeech() {
                 >
                   <div className="flex flex-col gap-1.5">
                     <div className="flex items-center justify-between">
-                      <span className={`font-mono text-[9px] uppercase tracking-wider font-extrabold ${selectedPhrase === item.id ? 'text-teal-400' : 'text-slate-400'}`}>
+                      <span className={`font-mono text-[9px] uppercase tracking-wider font-extrabold ${selectedPhrase === item.id ? 'text-orange-400' : 'text-slate-400'}`}>
                         {item.category}
                       </span>
                       <span className={`px-2 py-0.5 rounded text-[8px] font-sans font-extrabold uppercase ${
                         item.source === 'Redes Sociales' 
-                          ? 'bg-indigo-500/10 text-indigo-500 border border-indigo-500/25' 
-                          : 'bg-amber-500/10 text-amber-600 border border-amber-500/25'
+                          ? 'bg-emerald-600/10 text-emerald-600 border border-emerald-600/25' 
+                          : 'bg-slate-500/10 text-slate-600 border border-slate-500/25'
                       }`}>
                         {item.source}
                       </span>
@@ -502,13 +574,33 @@ export default function HateSpeech() {
                   </div>
                 </button>
               ))}
+          <div className="flex flex-col items-center gap-3 pt-6 border-t border-slate-100">
+            <button
+              onClick={handleGenerateAI}
+              disabled={isGenerating}
+              className="flex items-center justify-center gap-2 w-full py-3.5 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-sans font-bold rounded-xl transition-all shadow-md focus:ring-4 focus:ring-slate-900/10 cursor-pointer"
+            >
+              {isGenerating ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  Decodificando nuevas frases...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 text-orange-400" />
+                  Descubrir 4 nuevas frases
+                </>
+              )}
+            </button>
+            {errorAI && <span className="text-[10px] text-rose-500 font-sans">{errorAI}</span>}
+          </div>
             </div>
 
             {/* Right analysis detail panel */}
             <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-xs relative overflow-hidden">
               {selectedPhrase === null ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 animate-pulse">
+                  <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 animate-pulse">
                     <Info className="w-8 h-8" />
                   </div>
                   <div className="space-y-1">
@@ -527,11 +619,11 @@ export default function HateSpeech() {
                         Análisis de Microagresión
                       </span>
                       <span className="px-2 py-0.5 rounded text-[8px] font-sans font-extrabold uppercase bg-slate-100 text-slate-600 border border-slate-200">
-                        {phrases[selectedPhrase - 1].source}
+                        {selected.source}
                       </span>
                     </div>
                     <h4 className="font-sans font-black text-lg md:text-xl text-slate-900 leading-tight mt-1">
-                      {phrases[selectedPhrase - 1].phrase}
+                      {selected.phrase}
                     </h4>
                   </div>
 
@@ -542,33 +634,36 @@ export default function HateSpeech() {
                         <span className="text-rose-500">⚙</span> Mecanismo de Manipulación:
                       </h5>
                       <p className="text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-150">
-                        {phrases[selectedPhrase - 1].mechanism}
+                        {selected.mechanism}
                       </p>
                     </div>
 
                     {/* Impact */}
                     <div className="space-y-1">
                       <h5 className="font-bold text-slate-900 flex items-center gap-1.5">
-                        <span className="text-amber-500">⚠️</span> Impacto en la Convivencia:
+                        <span className="text-slate-500">⚠️</span> Impacto en la Convivencia:
                       </h5>
                       <p className="text-slate-600 leading-relaxed">
-                        {phrases[selectedPhrase - 1].impact}
+                        {selected.impact}
                       </p>
                     </div>
 
                     {/* Response */}
                     <div className="space-y-1 pt-2 border-t border-slate-100">
-                      <h5 className="font-bold text-teal-700 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                      <h5 className="font-bold text-orange-700 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
                         <ShieldCheck className="w-4 h-4" /> Respuesta Pedagógica Recomendada:
                       </h5>
-                      <p className="text-slate-800 leading-relaxed font-semibold bg-teal-50/50 p-4 rounded-xl border border-teal-100/50">
-                        {phrases[selectedPhrase - 1].teacherResponse}
+                      <p className="text-slate-800 leading-relaxed font-semibold bg-orange-50/50 p-4 rounded-xl border border-orange-100/50">
+                        {selected.teacherResponse}
                       </p>
                     </div>
                   </div>
                 </div>
               )}
             </div>
+
+          
+
           </div>
         </div>
 
@@ -597,8 +692,8 @@ export default function HateSpeech() {
                 const bgClass =
                   lvl.level === 4 ? (isSelected ? 'bg-red-700' : 'bg-red-500 hover:bg-red-600') :
                   lvl.level === 3 ? (isSelected ? 'bg-orange-700' : 'bg-orange-500 hover:bg-orange-600') :
-                  lvl.level === 2 ? (isSelected ? 'bg-amber-750' : 'bg-amber-500 hover:bg-amber-600') :
-                  (isSelected ? 'bg-teal-700' : 'bg-teal-600 hover:bg-teal-700');
+                  lvl.level === 2 ? (isSelected ? 'bg-slate-700' : 'bg-slate-500 hover:bg-slate-600') :
+                  (isSelected ? 'bg-orange-700' : 'bg-orange-600 hover:bg-orange-700');
 
                 return (
                   <button
@@ -654,7 +749,7 @@ export default function HateSpeech() {
                     </p>
                     
                     <div className="bg-slate-50 border border-slate-150 p-4 rounded-xl space-y-1.5">
-                      <span className="font-bold text-teal-700 text-[11px] uppercase tracking-wider block">
+                      <span className="font-bold text-orange-700 text-[11px] uppercase tracking-wider block">
                         🛡 Acción de ruptura preventiva:
                       </span>
                       <p className="text-slate-700 leading-relaxed italic">
@@ -671,8 +766,8 @@ export default function HateSpeech() {
         {/* Section 5: Interactive Workshop (Counter-narrative Practice) */}
         <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-10 shadow-xs space-y-8">
           <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 text-xs font-bold font-sans uppercase tracking-wide border border-indigo-100">
-              <HeartHandshake className="w-4 h-4 text-indigo-600 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-900 text-xs font-bold font-sans uppercase tracking-wide border border-emerald-100">
+              <HeartHandshake className="w-4 h-4 text-emerald-700 animate-pulse" />
               Taller de Contranarrativas
             </span>
             <h3 className="font-sans font-extrabold text-xl md:text-2xl text-slate-950">
@@ -686,8 +781,8 @@ export default function HateSpeech() {
           <div className="border border-slate-150 rounded-2xl p-6 bg-slate-50/50 space-y-6">
             {/* Exercise statement */}
             <div className="space-y-2.5">
-              <span className="font-mono text-[9px] uppercase tracking-wider text-indigo-600 font-extrabold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
-                Caso Práctico {activeExercise + 1} de {exercises.length}
+              <span className="font-mono text-[9px] uppercase tracking-wider text-emerald-700 font-extrabold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                Caso Práctico
               </span>
               <p className="font-sans font-extrabold text-sm sm:text-base text-slate-900 leading-relaxed">
                 {exercises[activeExercise].statement}
@@ -704,12 +799,12 @@ export default function HateSpeech() {
                 let borderStyle = 'border-slate-200 bg-white hover:bg-slate-50';
                 if (showFeedback) {
                   if (opt.correct) {
-                    borderStyle = 'border-teal-500 bg-teal-50/30 text-teal-900';
+                    borderStyle = 'border-orange-500 bg-orange-50/30 text-orange-900';
                   } else if (isSelected) {
                     borderStyle = 'border-rose-500 bg-rose-50/30 text-rose-900';
                   }
                 } else if (isSelected) {
-                  borderStyle = 'border-indigo-500 bg-indigo-50/30 text-indigo-950';
+                  borderStyle = 'border-emerald-600 bg-emerald-50/30 text-indigo-950';
                 }
 
                 return (
@@ -722,7 +817,7 @@ export default function HateSpeech() {
                   >
                     <div className="mt-0.5 shrink-0">
                       {showCheckSymbol && (
-                        <div className="w-5 h-5 rounded-full bg-teal-500 text-white flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center">
                           <Check className="w-3.5 h-3.5" />
                         </div>
                       )}
@@ -732,7 +827,7 @@ export default function HateSpeech() {
                         </div>
                       )}
                       {!showCheckSymbol && !showCrossSymbol && (
-                        <div className={`w-5 h-5 rounded-full border text-[10px] font-sans font-bold flex items-center justify-center ${isSelected ? 'border-indigo-500 bg-indigo-500 text-white' : 'border-slate-300 text-slate-500'}`}>
+                        <div className={`w-5 h-5 rounded-full border text-[10px] font-sans font-bold flex items-center justify-center ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 text-slate-500'}`}>
                           {opt.id}
                         </div>
                       )}
@@ -752,7 +847,7 @@ export default function HateSpeech() {
               >
                 <div className="flex items-center gap-2">
                   {exercises[activeExercise].options.find(o => o.id === selectedOption)?.correct ? (
-                    <span className="text-xs font-mono font-bold text-teal-700 uppercase tracking-widest bg-teal-100 px-2 py-0.5 rounded border border-teal-200">Enfoque Correcto</span>
+                    <span className="text-xs font-mono font-bold text-orange-700 uppercase tracking-widest bg-orange-100 px-2 py-0.5 rounded border border-orange-200">Enfoque Correcto</span>
                   ) : (
                     <span className="text-xs font-mono font-bold text-rose-700 uppercase tracking-widest bg-rose-100 px-2 py-0.5 rounded border border-rose-200">Enfoque a mejorar</span>
                   )}
@@ -778,6 +873,105 @@ export default function HateSpeech() {
           </div>
         </div>
 
+      </div>
+
+      {/* Additional Resources Section */}
+      <div className="max-w-4xl mx-auto mt-12 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+        <div className="flex items-center gap-3.5 mb-6">
+          <div className="p-2.5 bg-rose-100 text-rose-700 rounded-xl">
+            <HeartHandshake className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-sans font-extrabold text-[#111827] text-xl md:text-2xl tracking-tight">
+              Directorio de Ayuda y Recursos
+            </h3>
+            <p className="font-sans text-sm text-slate-500 mt-1">
+              Información útil, contactos de emergencia y herramientas contra el odio y la discriminación.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Telefonos */}
+          <div className="space-y-4 md:col-span-2 mb-4">
+            <h4 className="font-sans font-bold text-sm uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-2">
+              Teléfonos de Asistencia Oficiales
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <Phone className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-slate-900 block">021 - Discriminación Racial o Étnica</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Servicio estatal gratuito y confidencial de atención a víctimas (CEDRE).</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                <Phone className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-slate-900 block">017 - Ciberseguridad e INCIBE</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Línea de ayuda gratuita para casos de ciberacoso y odio en redes sociales.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Enlaces Expandidos */}
+          <div className="space-y-4 md:col-span-2 mt-4">
+            <h4 className="font-sans font-bold text-sm uppercase tracking-wider text-slate-800 border-b border-slate-100 pb-2">
+              Plataformas, Entidades y Recursos para el Aula
+            </h4>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <a href="https://www.inclusion.gob.es/oberaxe/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors group">
+                <ExternalLink className="w-5 h-5 text-orange-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="font-bold text-orange-600 group-hover:text-orange-700 block text-sm">OBERAXE</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Observatorio Español del Racismo. Estudios y guías oficiales.</span>
+                </div>
+              </a>
+
+              <a href="https://www.educatolerancia.com/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors group">
+                <ExternalLink className="w-5 h-5 text-orange-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="font-bold text-orange-600 group-hover:text-orange-700 block text-sm">Educa Tolerancia</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Portal del Movimiento contra la Intolerancia. Materiales y campañas.</span>
+                </div>
+              </a>
+
+              <a href="https://maldita.es/migracion/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors group">
+                <ExternalLink className="w-5 h-5 text-orange-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="font-bold text-orange-600 group-hover:text-orange-700 block text-sm">Maldita Migración</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Fact-checking periodístico para desmontar bulos de odio en el aula.</span>
+                </div>
+              </a>
+
+              <a href="https://www.cear.es/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors group">
+                <ExternalLink className="w-5 h-5 text-orange-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="font-bold text-orange-600 group-hover:text-orange-700 block text-sm">CEAR</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Comisión Española de Ayuda al Refugiado. Campañas escolares.</span>
+                </div>
+              </a>
+
+              <a href="https://www.fad.es/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors group">
+                <ExternalLink className="w-5 h-5 text-orange-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="font-bold text-orange-600 group-hover:text-orange-700 block text-sm">Fundación FAD</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Programas para la prevención del odio y machismo en adolescentes.</span>
+                </div>
+              </a>
+
+              <a href="https://www.es.amnesty.org/en-que-estamos/temas/educacion-en-derechos-humanos/" target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors group">
+                <ExternalLink className="w-5 h-5 text-orange-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                <div>
+                  <span className="font-bold text-orange-600 group-hover:text-orange-700 block text-sm">Amnistía Internacional</span>
+                  <span className="text-xs text-slate-600 leading-relaxed block mt-1">Red de Escuelas y recursos globales en Derechos Humanos.</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
