@@ -20,12 +20,12 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
   const menuItems = [
     { id: 'inicio', label: 'Inicio', icon: Compass },
     { id: 'concepto', label: '¿Qué es?', icon: GraduationCap },
-    { id: 'hate-speech', label: 'Discursos de Odio', icon: ShieldAlert },
-    { id: 'recursos', label: 'Recursos de Aula', icon: BookOpen },
+    { id: 'hate-speech', label: 'Antiodio', icon: ShieldAlert },
+    { id: 'recursos', label: 'Recursos', icon: BookOpen },
     { id: 'glosario', label: 'Glosario', icon: Globe },
-    { id: 'faq', label: 'Preguntas Frecuentes', icon: HelpCircle },
-    { id: 'contacto', label: 'Contacto y Comunidad', icon: MessageSquare },
-    { id: 'intranet', label: 'Acceso Administrador', icon: Lock },
+    { id: 'faq', label: 'FAQ', icon: HelpCircle },
+    { id: 'contacto', label: 'Contacto', icon: MessageSquare },
+    { id: 'intranet', label: 'Intranet', icon: Lock },
   ];
 
   const handleNavClick = (id: string) => {
@@ -73,7 +73,7 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden xl:flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar flex-nowrap">
+        <nav className="hidden xl:flex items-center gap-1.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -81,7 +81,7 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-sans font-extrabold text-xs sm:text-sm transition-all duration-300 cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans font-extrabold text-xs sm:text-sm transition-all duration-300 cursor-pointer ${
                   isActive
                     ? 'bg-slate-900 text-white shadow-sm transform translate-y-[-1px]'
                     : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-semibold'
@@ -93,18 +93,8 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
               </button>
             );
           })}
-          <div className="w-[1px] h-5 bg-slate-200 mx-2 shrink-0 hidden 2xl:block" />
-          <a
-            href="https://ais-pre-d7cuzigax4vxvpzdpcgyvx-439828789133.europe-west3.run.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden 2xl:flex items-center gap-1.5 px-3 py-2 rounded-xl font-sans font-bold text-xs bg-orange-50 hover:bg-orange-100 text-orange-700 transition-all cursor-pointer shadow-3xs hover:-translate-y-0.5 shrink-0"
-            id="nav-fullscreen"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            Pantalla Completa
-          </a>
-          <div className="ml-2 pl-3 border-l border-slate-200 flex xl:hidden 2xl:flex">
+
+          <div className="ml-2 pl-3 border-l border-slate-200 flex">
              <PWAInstallButton />
           </div>
         </nav>
@@ -134,18 +124,6 @@ export default function Header({ activeTab, setActiveTab, pendingCount = 0 }: He
                 </li>
               );
             })}
-            <li className="pt-2 border-t border-slate-100">
-              <a
-                href="https://ais-pre-d7cuzigax4vxvpzdpcgyvx-439828789133.europe-west3.run.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-sans font-bold text-sm text-left text-orange-700 bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer"
-                id="mobile-nav-fullscreen"
-              >
-                <ExternalLink className="w-5 h-5" />
-                Abrir Pantalla Completa
-              </a>
-            </li>
           </ul>
         </div>
       )}
