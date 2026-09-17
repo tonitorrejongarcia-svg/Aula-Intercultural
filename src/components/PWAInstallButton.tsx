@@ -63,7 +63,7 @@ export const PWAInstallButton: React.FC = () => {
                 <div className="bg-slate-50 p-4 rounded-xl space-y-4 border border-slate-100">
                   <p className="flex items-start gap-3">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-200 text-orange-800 font-bold shrink-0 text-xs">1</span>
-                    <span>Primero, abre la aplicación en una pestaña limpia: <a href="https://ais-pre-d7cuzigax4vxvpzdpcgyvx-439828789133.europe-west3.run.app" target="_blank" rel="noopener noreferrer" className="text-orange-600 font-bold hover:underline inline-flex items-center gap-1">Abrir app externa <ExternalLink className="w-3 h-3" /></a></span>
+                    <span>Primero, abre la aplicación en una pestaña limpia: <a href={window.location.href} target="_blank" rel="noopener noreferrer" className="text-orange-600 font-bold hover:underline inline-flex items-center gap-1">Abrir app externa <ExternalLink className="w-3 h-3" /></a></span>
                   </p>
                   <p className="flex items-start gap-3">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-200 text-orange-800 font-bold shrink-0 text-xs">2</span>
