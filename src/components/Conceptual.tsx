@@ -185,7 +185,7 @@ export default function Conceptual() {
             ¿Qué entendemos por Educación Intercultural?
           </h2>
           <p className="font-sans text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed">
-            Un marco educativo transformador que va mucho más allá de la tolerancia formal. Busca reconstruir la práctica docente diaria bajo principios de justicia social, decolonialidad del saber y diálogo de igual a igual.
+            Un enfoque pedagógico que promueve el diálogo, el respeto y el enriquecimiento mutuo. Va más allá de simplemente convivir en el aula: busca construir puentes reales mediante la igualdad y la interacción positiva, preparando al alumnado para un mundo diverso y enseñándoles a mirar la diferencia no con miedo, sino con curiosidad y empatía.
           </p>
         </div>
 
