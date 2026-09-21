@@ -18,9 +18,10 @@ import logoHoruelo from '../assets/logo-horuelo.jpg';
 
 interface FooterProps {
   setActiveTab: (tab: string) => void;
+  supportEmail?: string;
 }
 
-export default function Footer({ setActiveTab }: FooterProps) {
+export default function Footer({ setActiveTab, supportEmail = 'ciudadaniahoruelo@horuelo.net' }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   // Fallback direct URL strategies for the logo
@@ -190,11 +191,15 @@ export default function Footer({ setActiveTab }: FooterProps) {
                 <ArrowUpRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-orange-400 transition-colors" />
               </a>
               <a 
-                href="mailto:asociacion@horuelo.com" 
+                href={`mailto:${supportEmail}`} 
                 className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all group"
+                title={supportEmail}
               >
-                <span className="font-semibold">Email Soporte</span>
-                <Mail className="w-3.5 h-3.5 text-slate-500 group-hover:text-orange-400 transition-colors" />
+                <div className="flex flex-col text-left overflow-hidden mr-1">
+                  <span className="font-semibold text-xs text-slate-200">Email Contacto</span>
+                  <span className="text-[10px] text-slate-400 truncate">{supportEmail}</span>
+                </div>
+                <Mail className="w-3.5 h-3.5 text-slate-500 group-hover:text-orange-400 transition-colors shrink-0" />
               </a>
             </div>
           </div>

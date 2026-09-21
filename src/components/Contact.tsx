@@ -5,15 +5,21 @@
 
 import { useState, FormEvent } from 'react';
 import { Activity, ActivityCategory } from '../types';
-import { MessageSquare, Share2, Plus, CheckCircle, Trash } from 'lucide-react';
+import { MessageSquare, Share2, Plus, CheckCircle, Trash, Mail } from 'lucide-react';
 
 interface ContactProps {
   onAddCustomActivity: (newAct: Activity) => void;
   customActivities: Activity[];
   onClearCustomActivities: () => void;
+  supportEmail?: string;
 }
 
-export default function Contact({ onAddCustomActivity, customActivities, onClearCustomActivities }: ContactProps) {
+export default function Contact({ 
+  onAddCustomActivity, 
+  customActivities, 
+  onClearCustomActivities,
+  supportEmail = 'ciudadaniahoruelo@horuelo.net'
+}: ContactProps) {
   // Feedback Contact Form State
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
@@ -301,13 +307,21 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                 Asesorías pedagógicas y Consultas
               </h3>
               <p className="font-sans text-xs text-slate-500 leading-relaxed">
-                ¿Planeas un proyecto pluricultural de centro o deseas formación a medida para el claustro? Envíanos tu mensaje.
+                ¿Planeas un proyecto pluricultural de centro o deseas formación a medida para el claustro? Envíanos tu mensaje o escríbenos a{' '}
+                <a 
+                  href={`mailto:${supportEmail}`} 
+                  className="font-bold text-orange-600 hover:text-orange-700 underline"
+                >
+                  {supportEmail}
+                </a>.
               </p>
 
               {feedbackSent ? (
                 <div className="bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl p-5 text-center space-y-2 animate-fadeIn">
                   <p className="font-sans text-xs font-bold">¡Mensaje enviado con éxito!</p>
-                  <p className="font-sans text-[11px] text-orange-700">Nos pondremos en contacto contigo lo antes posible para coordinarnos.</p>
+                  <p className="font-sans text-[11px] text-orange-700">
+                    Tu consulta ha sido registrada para <strong>{supportEmail}</strong>. Nos pondremos en contacto contigo lo antes posible para coordinarnos.
+                  </p>
                 </div>
               ) : (
                 <form onSubmit={handleContactSubmit} className="space-y-3 font-sans text-xs">
@@ -369,6 +383,15 @@ export default function Contact({ onAddCustomActivity, customActivities, onClear
                   >
                     Enviar Mensaje
                   </button>
+
+                  <div className="text-center pt-1">
+                    <a
+                      href={`mailto:${supportEmail}?subject=Consulta pedagógica desde Aula Intercultural&body=Hola, soy ${encodeURIComponent(contactName || '')} (${contactRole}).%0D%0A%0D%0A${encodeURIComponent(contactMessage || '')}`}
+                      className="text-[11px] text-slate-400 hover:text-orange-600 underline inline-flex items-center gap-1"
+                    >
+                      <Mail className="w-3 h-3 text-slate-400" /> O abrir en tu gestor de correo ({supportEmail})
+                    </a>
+                  </div>
                 </form>
               )}
             </div>

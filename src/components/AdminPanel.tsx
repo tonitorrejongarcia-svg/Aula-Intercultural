@@ -525,7 +525,7 @@ export default function AdminPanel({
       // Reset variables
       setHeroTitle('Aula Intercultural');
       setHeroSubtitle('Un rincón de recursos pedagógicos interactivos, dinámicas de aula y soporte terminológico para la formación docente en diversidad, equidad y convivencia.');
-      setSupportEmail('contacto@aulaintercultural.es');
+      setSupportEmail('ciudadaniahoruelo@horuelo.net');
       setAdminPassword('aula2026');
       setRecoveryEmail('toni.torrejon.garcia@gmail.com');
       setRecEmailSettingsInput('toni.torrejon.garcia@gmail.com');
@@ -1699,7 +1699,7 @@ export default function AdminPanel({
                 <input
                   type="email"
                   required
-                  placeholder="contacto@aulaintercultural.es"
+                  placeholder="ciudadaniahoruelo@horuelo.net"
                   value={supportEmail}
                   onChange={(e) => setSupportEmail(e.target.value)}
                   className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-500/20 text-xs"

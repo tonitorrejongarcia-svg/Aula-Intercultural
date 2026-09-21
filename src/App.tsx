@@ -34,7 +34,7 @@ export default function App() {
   const [generalTexts, setGeneralTexts] = useState({
     heroTitle: '',
     heroSubtitle: '',
-    supportEmail: 'contacto@aulaintercultural.es'
+    supportEmail: 'ciudadaniahoruelo@horuelo.net'
   });
 
   // Load state from localStorage on mount, or fallback to default data
@@ -163,12 +163,16 @@ export default function App() {
            parsed.heroTitle = 'Educar en la diferencia es construir comunidad.';
            localStorage.setItem('intercultural_general_texts', JSON.stringify(parsed));
         }
+        if (!parsed.supportEmail || parsed.supportEmail === 'contacto@aulaintercultural.es' || parsed.supportEmail === 'asociacion@horuelo.com') {
+           parsed.supportEmail = 'ciudadaniahoruelo@horuelo.net';
+           localStorage.setItem('intercultural_general_texts', JSON.stringify(parsed));
+        }
         setGeneralTexts(parsed);
       } else {
         const defaultTexts = {
           heroTitle: 'Educar en la diferencia es construir comunidad.',
           heroSubtitle: 'Una plataforma interactiva concebida para docentes de todas las etapas (Infantil, Primaria, Secundaria). Descubre marcos teóricos rigurosos, dinámicas de aula guiadas paso a paso, glosarios explicativos y estrategias para cultivar un aula inclusiva, crítica e intercultural.',
-          supportEmail: 'contacto@aulaintercultural.es'
+          supportEmail: 'ciudadaniahoruelo@horuelo.net'
         };
         setGeneralTexts(defaultTexts);
         localStorage.setItem('intercultural_general_texts', JSON.stringify(defaultTexts));
@@ -210,7 +214,7 @@ export default function App() {
     const defaults = {
       heroTitle: 'Educar en la diferencia es construir comunidad.',
       heroSubtitle: 'Una plataforma interactiva concebida para docentes de todas las etapas (Infantil, Primaria, Secundaria). Descubre marcos teóricos rigurosos, dinámicas de aula guiadas paso a paso, glosarios explicativos y estrategias para cultivar un aula inclusiva, crítica e intercultural.',
-      supportEmail: 'contacto@aulaintercultural.es'
+      supportEmail: 'ciudadaniahoruelo@horuelo.net'
     };
     setGeneralTexts(defaults);
 
@@ -376,6 +380,7 @@ export default function App() {
               onAddCustomActivity={handleAddCustomActivity}
               customActivities={customActivities}
               onClearCustomActivities={handleClearCustomActivities}
+              supportEmail={generalTexts.supportEmail}
             />
           </div>
         )}
@@ -417,7 +422,7 @@ export default function App() {
       </button>
 
       {/* Global Footer component */}
-      <Footer setActiveTab={setActiveTab} />
+      <Footer setActiveTab={setActiveTab} supportEmail={generalTexts.supportEmail} />
     </div>
   );
 }
