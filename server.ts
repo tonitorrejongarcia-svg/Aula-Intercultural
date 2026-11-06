@@ -398,7 +398,7 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
-        hmr: process.env.DISABLE_HMR === "true" ? false : { server },
+        hmr: false,
       },
       appType: "spa",
     });

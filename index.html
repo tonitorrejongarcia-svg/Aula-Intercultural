@@ -15,6 +15,17 @@
     <meta property="og:description" content="Recursos didácticos, dinámicas interactivas y material conceptual sobre Educación Intercultural para docentes de todas las etapas (Infantil, Primaria, Secundaria)." />
     <script>
       // Suppress benign Vite WebSocket disconnect notices in iframe preview
+      (function() {
+        var origConsoleError = console.error;
+        console.error = function() {
+          var firstArg = arguments.length > 0 ? String(arguments[0]) : '';
+          var fullMessage = Array.prototype.slice.call(arguments).map(String).join(' ');
+          if (firstArg.indexOf('[vite]') !== -1 || fullMessage.indexOf('WebSocket closed without opened') !== -1) {
+            return;
+          }
+          return origConsoleError.apply(console, arguments);
+        };
+      })();
       window.addEventListener('error', function (e) {
         if (e && e.message && (e.message.indexOf('WebSocket') !== -1 || e.message.indexOf('[vite]') !== -1)) {
           e.stopImmediatePropagation();
