@@ -1,13 +1,14 @@
 import express from "express";
+import http from "http";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Helper function to retry API calls on 503 or 429 errors
-async function generateWithFallback(ai: GoogleGenAI, options: any, maxRetries = 5) {
+// Helper function to retry API calls on 503 or 429 errors quickly
+async function generateWithFallback(ai: GoogleGenAI, options: any, maxRetries = 2) {
   let attempt = 0;
   let currentModel = options.model;
-  const fallbackModels = ["gemini-3.8-flash", "gemini-3.1-flash-lite", "gemini-3.1-pro-preview"];
+  const fallbackModels = ["gemini-2.5-flash", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
   let modelIndex = fallbackModels.indexOf(currentModel);
   if (modelIndex === -1) {
     fallbackModels.unshift(currentModel);
@@ -21,7 +22,7 @@ async function generateWithFallback(ai: GoogleGenAI, options: any, maxRetries = 
       const isRateLimitOrOverloaded = error?.status === 503 || error?.status === 429 || error?.message?.includes("503") || error?.message?.includes("429") || error?.message?.includes("UNAVAILABLE");
       if (isRateLimitOrOverloaded && attempt < maxRetries - 1) {
         attempt++;
-        const delay = 1500; 
+        const delay = 600; 
         
         const previousModel = fallbackModels[modelIndex];
         if (modelIndex < fallbackModels.length - 1) {
@@ -39,15 +40,24 @@ async function generateWithFallback(ai: GoogleGenAI, options: any, maxRetries = 
 
 async function startServer() {
   const app = express();
+  const server = http.createServer(app);
   const PORT = 3000;
   app.use(express.json());
 
   // API Routes
   app.post("/api/generate-question", async (req, res) => {
+    const questionFallbacks = [
+      "¿En qué medida nuestras expectativas de éxito sobre un estudiante cambian al escuchar su acento por primera vez?",
+      "Si el currículum fuera verdaderamente universal, ¿qué autor o autora que ahora no se estudia sería imprescindible en tu asignatura?",
+      "¿Cómo diferenciamos en el aula entre la 'falta de interés' y el agotamiento por tener que adaptarse constantemente a una cultura escolar ajena?",
+      "¿Qué dinámicas en el patio escolar revelan barreras invisibles de inclusión entre grupos de estudiantes?",
+      "¿Cuándo fue la última vez que aprendiste algo transformador sobre pedagogía a partir de la perspectiva de una familia migrante?"
+    ];
+
     try {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
-        return res.status(500).json({ error: "GEMINI_API_KEY environment variable is required" });
+        return res.json({ question: questionFallbacks[Math.floor(Math.random() * questionFallbacks.length)] });
       }
       const ai = new GoogleGenAI({ apiKey });
       const subtopics = ["racismo sutil", "identidad bicultural", "el peso de la asimilación", "las expectativas del profesorado", "injusticia epistémica", "el mito de la meritocracia en aulas diversas", "diversidad neurodivergente y cultural", "los roles de género cruzados con cultura", "la presión del grupo de iguales"];
@@ -61,32 +71,38 @@ Devuelve ÚNICAMENTE el texto de la pregunta (sin comillas, sin introducciones).
 [Variante única: ${seed}]`;
       
       const response = await generateWithFallback(ai, {
-        model: "gemini-3.1-flash-lite", // Upgrade model here as well
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: { maxOutputTokens: 100, temperature: 0.9 },
       });
       
       let text = response?.text || "";
       if (!text.trim()) {
-        const fallbacks = [
-          "¿En qué medida nuestras expectativas de éxito sobre un estudiante cambian al escuchar su acento por primera vez?",
-          "Si el currículum fuera verdaderamente universal, ¿qué autor o autora que ahora no se estudia sería imprescindible en tu asignatura?",
-          "¿Cómo diferenciamos en el aula entre la 'falta de interés' y el agotamiento por tener que adaptarse constantemente a una cultura escolar ajena?"
-        ];
-        text = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        text = questionFallbacks[Math.floor(Math.random() * questionFallbacks.length)];
       }
       res.json({ question: text.trim() });
     } catch (error: any) {
-      console.error("Error generating question:", error);
-      res.status(500).json({ error: "No se pudo generar la pregunta. Los servidores de IA están saturados ahora mismo, por favor inténtalo de nuevo en unos segundos.", details: error.message || String(error) });
+      console.warn("Fallo o indisponibilidad en generate-question, usando fallback:", error?.message || error);
+      res.json({ question: questionFallbacks[Math.floor(Math.random() * questionFallbacks.length)] });
     }
   });
 
-    app.post("/api/generate-pill", async (req, res) => {
+  app.post("/api/generate-pill", async (req, res) => {
+    const pillFallbacks = [
+      { title: "El efecto Pigmalión", text: "Las expectativas del docente alteran el rendimiento real del estudiante. Si esperas menos de un alumno por su origen, sabotearás su éxito de forma inconsciente." },
+      { title: "El currículum oculto", text: "No solo enseñamos con el temario. Las normas implícitas, los silencios y las ausencias de ciertos autores en los libros de texto también educan (o excluyen)." },
+      { title: "Injusticia epistémica", text: "Ocurre cuando desacreditamos la capacidad de saber de un alumno simplemente por su acento, origen o forma de expresarse, perdiendo aportaciones muy valiosas en el aula." },
+      { title: "La falacia del daltonismo", text: "Decir «no veo colores, veo personas» invisibiliza las desigualdades y discriminaciones reales que vive el alumnado minorizado a diario." },
+      { title: "La minoría modelo", text: "Los estereotipos aparentemente positivos deshumanizan, generan enorme ansiedad académica y borran la individualidad real de cada estudiante." },
+      { title: "Bilingüismo como fortaleza", text: "Cambiar de código lingüístico enriquece la flexibilidad mental. El retraso aparente inicial en la lengua vehicular se compensa con creces a medio plazo." },
+      { title: "Asimilación vs. Diálogo", text: "Asimilar exige renunciar a la identidad propia para encajar; la interculturalidad propone un diálogo simétrico donde todas las identidades se enriquecen mutuamente." },
+      { title: "El mito del esfuerzo", text: "La meritocracia sin equidad previa es una trampa. No todos parten de la misma línea de salida en capital social, cultural y administrativo." }
+    ];
+
     try {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
-        return res.status(500).json({ error: "GEMINI_API_KEY environment variable is required" });
+        return res.json(pillFallbacks[Math.floor(Math.random() * pillFallbacks.length)]);
       }
       const ai = new GoogleGenAI({ apiKey });
       const subtopics = ["privilegios invisibles", "sesgos cognitivos en evaluación", "el mito del daltonismo racial", "barreras lingüísticas vs barreras culturales", "la carga mental de los estudiantes minorizados", "currículum oculto", "microagresiones en el aula", "acento y prejuicio", "interseccionalidad", "efecto Pigmalión", "riqueza del bilingüismo", "estereotipos en libros de texto"];
@@ -102,7 +118,7 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
 [Variante única: ${seed}]`;
       
       const response = await generateWithFallback(ai, {
-        model: "gemini-3.1-flash-lite",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: { 
           maxOutputTokens: 300, 
@@ -119,9 +135,7 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         },
       });
       
-            let text = response?.text || "{}";
-      
-      // Intentar limpiar bloques markdown
+      let text = response?.text || "{}";
       text = text.replace(/^[sS]*?```(?:json)?\n/, "").replace(/\n```[sS]*$/, "");
       
       let pill;
@@ -129,29 +143,46 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         pill = JSON.parse(text);
         if (!pill.title || !pill.text) throw new Error("Campos faltantes en el JSON");
       } catch (parseError) {
-        console.error("Fallo al parsear JSON. Texto original recibido:", JSON.stringify(text), parseError.message);
-        // Fallback seguro en caso de que la IA devuelva texto cortado o inválido
-        const fallbacks = [
-          { title: "El efecto Pigmalión", text: "Las expectativas del docente alteran el rendimiento real del estudiante. Si esperas menos de un alumno por su origen, sabotearás su éxito de forma inconsciente." },
-          { title: "El currículum oculto", text: "No solo enseñamos con el temario. Las normas implícitas, los silencios y las ausencias de ciertos autores en los libros de texto también educan (o excluyen)." },
-          { title: "Injusticia epistémica", text: "Ocurre cuando desacreditamos la capacidad de saber de un alumno simplemente por su acento, origen o forma de expresarse, perdiendo aportaciones muy valiosas en el aula." }
-        ];
-        pill = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        pill = pillFallbacks[Math.floor(Math.random() * pillFallbacks.length)];
       }
       
       res.json(pill);
     } catch (error: any) {
-      console.error("Error generating pill:", error);
-      res.status(500).json({ error: "Error al generar el contenido. Por favor, inténtalo de nuevo en unos segundos.", details: error.message || String(error) });
+      console.warn("Fallo o indisponibilidad en generate-pill, usando fallback:", error?.message || error);
+      res.json(pillFallbacks[Math.floor(Math.random() * pillFallbacks.length)]);
     }
   });
 
   
   app.post("/api/generate-myths", async (req, res) => {
+    const fallbackMyths = [
+      {
+        conceptName: "Falsa Ceguera al Color",
+        myth: "Tratar a todos por igual requiere 'no ver colores' ni diferencias culturales en clase.",
+        reality: "Ignorar las diferencias reales silencia las desigualdades sistémicas. Tratar con verdadera equidad exige reconocer y validar las identidades."
+      },
+      {
+        conceptName: "La Minoría Modelo",
+        myth: "Decir que los alumnos asiáticos son muy buenos en matemáticas es un elogio, no racismo.",
+        reality: "Los prejuicios 'buenos' deshumanizan, generan ansiedad académica y borran la individualidad del estudiante, encasillándolo en expectativas irreales."
+      },
+      {
+        conceptName: "Relegación al Anexo",
+        myth: "La inclusión y diversidad son temas transversales ideales para tratar el viernes a última hora en tutoría.",
+        reality: "Si solo está en tutoría, es un mero accesorio. La educación intercultural debe empapar transversalmente matemáticas, literatura e historia."
+      },
+      {
+        conceptName: "El mito del esfuerzo",
+        myth: "Si te esfuerzas, triunfas en los estudios, sin importar de dónde vengas ni qué acento tengas.",
+        reality: "El mito del esfuerzo aislado ignora que el racismo sistémico, la pobreza y las expectativas actúan como frenos estructurales."
+      }
+    ];
+
     try {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
-        return res.status(500).json({ error: "GEMINI_API_KEY environment variable is required" });
+        const shuffled = fallbackMyths.sort(() => 0.5 - Math.random());
+        return res.json(shuffled.slice(0, 3));
       }
       const ai = new GoogleGenAI({ apiKey });
       const subtopics = ["currículum eurocéntrico", "esfuerzo y meritocracia", "estereotipos positivos", "el peso de la integración", "neutralidad docente", "la diversidad como problema", "racismo inverso (mito)", "falacia de la minoría modelo"];
@@ -238,10 +269,46 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
 
   
   app.post("/api/generate-microviolences", async (req, res) => {
+    const fallbacks = [
+      {
+        phrase: "«¿Pero de dónde eres de verdad? Porque español no pareces con esa cara.»",
+        source: "Físico",
+        category: "Exclusión de identidad (Perpetuo extranjero)",
+        mechanism: "Se invalida la nacionalidad del estudiante asumiendo que la identidad nacional está exclusivamente ligada a rasgos fenotípicos caucásicos.",
+        impact: "Alienación, pérdida de pertenencia e invalidación de su identidad real.",
+        teacherResponse: "Cortar el interrogatorio: «Es español y es de aquí. La diversidad física es parte de nuestra sociedad; asimilar que solo hay un 'tipo' de español es un sesgo que debemos corregir.»"
+      },
+      {
+        phrase: "«Jaja, me voy a disfrazar de [cultura minoritaria] para carnaval, será súper gracioso.»",
+        source: "Físico",
+        category: "Apropiación y burla cultural",
+        mechanism: "Se reduce una identidad cultural o religiosa compleja a una caricatura cómica temporal para el entretenimiento del grupo dominante.",
+        impact: "Banaliza y ridiculiza la herencia cultural del alumno, generando humillación pública.",
+        teacherResponse: "Parar la banalización: «La cultura y la identidad de tus compañeros no son un disfraz de comedia. Burlarse de las raíces de otros es una falta de respeto inaceptable en este centro.»"
+      },
+      {
+        phrase: "«Se lo ha tomado muy a pecho, los de su país es que son muy temperamentales.»",
+        source: "Redes Sociales",
+        category: "Invalidación por estereotipo cultural",
+        mechanism: "Gaslighting. Se desactiva la queja legítima del estudiante frente a un abuso, atribuyéndosela a un defecto genético o cultural.",
+        impact: "Aísla a la víctima, le quita credibilidad y protege al agresor o provocador.",
+        teacherResponse: "Focalizar en el hecho: «No tiene nada que ver con su país. Se ha enfadado porque se le ha faltado al respeto. Exijo que dejemos de usar estereotipos para justificar agresiones.»"
+      },
+      {
+        phrase: "«Madre mía, a la mínima os ofendéis, ahora ya no se puede decir nada.»",
+        source: "Redes Sociales",
+        category: "Victimismo del grupo dominante",
+        mechanism: "El agresor se posiciona como víctima de la 'censura', invisibilizando el daño real causado y negándose a asumir responsabilidad.",
+        impact: "Silencia futuras denuncias por miedo a ser tachados de exagerados.",
+        teacherResponse: "Reenfoque de responsabilidad: «Se puede decir de todo, menos insultar o discriminar. Que ahora los límites del respeto estén más claros es un avance, no un ataque hacia ti.»"
+      }
+    ];
+
     try {
       const apiKey = process.env.GEMINI_API_KEY;
       if (!apiKey) {
-        return res.status(500).json({ error: "GEMINI_API_KEY environment variable is required" });
+        const shuffled = fallbacks.sort(() => 0.5 - Math.random());
+        return res.json(shuffled.slice(0, 4));
       }
       const ai = new GoogleGenAI({ apiKey });
       const subtopics = ["microagresiones sutiles", "humor negro en whatsapp", "estereotipos positivos de asiaticos", "exclusión en trabajos de grupo", "presunción de culpabilidad en el patio", "burlas por acento", "falsa ceguera al color", "apropiación cultural"];
@@ -300,51 +367,39 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
       
       res.json(items);
     } catch (error: any) {
-      console.error("Error generating microviolences:", error);
-      
-      const fallbacks = [
-        {
-          phrase: "«¿Pero de dónde eres de verdad? Porque español no pareces con esa cara.»",
-          source: "Físico",
-          category: "Exclusión de identidad (Perpetuo extranjero)",
-          mechanism: "Se invalida la nacionalidad del estudiante asumiendo que la identidad nacional está exclusivamente ligada a rasgos fenotípicos caucásicos.",
-          impact: "Alienación, pérdida de pertenencia e invalidación de su identidad real.",
-          teacherResponse: "Cortar el interrogatorio: «Es español y es de aquí. La diversidad física es parte de nuestra sociedad; asimilar que solo hay un 'tipo' de español es un sesgo que debemos corregir.»"
-        },
-        {
-          phrase: "«Jaja, me voy a disfrazar de [cultura minoritaria] para carnaval, será súper gracioso.»",
-          source: "Físico",
-          category: "Apropiación y burla cultural",
-          mechanism: "Se reduce una identidad cultural o religiosa compleja a una caricatura cómica temporal para el entretenimiento del grupo dominante.",
-          impact: "Banaliza y ridiculiza la herencia cultural del alumno, generando humillación pública.",
-          teacherResponse: "Parar la banalización: «La cultura y la identidad de tus compañeros no son un disfraz de comedia. Burlarse de las raíces de otros es una falta de respeto inaceptable en este centro.»"
-        },
-        {
-          phrase: "«Se lo ha tomado muy a pecho, los de su país es que son muy temperamentales.»",
-          source: "Redes Sociales",
-          category: "Invalidación por estereotipo cultural",
-          mechanism: "Gaslighting. Se desactiva la queja legítima del estudiante frente a un abuso, atribuyéndosela a un defecto genético o cultural.",
-          impact: "Aísla a la víctima, le quita credibilidad y protege al agresor o provocador.",
-          teacherResponse: "Focalizar en el hecho: «No tiene nada que ver con su país. Se ha enfadado porque se le ha faltado al respeto. Exijo que dejemos de usar estereotipos para justificar agresiones.»"
-        },
-        {
-          phrase: "«Madre mía, a la mínima os ofendéis, ahora ya no se puede decir nada.»",
-          source: "Redes Sociales",
-          category: "Victimismo del grupo dominante",
-          mechanism: "El agresor se posiciona como víctima de la 'censura', invisibilizando el daño real causado y negándose a asumir responsabilidad.",
-          impact: "Silencia futuras denuncias por miedo a ser tachados de exagerados.",
-          teacherResponse: "Reenfoque de responsabilidad: «Se puede decir de todo, menos insultar o discriminar. Que ahora los límites del respeto estén más claros es un avance, no un ataque hacia ti.»"
-        }
-      ];
+      console.warn("Error o indisponibilidad en generate-microviolences, usando fallback:", error?.message || error);
       const shuffled = fallbacks.sort(() => 0.5 - Math.random());
       res.json(shuffled.slice(0, 4));
+    }
+  });
+
+  // Contact form receiver endpoint
+  app.post("/api/send-contact", (req, res) => {
+    try {
+      const { name, email, role, message, targetEmail } = req.body;
+      const destination = targetEmail || "ciudadaniahoruelo@horuelo.net";
+      console.log(`[CONTACT LOG] Nueva consulta recibida para: ${destination}`);
+      console.log(`De: ${name} <${email}> (${role})`);
+      console.log(`Mensaje: ${message}`);
+      
+      res.json({
+        success: true,
+        destination,
+        timestamp: new Date().toISOString()
+      });
+    } catch (err: any) {
+      console.error("Error al procesar consulta en /api/send-contact:", err);
+      res.status(500).json({ success: false, error: err?.message || "Error al procesar el mensaje" });
     }
   });
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: process.env.DISABLE_HMR === "true" ? false : { server },
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);
@@ -356,7 +411,7 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
     });
   }
   
-  app.listen(PORT, "0.0.0.0", () => {
+  server.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on port ${PORT}`);
   });
 }

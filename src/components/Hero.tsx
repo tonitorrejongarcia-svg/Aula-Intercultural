@@ -24,6 +24,69 @@ const initialFacts = [
   {
     title: "Enfoque curricular transversal",
     text: "No se trata de celebrar 'Días de la gastronomía', sino de impregnar asignaturas como matemáticas, química o historia con las aportaciones de todas las civilizaciones."
+  },
+  {
+    title: "El efecto Pigmalión",
+    text: "Las expectativas del docente alteran el rendimiento real del estudiante. Si esperas menos de un alumno por su origen, sabotearás su éxito de forma inconsciente."
+  },
+  {
+    title: "El currículum oculto",
+    text: "No solo enseñamos con el temario oficial. Las normas implícitas, los silencios y las ausencias de ciertos autores en los libros de texto también educan (o excluyen)."
+  },
+  {
+    title: "Injusticia epistémica",
+    text: "Ocurre cuando desacreditamos la capacidad de saber de un alumno simplemente por su acento, procedencia o forma de expresarse, perdiendo aportaciones muy valiosas en el aula."
+  },
+  {
+    title: "La falacia del daltonismo racial",
+    text: "Decir «yo no veo colores, veo personas» invisibiliza las desigualdades y discriminaciones reales que vive el alumnado minorizado a diario."
+  },
+  {
+    title: "La minoría modelo",
+    text: "Los estereotipos aparentemente «positivos» deshumanizan, generan una enorme ansiedad académica y borran la individualidad real de cada estudiante."
+  },
+  {
+    title: "Bilingüismo como fortaleza cognitiva",
+    text: "Cambiar de código lingüístico enriquece la flexibilidad mental. El retraso aparente inicial en la lengua vehicular se compensa con creces a medio plazo."
+  },
+  {
+    title: "Asimilación vs. Interculturalidad",
+    text: "Asimilar exige renunciar a la identidad propia para encajar; la interculturalidad propone un diálogo simétrico donde todas las identidades se enriquecen mutuamente."
+  },
+  {
+    title: "Hospitalidad lingüística",
+    text: "Valorar la lengua materna del alumno en el centro no frena el aprendizaje del idioma vehicular; al contrario, afianza la adquisición de segundas lenguas."
+  },
+  {
+    title: "El mito del esfuerzo aislado",
+    text: "La meritocracia sin equidad previa es una trampa. No todos parten de la misma línea de salida en capital social, cultural y administrativo."
+  }
+];
+
+const fallbackPillsPool = [
+  {
+    title: "Privilegio de la representación",
+    text: "Verse reflejado en referentes científicos, literarios y artísticos fomenta la autoestima académica; su ausencia comunica que ese saber no te pertenece."
+  },
+  {
+    title: "Microagresiones de baja intensidad",
+    text: "Comentarios como «¿De dónde eres de verdad?» o «Hablas muy bien español» transmiten la idea sutil de que la persona siempre será una extraña."
+  },
+  {
+    title: "El patio escolar como termómetro",
+    text: "La segregación espontánea en los descansos no es una elección natural libre: refleja dinámicas de seguridad, exclusión y pertenencia comunitaria."
+  },
+  {
+    title: "La carga mental del portavoz",
+    text: "Pedir a un alumno que sea el representante de toda su cultura o religión genera estrés innecesario y borra su individualidad como estudiante."
+  },
+  {
+    title: "Conflictos como oportunidad",
+    text: "El choque de pautas culturales en clase no debe reprimirse con sanciones punitivas, sino aprovecharse para una mediación dialógica y restaurativa."
+  },
+  {
+    title: "Curiosidad sin exotismo",
+    text: "Interesarse por las raíces del otro debe hacerse desde el respeto y la horizontalidad, evitando convertir sus tradiciones en un espectáculo folclórico."
   }
 ];
 
@@ -53,22 +116,47 @@ export default function Hero({ setActiveTab, heroTitle, heroSubtitle }: HeroProp
     if (isGenerating) return;
     setIsGenerating(true);
     setError(null);
+
+    const getFallbackPill = () => {
+      const existingTitles = new Set(facts.map(f => f.title));
+      const available = fallbackPillsPool.filter(p => !existingTitles.has(p.title));
+      if (available.length > 0) {
+        return available[Math.floor(Math.random() * available.length)];
+      }
+      return fallbackPillsPool[Math.floor(Math.random() * fallbackPillsPool.length)];
+    };
+
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
       const res = await fetch("/api/generate-pill", {
         method: "POST",
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Error al generar la píldora.");
+      clearTimeout(timeoutId);
+
+      const contentType = res.headers.get("content-type") || "";
+      if (res.ok && contentType.includes("application/json")) {
+        const data = await res.json();
+        if (data && data.title && data.text) {
+          const newFact = { title: data.title, text: data.text };
+          setFacts(prev => [...prev, newFact]);
+          setQuoteIndex(prev => prev + 1);
+          return;
+        }
       }
-      
-      const newFact = { title: data.title, text: data.text };
-      setFacts(prev => [...prev, newFact]);
+
+      // If response is not ok or not json, seamlessly fallback
+      const fallback = getFallbackPill();
+      setFacts(prev => [...prev, fallback]);
       setQuoteIndex(prev => prev + 1);
-    } catch (err: any) {
-      setError(err.message);
-      console.error(err);
+    } catch {
+      // Offline, timeout, or network error: gracefully use fallback pill without breaking UI
+      const fallback = getFallbackPill();
+      setFacts(prev => [...prev, fallback]);
+      setQuoteIndex(prev => prev + 1);
     } finally {
       setIsGenerating(false);
     }

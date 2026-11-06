@@ -5,7 +5,7 @@
 
 import { useState, FormEvent } from 'react';
 import { Activity, ActivityCategory } from '../types';
-import { MessageSquare, Share2, Plus, CheckCircle, Trash, Mail } from 'lucide-react';
+import { MessageSquare, Share2, Plus, CheckCircle, Trash, Mail, Send, RefreshCw } from 'lucide-react';
 
 interface ContactProps {
   onAddCustomActivity: (newAct: Activity) => void;
@@ -18,14 +18,16 @@ export default function Contact({
   onAddCustomActivity, 
   customActivities, 
   onClearCustomActivities,
-  supportEmail = 'ciudadaniahoruelo@horuelo.net'
+  supportEmail = 'ciudadaniaglobal@horuelo.net'
 }: ContactProps) {
   // Feedback Contact Form State
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [contactRole, setContactRole] = useState('Profesorado');
   const [contactMessage, setContactMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSent, setFeedbackSent] = useState(false);
+  const [contactError, setContactError] = useState('');
 
   // Proposal Form State (Interactive Dynamic Creator)
   const [propTitle, setPropTitle] = useState('');
@@ -36,45 +38,95 @@ export default function Contact({
   const [propMaterials, setPropMaterials] = useState('');
   const [propSteps, setPropSteps] = useState('');
   const [propQuestions, setPropQuestions] = useState('');
+  const [isSubmittingProposal, setIsSubmittingProposal] = useState(false);
   const [proposalSent, setProposalSent] = useState(false);
+  const [proposalError, setProposalError] = useState('');
 
   // Submit Feedback
-  const handleContactSubmit = (e: FormEvent) => {
+  const handleContactSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setContactError('');
     if (!contactName || !contactEmail || !contactMessage) {
-      alert('Por favor, rellena todos los campos del formulario de contacto.');
+      setContactError('Por favor, rellena todos los campos del formulario de contacto.');
       return;
     }
     
-    // Save to local storage for Admin Panel to read (Mocking a database/email send)
+    setIsSubmitting(true);
+    const targetEmail = supportEmail || 'ciudadaniahoruelo@horuelo.net';
+
+    // 1. Guardar el contenido completo en el buzón local de la intranet
     const storedMessages = JSON.parse(localStorage.getItem('intercultural_inbox') || '[]');
-    storedMessages.push({
+    const newMsg = {
       id: Date.now().toString(),
       name: contactName,
       email: contactEmail,
+      role: contactRole,
       date: new Date().toISOString(),
       message: contactMessage,
       status: 'pending'
-    });
+    };
+    storedMessages.unshift(newMsg);
     localStorage.setItem('intercultural_inbox', JSON.stringify(storedMessages));
 
+    // 2. Registrar en la API interna del servidor en paralelo
+    fetch('/api/send-contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: contactName,
+        email: contactEmail,
+        role: contactRole,
+        message: contactMessage,
+        targetEmail: targetEmail
+      })
+    }).catch(err => console.warn('Registro en servidor local:', err));
+
+    // 3. Despachar AVISO GENÉRICO a la cuenta de correo para no duplicar ni saturar
+    // Informa al administrador con enlace DIRECTO a la sección de intranet (Buzón de Consultas)
+    const directInboxUrl = `${window.location.origin}/?tab=intranet&subtab=inbox`;
+    fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        notificacion: 'Tienes un mensaje nuevo. Revisa la bandeja de entrada en la intranet.',
+        remitente: `${contactName} (${contactRole})`,
+        enlace_directo_intranet: directInboxUrl,
+        instrucciones: 'Haz clic en el enlace para acceder directamente al Buzón de la Intranet y contestar la consulta.',
+        _url: directInboxUrl,
+        _subject: 'Tienes un mensaje nuevo. Revisa la bandeja de entrada en la intranet',
+        _replyto: contactEmail,
+        _template: 'table',
+        _captcha: 'false'
+      })
+    }).catch(err => console.warn('Aviso de envío por pasarela web:', err));
+
+    // Breve transición visual de feedback fluido
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    setIsSubmitting(false);
     setFeedbackSent(true);
+    setContactName('');
+    setContactEmail('');
+    setContactMessage('');
     setTimeout(() => {
-      // Refresh form
-      setContactName('');
-      setContactEmail('');
-      setContactMessage('');
       setFeedbackSent(false);
-    }, 3000);
+    }, 8000);
   };
 
   // Submit Proposal Activity
-  const handleProposalSubmit = (e: FormEvent) => {
+  const handleProposalSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setProposalError('');
     if (!propTitle || !propObjective || !propSteps) {
-      alert('Por favor, rellena los campos principales (Título, Objetivo y Paso a paso).');
+      setProposalError('Por favor, rellena los campos principales (Título, Objetivo y Paso a paso).');
       return;
     }
+
+    setIsSubmittingProposal(true);
+    const targetEmail = supportEmail || 'ciudadaniahoruelo@horuelo.net';
 
     // Parse comma-separated materials and questions
     const parsedMaterials = propMaterials
@@ -111,6 +163,34 @@ export default function Contact({
     };
 
     onAddCustomActivity(newActivity);
+
+    // Enviar notificación a los administradores para que entren a la intranet y validen la nueva dinámica con enlace directo
+    const directDynamicsUrl = `${window.location.origin}/?tab=intranet&subtab=dynamics`;
+    fetch(`https://formsubmit.co/ajax/${encodeURIComponent(targetEmail)}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        notificacion: 'Se ha creado una nueva dinámica de aula propuesta por un docente.',
+        titulo_dinamica: propTitle,
+        nivel_educativo: propGrade,
+        categoria: propCategory,
+        duracion_minutos: propDuration,
+        objetivo: propObjective,
+        enlace_directo_intranet: directDynamicsUrl,
+        instrucciones: 'Por favor, haz clic en el enlace para acceder directamente a la Intranet (apartado Dinámicas) y validar o publicar esta propuesta.',
+        _url: directDynamicsUrl,
+        _subject: 'Nueva dinámica pendiente de validación en la intranet',
+        _template: 'table',
+        _captcha: 'false'
+      })
+    }).catch(err => console.warn('Aviso de nueva dinámica:', err));
+
+    await new Promise(resolve => setTimeout(resolve, 400));
+
+    setIsSubmittingProposal(false);
     setProposalSent(true);
 
     // Reset fields after quick delay
@@ -169,6 +249,12 @@ export default function Contact({
               </div>
             ) : (
               <form onSubmit={handleProposalSubmit} className="space-y-4 font-sans text-xs [align-items:stretch]">
+                {proposalError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl font-bold flex items-center gap-2">
+                    <span>⚠️</span>
+                    <span>{proposalError}</span>
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Title */}
                   <div>
@@ -288,10 +374,18 @@ export default function Contact({
 
                 <button
                   type="submit"
-                  className="w-full py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer transform hover:-translate-y-0.5"
+                  disabled={isSubmittingProposal}
+                  className={`w-full py-3.5 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer flex items-center justify-center gap-2 ${isSubmittingProposal ? 'opacity-75 cursor-wait' : 'transform hover:-translate-y-0.5'}`}
                   id="submit-proposal-btn"
                 >
-                  🚀 Crear y Publicar Dinámica
+                  {isSubmittingProposal ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Enviando propuesta...</span>
+                    </>
+                  ) : (
+                    <span>🚀 Crear y Publicar Dinámica</span>
+                  )}
                 </button>
               </form>
             )}
@@ -317,16 +411,27 @@ export default function Contact({
               </p>
 
               {feedbackSent ? (
-                <div className="bg-orange-50 border border-orange-200 text-orange-800 rounded-2xl p-5 text-center space-y-2 animate-fadeIn">
-                  <p className="font-sans text-xs font-bold">¡Mensaje enviado con éxito!</p>
-                  <p className="font-sans text-[11px] text-orange-700">
-                    Tu consulta ha sido registrada para <strong>{supportEmail}</strong>. Nos pondremos en contacto contigo lo antes posible para coordinarnos.
-                  </p>
+                <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-2xl p-6 text-center space-y-3 animate-fadeIn">
+                  <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle className="w-6 h-6" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-sans text-sm font-extrabold text-emerald-900">¡Mensaje enviado con éxito!</p>
+                    <p className="font-sans text-xs text-emerald-800 leading-relaxed">
+                      Tu consulta ha sido enviada. Nos pondremos en contacto contigo lo antes posible.
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleContactSubmit} className="space-y-3 font-sans text-xs">
+                  {contactError && (
+                    <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl font-bold flex items-center gap-2">
+                      <span>⚠️</span>
+                      <span>{contactError}</span>
+                    </div>
+                  )}
                   <div>
-                    <label className="block font-bold text-slate-600 mb-1">Nombre y Apellidos</label>
+                    <label className="block font-bold text-slate-600 mb-1">Nombre y Apellidos *</label>
                     <input
                       type="text"
                       required
@@ -338,7 +443,7 @@ export default function Contact({
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-600 mb-1">Correo Electrónico</label>
+                    <label className="block font-bold text-slate-600 mb-1">Correo Electrónico *</label>
                     <input
                       type="email"
                       required
@@ -356,20 +461,20 @@ export default function Contact({
                       onChange={(e) => setContactRole(e.target.value)}
                       className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 font-medium text-slate-700"
                     >
-                      <option value="Profesorado font-medium">Docente (Infantil / Primaria / Secundaria)</option>
-                      <option value="Orientacion font-medium">Departamento de Orientación</option>
-                      <option value="Equipo Directivo font-medium">Equipo de Dirección</option>
-                      <option value="Alumno font-medium">Alumno / Alumna</option>
-                      <option value="Otros font-medium">Otros</option>
+                      <option value="Docente (Infantil / Primaria / Secundaria)">Docente (Infantil / Primaria / Secundaria)</option>
+                      <option value="Departamento de Orientación">Departamento de Orientación</option>
+                      <option value="Equipo de Dirección">Equipo de Dirección</option>
+                      <option value="Alumno / Alumna">Alumno / Alumna</option>
+                      <option value="Otros">Otros</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="block font-bold text-slate-600 mb-1">Mensaje o Consulta</label>
+                    <label className="block font-bold text-slate-600 mb-1">Mensaje o Consulta *</label>
                     <textarea
                       required
-                      rows={3}
-                      placeholder="Escribe aquí de qué formas podemos apoyarte..."
+                      rows={4}
+                      placeholder="Escribe aquí tu consulta o de qué formas podemos apoyarte..."
                       value={contactMessage}
                       onChange={(e) => setContactMessage(e.target.value)}
                       className="w-full bg-white text-slate-800 border border-slate-200 rounded-xl px-3 py-2 bg-scroll focus:outline-none focus:ring-2 focus:ring-orange-500/20"
@@ -378,20 +483,22 @@ export default function Contact({
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer transform hover:-translate-y-0.5"
+                    disabled={isSubmitting}
+                    className={`w-full py-3 bg-orange-600 hover:bg-orange-700 text-white font-extrabold rounded-xl transition-all shadow-md hover:shadow-lg focus:outline-none cursor-pointer flex items-center justify-center gap-2 ${isSubmitting ? 'opacity-75 cursor-wait' : 'transform hover:-translate-y-0.5'}`}
                     id="submit-contact-btn"
                   >
-                    Enviar Mensaje
+                    {isSubmitting ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                        <span>Enviando mensaje...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>Enviar Mensaje</span>
+                      </>
+                    )}
                   </button>
-
-                  <div className="text-center pt-1">
-                    <a
-                      href={`mailto:${supportEmail}?subject=Consulta pedagógica desde Aula Intercultural&body=Hola, soy ${encodeURIComponent(contactName || '')} (${contactRole}).%0D%0A%0D%0A${encodeURIComponent(contactMessage || '')}`}
-                      className="text-[11px] text-slate-400 hover:text-orange-600 underline inline-flex items-center gap-1"
-                    >
-                      <Mail className="w-3 h-3 text-slate-400" /> O abrir en tu gestor de correo ({supportEmail})
-                    </a>
-                  </div>
                 </form>
               )}
             </div>

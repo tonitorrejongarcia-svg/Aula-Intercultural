@@ -8,8 +8,21 @@ import { Activity, GlossaryTerm, FAQItem, ActivityCategory } from '../types';
 import { 
   Lock, KeyRound, LayoutDashboard, BookOpen, Globe, HelpCircle, 
   Settings, LogOut, Plus, Trash2, Edit3, Save, RefreshCw, Check, AlertCircle,
-  Eye, EyeOff, ShieldAlert, Mail, Send, Inbox, CheckCircle, FileText, ArrowRight
+  Eye, EyeOff, ShieldAlert, Mail, Send, Inbox, CheckCircle, FileText, ArrowRight,
+  Copy, Reply, MessageSquare, RotateCcw, Filter
 } from 'lucide-react';
+
+interface InboxMessage {
+  id: string;
+  name: string;
+  email: string;
+  role?: string;
+  date: string;
+  message: string;
+  status: 'pending' | 'resolved';
+  replyText?: string;
+  replyDate?: string;
+}
 
 interface AdminPanelProps {
   activities: Activity[];
@@ -29,6 +42,8 @@ interface AdminPanelProps {
     supportEmail: string;
   }>>;
   onRestoreDefaults: () => void;
+  initialSubTab?: string;
+  onSubTabChange?: (subTab: string) => void;
 }
 
 export default function AdminPanel({
@@ -40,31 +55,193 @@ export default function AdminPanel({
   setFaqs,
   generalTexts,
   setGeneralTexts,
-  onRestoreDefaults
+  onRestoreDefaults,
+  initialSubTab,
+  onSubTabChange
 }: AdminPanelProps) {
   const [password, setPassword] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('intercultural_admin_auth') === 'true';
+  });
   const [loginError, setLoginError] = useState('');
-  const [activeSubTab, setActiveSubTab] = useState<'stats' | 'dynamics' | 'glossary' | 'faqs' | 'texts' | 'inbox'>('stats');
-  const [inboxMessages, setInboxMessages] = useState<{id: string, name: string, email: string, date: string, message: string, status: string}[]>([]);
+  const [activeSubTab, setActiveSubTab] = useState<'stats' | 'dynamics' | 'glossary' | 'faqs' | 'texts' | 'inbox'>(() => {
+    if (initialSubTab && ['stats', 'dynamics', 'glossary', 'faqs', 'texts', 'inbox'].includes(initialSubTab)) {
+      return initialSubTab as any;
+    }
+    return 'stats';
+  });
+
+  // Keep subtab in sync when initialSubTab changes (e.g. navigation via direct URL link from email)
+  useEffect(() => {
+    if (initialSubTab && ['stats', 'dynamics', 'glossary', 'faqs', 'texts', 'inbox'].includes(initialSubTab)) {
+      setActiveSubTab(initialSubTab as any);
+    }
+  }, [initialSubTab]);
+
+  const changeSubTab = (newSubTab: 'stats' | 'dynamics' | 'glossary' | 'faqs' | 'texts' | 'inbox') => {
+    setActiveSubTab(newSubTab);
+    if (onSubTabChange) {
+      onSubTabChange(newSubTab);
+    }
+  };
+
+  const [inboxMessages, setInboxMessages] = useState<InboxMessage[]>([]);
+  const [inboxFilter, setInboxFilter] = useState<'all' | 'pending' | 'resolved'>('all');
+  const [replyingMessageId, setReplyingMessageId] = useState<string | null>(null);
+  const [replyDraft, setReplyDraft] = useState<string>('');
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [copiedReplyId, setCopiedReplyId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
-      const msgs = JSON.parse(localStorage.getItem('intercultural_inbox') || '[]');
+      const msgs: InboxMessage[] = JSON.parse(localStorage.getItem('intercultural_inbox') || '[]');
       setInboxMessages(msgs.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     }
   }, [isAuthenticated, activeSubTab]);
 
-  const handleResolveMessage = (id) => {
-    const updated = inboxMessages.map(m => m.id === id ? {...m, status: 'resolved'} : m);
+  const handleResolveMessage = (id: string, replyText?: string) => {
+    const updated = inboxMessages.map(m => {
+      if (m.id === id) {
+        return {
+          ...m,
+          status: 'resolved' as const,
+          replyText: replyText !== undefined ? replyText : m.replyText,
+          replyDate: replyText ? new Date().toISOString() : (m.replyDate || new Date().toISOString())
+        };
+      }
+      return m;
+    });
     setInboxMessages(updated);
     localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+    setActionStatus({
+      type: 'success',
+      message: 'Consulta marcada como resuelta.'
+    });
   };
 
-  const handleDeleteMessage = (id) => {
+  const handleReopenMessage = (id: string) => {
+    const updated = inboxMessages.map(m => m.id === id ? { ...m, status: 'pending' as const } : m);
+    setInboxMessages(updated);
+    localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+    setActionStatus({
+      type: 'success',
+      message: 'Consulta reabierta y devuelta al estado pendiente.'
+    });
+  };
+
+  const handleDeleteMessage = (id: string) => {
     const updated = inboxMessages.filter(m => m.id !== id);
     setInboxMessages(updated);
     localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+    if (replyingMessageId === id) {
+      setReplyingMessageId(null);
+      setReplyDraft('');
+    }
+    setActionStatus({
+      type: 'success',
+      message: 'Consulta eliminada de la bandeja de entrada.'
+    });
+  };
+
+  const handleStartReply = (msg: InboxMessage) => {
+    setReplyingMessageId(msg.id);
+    if (msg.replyText) {
+      setReplyDraft(msg.replyText);
+    } else {
+      setReplyDraft(
+`Hola ${msg.name},
+
+Muchas gracias por ponerte en contacto con nosotros en Aula Intercultural.
+
+En relación a tu consulta recibida:
+"${msg.message}"
+
+[Escribe aquí tu respuesta pedagógica o indicaciones para el centro...]
+
+Quedamos a tu total disposición para cualquier otra duda o apoyo que precises.
+
+Un saludo cordial,
+Equipo de Aula Intercultural
+${supportEmail}`
+      );
+    }
+  };
+
+  const handleCancelReply = () => {
+    setReplyingMessageId(null);
+    setReplyDraft('');
+  };
+
+  const handleSaveReplyOnly = (msg: InboxMessage) => {
+    if (!replyDraft.trim()) {
+      setActionStatus({
+        type: 'error',
+        message: 'Por favor, introduce el texto de la respuesta antes de guardar.'
+      });
+      return;
+    }
+    const updated = inboxMessages.map(m => {
+      if (m.id === msg.id) {
+        return {
+          ...m,
+          status: 'resolved' as const,
+          replyText: replyDraft.trim(),
+          replyDate: new Date().toISOString()
+        };
+      }
+      return m;
+    });
+    setInboxMessages(updated);
+    localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+    setReplyingMessageId(null);
+    setReplyDraft('');
+    setActionStatus({
+      type: 'success',
+      message: `¡Respuesta a ${msg.name} guardada con éxito en la intranet y consulta marcada como resuelta!`
+    });
+  };
+
+  const handleSendGmailWithReply = (msg: InboxMessage) => {
+    const textToSend = replyDraft.trim() || `Hola ${msg.name},\n\nEn respuesta a tu consulta recibida en Aula Intercultural:\n"${msg.message}"\n\n\nUn saludo cordial,\nEquipo de Aula Intercultural\n${supportEmail}`;
+    
+    // Save reply in database so it is recorded in the intranet consultation card
+    const updated = inboxMessages.map(m => {
+      if (m.id === msg.id) {
+        return {
+          ...m,
+          status: 'resolved' as const,
+          replyText: textToSend,
+          replyDate: new Date().toISOString()
+        };
+      }
+      return m;
+    });
+    setInboxMessages(updated);
+    localStorage.setItem('intercultural_inbox', JSON.stringify(updated));
+    setReplyingMessageId(null);
+    setReplyDraft('');
+
+    // Open Gmail composer with custom recipient, subject, and the exact response text
+    const gmailUrl = `https://mail.google.com/mail/u/${encodeURIComponent(supportEmail)}/?authuser=${encodeURIComponent(supportEmail)}&view=cm&fs=1&to=${encodeURIComponent(msg.email)}&su=${encodeURIComponent('Respuesta a tu consulta en Aula Intercultural')}&body=${encodeURIComponent(textToSend)}`;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
+
+    setActionStatus({
+      type: 'success',
+      message: `Respuesta registrada de forma permanente en la intranet y redactor de Gmail abierto para responder a ${msg.name}.`
+    });
+  };
+
+  const handleCopyTemplate = (msg: { name: string; email: string; message: string; id: string }) => {
+    const text = `Para: ${msg.email}\nAsunto: Respuesta a tu consulta en Aula Intercultural\n\nHola ${msg.name},\n\nEn respuesta a tu consulta recibida en el portal:\n"${msg.message}"\n\n\nUn saludo cordial,\nEquipo de Aula Intercultural\n${supportEmail}`;
+    navigator.clipboard.writeText(text);
+    setCopiedMessageId(msg.id);
+    setTimeout(() => setCopiedMessageId(null), 2500);
+  };
+
+  const handleCopyReplyText = (text: string, msgId: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedReplyId(msgId);
+    setTimeout(() => setCopiedReplyId(null), 2500);
   };
 
 
@@ -79,7 +256,11 @@ export default function AdminPanel({
 
   // Password Recovery via Email Verification Code
   const [recoveryEmail, setRecoveryEmail] = useState(() => {
-    return localStorage.getItem('intercultural_recovery_email') || 'toni.torrejon.garcia@gmail.com';
+    const saved = localStorage.getItem('intercultural_recovery_email');
+    if (!saved || saved === 'ciudadaniaglobal@horuelo.net') {
+      return 'ciudadaniahoruelo@horuelo.net';
+    }
+    return saved;
   });
   const [recoveryEmailInput, setRecoveryEmailInput] = useState('');
 
@@ -133,6 +314,7 @@ export default function AdminPanel({
   }, [codeTimer]);
 
   // --- Dynamic editing state for Activities ---
+  const [actionStatus, setActionStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [editingActivity, setEditingActivity] = useState<Activity | null>(null);
   const [actTitle, setActTitle] = useState('');
   const [actObjective, setActObjective] = useState('');
@@ -177,6 +359,7 @@ export default function AdminPanel({
 
     if (isCorrect) {
       setIsAuthenticated(true);
+      sessionStorage.setItem('intercultural_admin_auth', 'true');
       setLoginError('');
       setFailedAttempts(0);
     } else {
@@ -194,6 +377,7 @@ export default function AdminPanel({
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    sessionStorage.removeItem('intercultural_admin_auth');
     setPassword('');
     setShowPassword(false);
   };
@@ -248,7 +432,7 @@ export default function AdminPanel({
   const handleSaveActivity = (e: React.FormEvent) => {
     e.preventDefault();
     if (!actTitle || !actObjective || !actSteps) {
-      alert('Por favor, rellena los campos requeridos (Título, Objetivo, Fases).');
+      setActionStatus({ type: 'error', message: 'Por favor, rellena los campos requeridos (Título, Objetivo, Fases).' });
       return;
     }
 
@@ -296,6 +480,7 @@ export default function AdminPanel({
     setActivities(updated);
     localStorage.setItem('intercultural_activities_all', JSON.stringify(updated));
     cancelEditActivity();
+    setActionStatus({ type: 'success', message: 'Dinámica de aula guardada correctamente.' });
   };
 
   const handleToggleApproval = (id: string) => {
@@ -310,14 +495,13 @@ export default function AdminPanel({
   };
 
   const handleDeleteActivity = (id: string) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar esta dinámica de aula de forma permanente?')) {
-      const updated = activities.filter(a => a.id !== id);
-      setActivities(updated);
-      localStorage.setItem('intercultural_activities_all', JSON.stringify(updated));
-      if (editingActivity && editingActivity.id === id) {
-        cancelEditActivity();
-      }
+    const updated = activities.filter(a => a.id !== id);
+    setActivities(updated);
+    localStorage.setItem('intercultural_activities_all', JSON.stringify(updated));
+    if (editingActivity && editingActivity.id === id) {
+      cancelEditActivity();
     }
+    setActionStatus({ type: 'success', message: 'Dinámica eliminada correctamente.' });
   };
 
   // --- Glossary Actions ---
@@ -348,7 +532,7 @@ export default function AdminPanel({
   const handleSaveGlossary = (e: React.FormEvent) => {
     e.preventDefault();
     if (!gloWord || !gloDefinition) {
-      alert('Palabra y Definición son obligatorios.');
+      setActionStatus({ type: 'error', message: 'Palabra y Definición son obligatorios.' });
       return;
     }
 
@@ -364,7 +548,7 @@ export default function AdminPanel({
     let updated: GlossaryTerm[];
     if (isNew) {
       if (glossaryTerms.some(t => t.word.toLowerCase() === gloWord.toLowerCase())) {
-        alert('Este término ya existe en el glosario.');
+        setActionStatus({ type: 'error', message: 'Este término ya existe en el glosario.' });
         return;
       }
       updated = [savedTerm, ...glossaryTerms];
@@ -375,17 +559,17 @@ export default function AdminPanel({
     setGlossaryTerms(updated);
     localStorage.setItem('intercultural_glossary_all', JSON.stringify(updated));
     cancelEditGlossary();
+    setActionStatus({ type: 'success', message: 'Término del glosario guardado correctamente.' });
   };
 
   const handleDeleteGlossary = (word: string) => {
-    if (window.confirm(`¿Estás seguro de que deseas eliminar el término "${word}" del glosario?`)) {
-      const updated = glossaryTerms.filter(t => t.word !== word);
-      setGlossaryTerms(updated);
-      localStorage.setItem('intercultural_glossary_all', JSON.stringify(updated));
-      if (editingGlossary && editingGlossary.word === word) {
-        cancelEditGlossary();
-      }
+    const updated = glossaryTerms.filter(t => t.word !== word);
+    setGlossaryTerms(updated);
+    localStorage.setItem('intercultural_glossary_all', JSON.stringify(updated));
+    if (editingGlossary && editingGlossary.word === word) {
+      cancelEditGlossary();
     }
+    setActionStatus({ type: 'success', message: `Término "${word}" eliminado del glosario.` });
   };
 
   // --- FAQ Actions ---
@@ -413,7 +597,7 @@ export default function AdminPanel({
   const handleSaveFAQ = (e: React.FormEvent) => {
     e.preventDefault();
     if (!faqQuestion || !faqAnswer) {
-      alert('Pregunta y Respuesta son obligatorios.');
+      setActionStatus({ type: 'error', message: 'Pregunta y Respuesta son obligatorios.' });
       return;
     }
 
@@ -428,7 +612,7 @@ export default function AdminPanel({
     let updated: FAQItem[];
     if (isNew) {
       if (faqs.some(f => f.question.toLowerCase() === faqQuestion.toLowerCase())) {
-        alert('Esta pregunta ya existe en el listado.');
+        setActionStatus({ type: 'error', message: 'Esta pregunta ya existe en el listado.' });
         return;
       }
       updated = [savedFAQ, ...faqs];
@@ -439,17 +623,17 @@ export default function AdminPanel({
     setFaqs(updated);
     localStorage.setItem('intercultural_faqs_all', JSON.stringify(updated));
     cancelEditFAQ();
+    setActionStatus({ type: 'success', message: 'Pregunta frecuente guardada correctamente.' });
   };
 
   const handleDeleteFAQ = (question: string) => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar esta pregunta frecuente?')) {
-      const updated = faqs.filter(f => f.question !== question);
-      setFaqs(updated);
-      localStorage.setItem('intercultural_faqs_all', JSON.stringify(updated));
-      if (editingFAQ && editingFAQ.question === question) {
-        cancelEditFAQ();
-      }
+    const updated = faqs.filter(f => f.question !== question);
+    setFaqs(updated);
+    localStorage.setItem('intercultural_faqs_all', JSON.stringify(updated));
+    if (editingFAQ && editingFAQ.question === question) {
+      cancelEditFAQ();
     }
+    setActionStatus({ type: 'success', message: 'Pregunta frecuente eliminada.' });
   };
 
   // --- Save Web Texts ---
@@ -520,19 +704,17 @@ export default function AdminPanel({
 
   // --- Restore Defaults Wrapper ---
   const handleReset = () => {
-    if (window.confirm('¿Deseas restablecer TODAS las bases de datos (Dinámicas, Glosario, FAQs, Textos, Contraseña y Correo de Recuperación) a sus valores originales de fábrica? Se perderán las modificaciones locales.')) {
-      onRestoreDefaults();
-      // Reset variables
-      setHeroTitle('Aula Intercultural');
-      setHeroSubtitle('Un rincón de recursos pedagógicos interactivos, dinámicas de aula y soporte terminológico para la formación docente en diversidad, equidad y convivencia.');
-      setSupportEmail('ciudadaniahoruelo@horuelo.net');
-      setAdminPassword('aula2026');
-      setRecoveryEmail('toni.torrejon.garcia@gmail.com');
-      setRecEmailSettingsInput('toni.torrejon.garcia@gmail.com');
-      localStorage.setItem('intercultural_admin_password', 'aula2026');
-      localStorage.setItem('intercultural_recovery_email', 'toni.torrejon.garcia@gmail.com');
-      alert('¡Valores restablecidos con éxito!');
-    }
+    onRestoreDefaults();
+    // Reset variables
+    setHeroTitle('Aula Intercultural');
+    setHeroSubtitle('Un rincón de recursos pedagógicos interactivos, dinámicas de aula y soporte terminológico para la formación docente en diversidad, equidad y convivencia.');
+    setSupportEmail('ciudadaniahoruelo@horuelo.net');
+    setAdminPassword('aula2026');
+    setRecoveryEmail('ciudadaniahoruelo@horuelo.net');
+    setRecEmailSettingsInput('ciudadaniahoruelo@horuelo.net');
+    localStorage.setItem('intercultural_admin_password', 'aula2026');
+    localStorage.setItem('intercultural_recovery_email', 'ciudadaniahoruelo@horuelo.net');
+    setActionStatus({ type: 'success', message: '¡Todas las bases de datos y configuraciones han sido restablecidas con éxito a sus valores de fábrica!' });
   };
 
   // --- Send Recovery Code Handler ---
@@ -969,7 +1151,7 @@ export default function AdminPanel({
          {/* Dashboard Nav Tabs */}
          <div className="flex flex-wrap gap-1.5 border-b border-slate-200 pb-3">
           <button
-            onClick={() => { setActiveSubTab('stats'); setEditingActivity(null); setEditingGlossary(null); setEditingFAQ(null); }}
+            onClick={() => { changeSubTab('stats'); setEditingActivity(null); setEditingGlossary(null); setEditingFAQ(null); }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer ${
               activeSubTab === 'stats' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
@@ -977,7 +1159,7 @@ export default function AdminPanel({
             📊 Resumen General
           </button>
           <button
-            onClick={() => { setActiveSubTab('dynamics'); cancelEditActivity(); }}
+            onClick={() => { changeSubTab('dynamics'); cancelEditActivity(); }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer relative ${
               activeSubTab === 'dynamics' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
@@ -991,7 +1173,7 @@ export default function AdminPanel({
             )}
           </button>
           <button
-            onClick={() => { setActiveSubTab('glossary'); cancelEditGlossary(); }}
+            onClick={() => { changeSubTab('glossary'); cancelEditGlossary(); }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer ${
               activeSubTab === 'glossary' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
@@ -999,7 +1181,7 @@ export default function AdminPanel({
             🌐 Glosario Técnico ({glossaryTerms.length})
           </button>
           <button
-            onClick={() => { setActiveSubTab('faqs'); cancelEditFAQ(); }}
+            onClick={() => { changeSubTab('faqs'); cancelEditFAQ(); }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer ${
               activeSubTab === 'faqs' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
@@ -1007,7 +1189,7 @@ export default function AdminPanel({
             ❓ Dudas / FAQs ({faqs.length})
           </button>
           <button
-            onClick={() => { setActiveSubTab('texts'); }}
+            onClick={() => { changeSubTab('texts'); }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer ${
               activeSubTab === 'texts' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
@@ -1015,7 +1197,7 @@ export default function AdminPanel({
             ⚙ Textos y Ajustes Web
           </button>
           <button
-            onClick={() => { setActiveSubTab('inbox'); }}
+            onClick={() => { changeSubTab('inbox'); }}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-sans font-black transition-all cursor-pointer relative ${
               activeSubTab === 'inbox' ? 'bg-slate-900 text-white shadow-md border-2 border-slate-900' : 'bg-white border border-slate-200 hover:bg-slate-100 text-slate-650'
             }`}
@@ -1029,6 +1211,26 @@ export default function AdminPanel({
             )}
           </button>
         </div>
+
+        {/* Global Action Status Banner */}
+        {actionStatus && (
+          <div className={`p-4 rounded-2xl flex items-center justify-between text-xs font-bold transition-all shadow-sm ${
+            actionStatus.type === 'success' 
+              ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' 
+              : 'bg-rose-50 text-rose-900 border border-rose-200'
+          }`}>
+            <div className="flex items-center gap-2">
+              <span>{actionStatus.type === 'success' ? '✓' : '⚠️'}</span>
+              <span>{actionStatus.message}</span>
+            </div>
+            <button 
+              onClick={() => setActionStatus(null)}
+              className="ml-4 p-1 hover:bg-black/5 rounded-lg font-bold text-slate-500 hover:text-slate-900 cursor-pointer"
+            >
+              ✕
+            </button>
+          </div>
+        )}
 
         {/* SUBTAB CONTENT: STATS */}
         {activeSubTab === 'stats' && (
@@ -1580,73 +1782,339 @@ export default function AdminPanel({
                 {/* SUBTAB CONTENT: INBOX */}
         {activeSubTab === 'inbox' && (
           <div className="space-y-6 animate-fadeIn">
-            <div className="flex justify-between items-end border-b border-slate-200 pb-4">
+            <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-200 pb-4 gap-3">
               <div>
                 <h3 className="text-xl font-extrabold text-slate-900 flex items-center gap-2">
-                  <Inbox className="w-6 h-6 text-orange-600" /> Consultas de Docentes
+                  <Inbox className="w-6 h-6 text-orange-600" /> Consultas de Docentes y Buzón
                 </h3>
-                <p className="text-sm text-slate-500 mt-1">Buzón de entrada del formulario de contacto.</p>
+                <p className="text-sm text-slate-500 mt-1">
+                  Buzón central de la intranet con registro de consultas recibidas y respuestas emitidas.
+                </p>
+              </div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-orange-50 border border-orange-200 text-orange-850 text-xs font-medium">
+                <Mail className="w-4 h-4 text-orange-600 shrink-0" />
+                <span>Cuenta oficial del centro: <strong>{supportEmail}</strong></span>
               </div>
             </div>
 
-            {inboxMessages.length === 0 ? (
+            {/* Practical guidance tip for replying and tracking responses */}
+            <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 text-xs text-amber-900 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-bold text-amber-950">Registro permanente de respuestas:</p>
+                <p className="text-amber-800 leading-relaxed">
+                  Ahora puedes redactar la respuesta directamente en cada consulta. Al pulsar <strong>"Guardar respuesta en intranet"</strong> o <strong>"Guardar y enviar por Gmail"</strong>, el texto de la contestación quedará <strong>visible permanentemente</strong> en la ficha de la consulta, junto con la fecha y hora en que se respondió.
+                </p>
+              </div>
+            </div>
+
+            {/* Filter buttons */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                <button
+                  type="button"
+                  onClick={() => setInboxFilter('all')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    inboxFilter === 'all' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Todas ({inboxMessages.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInboxFilter('pending')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    inboxFilter === 'pending' ? 'bg-white text-orange-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <span>Pendientes</span>
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-orange-100 text-orange-800">
+                    {inboxMessages.filter(m => m.status === 'pending').length}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInboxFilter('resolved')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    inboxFilter === 'resolved' ? 'bg-white text-emerald-700 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <span>Resueltas</span>
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-emerald-100 text-emerald-800">
+                    {inboxMessages.filter(m => m.status === 'resolved').length}
+                  </span>
+                </button>
+              </div>
+
+              <span className="text-xs text-slate-500 font-medium">
+                Mostrando {inboxMessages.filter(m => inboxFilter === 'all' || m.status === inboxFilter).length} consultas
+              </span>
+            </div>
+
+            {inboxMessages.filter(m => inboxFilter === 'all' || m.status === inboxFilter).length === 0 ? (
               <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200 border-dashed">
                 <Mail className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                <h4 className="text-slate-900 font-bold mb-1">Bandeja vacía</h4>
-                <p className="text-sm text-slate-500">No hay consultas pendientes de revisar.</p>
+                <h4 className="text-slate-900 font-bold mb-1">
+                  {inboxFilter === 'pending' ? 'No hay consultas pendientes' : inboxFilter === 'resolved' ? 'No hay consultas resueltas aún' : 'Bandeja vacía'}
+                </h4>
+                <p className="text-sm text-slate-500">
+                  {inboxFilter === 'pending' ? '¡Buen trabajo! Todas las consultas han sido respondidas o resueltas.' : 'Las nuevas consultas enviadas desde el formulario de contacto aparecerán aquí.'}
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
-                {inboxMessages.map(msg => (
-                  <div key={msg.id} className={`p-5 rounded-2xl border transition-all ${msg.status === 'resolved' ? 'bg-slate-50 border-slate-200 opacity-70' : 'bg-white border-orange-200 shadow-sm border-l-4 border-l-orange-500'}`}>
-                    <div className="flex justify-between items-start mb-3">
+                {inboxMessages
+                  .filter(m => inboxFilter === 'all' || m.status === inboxFilter)
+                  .map(msg => (
+                  <div 
+                    key={msg.id} 
+                    className={`p-5 rounded-2xl border transition-all ${
+                      msg.status === 'resolved' 
+                        ? 'bg-slate-50/70 border-slate-200' 
+                        : 'bg-white border-orange-200 shadow-xs border-l-4 border-l-orange-500'
+                    }`}
+                  >
+                    {/* Header info */}
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3">
                       <div>
-                        <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                          {msg.name} 
-                          {msg.status === 'resolved' && <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Resuelta</span>}
-                          {msg.status === 'pending' && <span className="text-[10px] bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Pendiente</span>}
-                        </h4>
-                        <a href={`mailto:${msg.email}`} className="text-xs text-blue-600 hover:underline">{msg.email}</a>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="font-extrabold text-slate-900 text-base">{msg.name}</h4>
+                          {msg.role && (
+                            <span className="text-[11px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-medium">
+                              {msg.role}
+                            </span>
+                          )}
+                          {msg.status === 'resolved' ? (
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3 text-emerald-600" /> Resuelta
+                            </span>
+                          ) : (
+                            <span className="text-[10px] bg-orange-100 text-orange-800 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3 text-orange-600" /> Pendiente
+                            </span>
+                          )}
+                        </div>
+                        <a 
+                          href={`mailto:${msg.email}`} 
+                          className="text-xs text-blue-600 hover:text-blue-800 hover:underline font-mono inline-flex items-center gap-1 mt-0.5"
+                        >
+                          <Mail className="w-3 h-3" /> {msg.email}
+                        </a>
                       </div>
-                      <span className="text-xs text-slate-400 font-mono">{new Date(msg.date).toLocaleDateString()} {new Date(msg.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                      <span className="text-xs text-slate-500 font-mono shrink-0">
+                        {new Date(msg.date).toLocaleDateString()} {new Date(msg.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </div>
-                    <p className="text-sm text-slate-700 bg-slate-50 p-4 rounded-xl mb-4 italic">"{msg.message}"</p>
+
+                    {/* Received message */}
+                    <div className="bg-white border border-slate-200/80 rounded-xl p-3.5 mb-3 shadow-2xs">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                        Consulta enviada por el docente:
+                      </span>
+                      <p className="text-sm text-slate-800 whitespace-pre-wrap leading-relaxed italic">
+                        "{msg.message}"
+                      </p>
+                    </div>
+
+                    {/* Saved response display (The core feature requested by the user) */}
+                    {msg.replyText && replyingMessageId !== msg.id && (
+                      <div className="bg-emerald-50/90 border border-emerald-200 rounded-xl p-4 mb-3 space-y-2">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-1.5 text-emerald-900 font-bold text-xs">
+                            <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>Respuesta dada y registrada:</span>
+                          </div>
+                          {msg.replyDate && (
+                            <span className="text-[11px] text-emerald-700/80 font-mono">
+                              {new Date(msg.replyDate).toLocaleDateString()} {new Date(msg.replyDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          )}
+                        </div>
+                        <div className="bg-white border border-emerald-200/70 rounded-lg p-3 text-slate-800 whitespace-pre-wrap leading-relaxed text-xs shadow-2xs">
+                          {msg.replyText}
+                        </div>
+                        <div className="flex items-center justify-end gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={() => handleCopyReplyText(msg.replyText!, msg.id)}
+                            className="px-2.5 py-1 bg-white hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-[11px] font-semibold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Copiar el texto de la respuesta al portapapeles"
+                          >
+                            {copiedReplyId === msg.id ? (
+                              <>
+                                <Check className="w-3 h-3 text-emerald-600" />
+                                <span>¡Copiada!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3 h-3 text-emerald-600" />
+                                <span>Copiar respuesta</span>
+                              </>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleStartReply(msg)}
+                            className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-semibold rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Editar o ampliar la respuesta dada"
+                          >
+                            <Edit3 className="w-3 h-3 text-slate-600" />
+                            <span>Modificar respuesta</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Inline Response Editor */}
+                    {replyingMessageId === msg.id && (
+                      <div className="bg-orange-50/80 border-2 border-orange-300 rounded-xl p-4 mb-3 space-y-3 animate-fadeIn">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-orange-950 flex items-center gap-1.5">
+                            <Reply className="w-4 h-4 text-orange-600" />
+                            Redactar respuesta para {msg.name} ({msg.email})
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleCancelReply}
+                            className="text-xs text-slate-500 hover:text-slate-800 font-semibold cursor-pointer underline"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                        <textarea
+                          rows={7}
+                          value={replyDraft}
+                          onChange={(e) => setReplyDraft(e.target.value)}
+                          placeholder="Escribe aquí la respuesta que se guardará en la intranet..."
+                          className="w-full bg-white text-slate-900 border border-orange-200 rounded-xl p-3 text-xs leading-relaxed focus:outline-none focus:ring-2 focus:ring-orange-500/30 font-sans"
+                        />
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+                          <span className="text-[11px] text-slate-500">
+                            La respuesta se guardará en la intranet para consulta futura y marcará la ficha como resuelta.
+                          </span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <button
+                              type="button"
+                              onClick={() => handleSaveReplyOnly(msg)}
+                              className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                              title="Guarda la respuesta en la intranet y marca la consulta como resuelta sin abrir Gmail"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                              <span>Guardar en Intranet</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleSendGmailWithReply(msg)}
+                              className="px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                              title="Guarda la respuesta en la intranet y abre Gmail con el texto redactado"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                              <span>Guardar y Enviar por Gmail</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
-                    <div className="flex justify-end gap-3 border-t pt-4">
-                       {msg.status === 'pending' && (
-                         <>
-                           <a 
-                             href={`https://mail.google.com/mail/?view=cm&fs=1&to=${msg.email}&su=Respuesta%20a%20tu%20consulta%20en%20Aula%20Intercultural&body=Hola%20${encodeURIComponent(msg.name)},%0A%0AEn%20respuesta%20a%20tu%20consulta:%0A%22${encodeURIComponent(msg.message)}%22%0A%0A%0AUn%20saludo.`} target="_blank" rel="noopener noreferrer"
-                             className="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-2"
-                           >
-                             <Mail className="w-3.5 h-3.5" /> Responder por Email
-                           </a>
-                           <button 
+                    {/* Action buttons footer */}
+                    {replyingMessageId !== msg.id && (
+                      <div className="flex flex-wrap items-center justify-end gap-2 border-t border-slate-200/60 pt-3">
+                        {/* If pending without reply yet */}
+                        {msg.status === 'pending' && !msg.replyText && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => handleStartReply(msg)}
+                              className="px-3.5 py-2 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                              title="Redactar una respuesta para enviarla y dejarla registrada en la intranet"
+                            >
+                              <Reply className="w-3.5 h-3.5" />
+                              <span>Responder consulta</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleCopyTemplate(msg)}
+                              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                              title="Copiar texto y destinatario al portapapeles para pegarlo en cualquier gestor o webmail"
+                            >
+                              {copiedMessageId === msg.id ? (
+                                <>
+                                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span className="text-emerald-700">¡Copiado!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3.5 h-3.5 text-slate-500" />
+                                  <span>Copiar plantilla</span>
+                                </>
+                              )}
+                            </button>
+
+                            <button
+                              type="button"
                               onClick={() => handleResolveMessage(msg.id)}
-                              className="px-4 py-2 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl hover:bg-emerald-200 transition-colors flex items-center gap-2"
-                           >
-                             <CheckCircle className="w-3.5 h-3.5" /> Marcar como Resuelta
-                           </button>
-                         </>
-                       )}
-                       <button 
+                              className="px-3 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                              title="Marcar como resuelta sin añadir respuesta escrita"
+                            >
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Marcar resuelta</span>
+                            </button>
+                          </>
+                        )}
+
+                        {/* If resolved or already has reply */}
+                        {msg.status === 'resolved' && (
+                          <>
+                            {!msg.replyText && (
+                              <button
+                                type="button"
+                                onClick={() => handleStartReply(msg)}
+                                className="px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                              >
+                                <Reply className="w-3.5 h-3.5" />
+                                <span>Añadir registro de respuesta</span>
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleReopenMessage(msg.id)}
+                              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
+                              title="Volver a marcar como pendiente"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                              <span>Reabrir</span>
+                            </button>
+                          </>
+                        )}
+
+                        <button 
+                          type="button"
                           onClick={() => {
                             setFaqQuestion(msg.message);
-                            setFaqAnswer('');
+                            setFaqAnswer(msg.replyText || '');
                             setFaqCategory('Consultas');
-                            setActiveSubTab('faqs');
+                            changeSubTab('faqs');
                           }}
-                          className="px-4 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-2"
-                       >
-                         <HelpCircle className="w-3.5 h-3.5" /> Convertir en FAQ
-                       </button>
-                       <button 
+                          className="px-3.5 py-2 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl hover:bg-blue-100 transition-colors flex items-center gap-1.5 cursor-pointer"
+                          title="Convertir esta consulta (y su respuesta si existe) en una pregunta frecuente FAQ"
+                        >
+                          <HelpCircle className="w-3.5 h-3.5" /> 
+                          <span>Convertir en FAQ</span>
+                        </button>
+
+                        <button 
+                          type="button"
                           onClick={() => handleDeleteMessage(msg.id)}
-                          className="px-3 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl hover:bg-red-100 transition-colors flex items-center gap-2"
-                       >
-                         <Trash2 className="w-3.5 h-3.5" /> Borrar
-                       </button>
-                    </div>
+                          className="px-3 py-2 bg-red-50 text-red-600 text-xs font-bold rounded-xl hover:bg-red-100 transition-colors flex items-center gap-1.5 cursor-pointer"
+                          title="Eliminar esta consulta del registro"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> 
+                          <span>Borrar</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

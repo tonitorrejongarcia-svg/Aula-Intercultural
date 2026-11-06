@@ -21,7 +21,7 @@ interface FooterProps {
   supportEmail?: string;
 }
 
-export default function Footer({ setActiveTab, supportEmail = 'ciudadaniahoruelo@horuelo.net' }: FooterProps) {
+export default function Footer({ setActiveTab, supportEmail = 'ciudadaniaglobal@horuelo.net' }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   // Fallback direct URL strategies for the logo

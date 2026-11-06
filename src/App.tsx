@@ -22,7 +22,52 @@ import { INITIAL_ACTIVITIES, GLOSSARY_TERMS, FAQS } from './data';
 import { ArrowUp } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('inicio');
+  // Read URL query parameters and hash to support direct links from emails or bookmarks
+  const getInitialRoute = () => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tabParam = urlParams.get('tab') || urlParams.get('seccion');
+      const subTabParam = urlParams.get('subtab');
+      const hash = window.location.hash.replace('#', '').toLowerCase();
+
+      let tab = 'inicio';
+      let subTab = '';
+
+      if (tabParam) {
+        if (tabParam === 'admin' || tabParam === 'intranet') {
+          tab = 'intranet';
+          subTab = subTabParam || 'inbox';
+        } else {
+          tab = tabParam;
+        }
+      } else if (hash) {
+        if (hash === 'admin' || hash === 'intranet') {
+          tab = 'intranet';
+          subTab = 'inbox';
+        } else if (hash.includes('inbox') || hash.includes('buzon')) {
+          tab = 'intranet';
+          subTab = 'inbox';
+        } else if (hash.includes('dynamics') || hash.includes('dinamicas')) {
+          tab = 'intranet';
+          subTab = 'dynamics';
+        } else {
+          tab = hash;
+        }
+      }
+
+      if (subTabParam) {
+        subTab = subTabParam;
+      }
+
+      return { tab, subTab };
+    } catch {
+      return { tab: 'inicio', subTab: '' };
+    }
+  };
+
+  const initialRoute = getInitialRoute();
+  const [activeTab, setActiveTab] = useState<string>(initialRoute.tab);
+  const [adminSubTab, setAdminSubTab] = useState<string>(initialRoute.subTab);
   const [fontSizeScale, setFontSizeScale] = useState<'normal' | 'large' | 'xl'>('normal');
   const [highContrast, setHighContrast] = useState<boolean>(false);
   const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
@@ -163,7 +208,7 @@ export default function App() {
            parsed.heroTitle = 'Educar en la diferencia es construir comunidad.';
            localStorage.setItem('intercultural_general_texts', JSON.stringify(parsed));
         }
-        if (!parsed.supportEmail || parsed.supportEmail === 'contacto@aulaintercultural.es' || parsed.supportEmail === 'asociacion@horuelo.com') {
+        if (!parsed.supportEmail || parsed.supportEmail === 'contacto@aulaintercultural.es' || parsed.supportEmail === 'asociacion@horuelo.com' || parsed.supportEmail === 'ciudadaniaglobal@horuelo.net') {
            parsed.supportEmail = 'ciudadaniahoruelo@horuelo.net';
            localStorage.setItem('intercultural_general_texts', JSON.stringify(parsed));
         }
@@ -195,14 +240,12 @@ export default function App() {
 
   // Handle clearing all custom activities
   const handleClearCustomActivities = () => {
-    if (window.confirm('¿Estás seguro de que quieres borrar de forma permanente todas las dinámicas propuestas de la comunidad?')) {
-      const updated = activities.filter(a => !a.isCustom);
-      setActivities(updated);
-      try {
-        localStorage.setItem('intercultural_activities_all', JSON.stringify(updated));
-      } catch (e) {
-        console.error('Error clearing custom activities:', e);
-      }
+    const updated = activities.filter(a => !a.isCustom);
+    setActivities(updated);
+    try {
+      localStorage.setItem('intercultural_activities_all', JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error clearing custom activities:', e);
     }
   };
 
@@ -234,6 +277,40 @@ export default function App() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
+
+  // Keep URL search query in sync when active tab and subtab change
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      if (activeTab === 'inicio') {
+        url.searchParams.delete('tab');
+        url.searchParams.delete('subtab');
+      } else {
+        url.searchParams.set('tab', activeTab);
+        if (activeTab === 'intranet' && adminSubTab) {
+          url.searchParams.set('subtab', adminSubTab);
+        } else {
+          url.searchParams.delete('subtab');
+        }
+      }
+      window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    } catch (e) {
+      console.warn('Error al sincronizar URL:', e);
+    }
+  }, [activeTab, adminSubTab]);
+
+  // Handle browser back and forward button navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = getInitialRoute();
+      setActiveTab(route.tab);
+      if (route.subTab) {
+        setAdminSubTab(route.subTab);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Listen to scroll to toggle scroll to top button
   useEffect(() => {
@@ -397,6 +474,8 @@ export default function App() {
               generalTexts={generalTexts}
               setGeneralTexts={setGeneralTexts}
               onRestoreDefaults={handleRestoreDefaults}
+              initialSubTab={adminSubTab}
+              onSubTabChange={(subTab) => setAdminSubTab(subTab)}
             />
           </div>
         )}

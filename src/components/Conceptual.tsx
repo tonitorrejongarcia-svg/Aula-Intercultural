@@ -110,6 +110,10 @@ export default function Conceptual() {
     setRevealedMyths({}); // Reset reveals
     try {
       const response = await fetch('/api/generate-myths', { method: 'POST' });
+      const contentType = response.headers.get("content-type") || "";
+      if (!response.ok || !contentType.includes("application/json")) {
+        throw new Error("Respuesta no válida del servidor");
+      }
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       

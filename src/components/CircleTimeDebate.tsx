@@ -76,7 +76,8 @@ export default function CircleTimeDebate() {
           headers: { 'Content-Type': 'application/json' },
         });
         
-        if (!response.ok) {
+        const contentType = response.headers.get("content-type") || "";
+        if (!response.ok || !contentType.includes("application/json")) {
           throw new Error('No se pudo generar la pregunta');
         }
         
@@ -131,7 +132,7 @@ export default function CircleTimeDebate() {
 
   const handleDeleteQuestion = (idxToDelete: number) => {
     if (questions.length <= 3) {
-      alert('Por favor, mantén al menos 3 preguntas de debate para que el generador tenga suficiente variedad.');
+      setCurrentQuestion('⚠️ Por favor, mantén al menos 3 preguntas de debate para que el generador tenga suficiente variedad.');
       return;
     }
     const updated = questions.filter((_, i) => i !== idxToDelete);

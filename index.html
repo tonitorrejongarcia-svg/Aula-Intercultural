@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,10 +9,25 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Aula Inter" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>Aula Intercultural - Recursos Docentes</title>
+    <title>Aula Intercultural</title>
     <meta name="description" content="Recursos didácticos, dinámicas interactivas y material conceptual sobre Educación Intercultural para docentes de todas las etapas (Infantil, Primaria, Secundaria)." />
-    <meta property="og:title" content="Aula Intercultural - Recursos Docentes" />
+    <meta property="og:title" content="Aula Intercultural" />
     <meta property="og:description" content="Recursos didácticos, dinámicas interactivas y material conceptual sobre Educación Intercultural para docentes de todas las etapas (Infantil, Primaria, Secundaria)." />
+    <script>
+      // Suppress benign Vite WebSocket disconnect notices in iframe preview
+      window.addEventListener('error', function (e) {
+        if (e && e.message && (e.message.indexOf('WebSocket') !== -1 || e.message.indexOf('[vite]') !== -1)) {
+          e.stopImmediatePropagation();
+        }
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        var reasonStr = (e && e.reason) ? String(e.reason.message || e.reason) : '';
+        if (reasonStr.indexOf('WebSocket') !== -1 || reasonStr.indexOf('[vite]') !== -1) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
