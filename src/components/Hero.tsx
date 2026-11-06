@@ -280,29 +280,41 @@ export default function Hero({ setActiveTab, heroTitle, heroSubtitle }: HeroProp
 
           {/* Quick interactive widget: Aula inclusiva checklist */}
           <div className="bg-slate-900 text-white rounded-3xl p-6 shadow-md">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-3">
               <div className="p-1.5 bg-white/15 rounded-lg">
                 <HeartHandshake className="w-5 h-5 text-amber-300" />
               </div>
-              <h3 className="font-sans font-bold text-lg">Tu Brújula Intercultural</h3>
+              <h3 className="font-sans font-bold text-lg">Brújula Intercultural</h3>
             </div>
-            <p className="font-sans text-sm text-emerald-100 mb-4">
-              Criterios clave para identificar si un recurso de aula es realmente intercultural:
+            <p className="font-sans text-xs sm:text-sm text-slate-300 mb-4 font-medium">
+              Pregúntate esto antes de usar un recurso en clase:
             </p>
-            <ul className="space-y-3 font-sans text-xs text-emerald-50">
-              <li className="flex items-start gap-2">
-                <span className="text-amber-300 font-bold">✔</span>
-                <span>¿Visibiliza la asimetría de privilegios o se limita a un festejo folclórico?</span>
+            <ol className="space-y-3.5 font-sans text-xs sm:text-sm text-slate-100">
+              <li className="flex items-start gap-2.5">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-400/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-400/30">
+                  1
+                </span>
+                <span className="leading-relaxed">
+                  <strong className="text-white font-semibold">Más allá del folclore:</strong> ¿Aborda las desigualdades y la complejidad cultural, o se queda en la superficie de la "gastronomía y las fiestas"?
+                </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-amber-300 font-bold">✔</span>
-                <span>¿Da voz activa a los alumnos para tejer puentes, en lugar de encasillarlos?</span>
+              <li className="flex items-start gap-2.5">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-400/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-400/30">
+                  2
+                </span>
+                <span className="leading-relaxed">
+                  <strong className="text-white font-semibold">Protagonismo real:</strong> ¿Los estudiantes participan de forma activa y horizontal, o actúan como meros espectadores pasivos?
+                </span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-amber-300 font-bold">✔</span>
-                <span>¿Involucra un espacio seguro para el diálogo horizontal guiado?</span>
+              <li className="flex items-start gap-2.5">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-amber-400/20 text-amber-300 font-bold text-xs flex items-center justify-center border border-amber-400/30">
+                  3
+                </span>
+                <span className="leading-relaxed">
+                  <strong className="text-white font-semibold">Espacio seguro:</strong> ¿Fomenta el pensamiento crítico y el contraste de puntos de vista sin miedos?
+                </span>
               </li>
-            </ul>
+            </ol>
           </div>
         </div>
       </div>
