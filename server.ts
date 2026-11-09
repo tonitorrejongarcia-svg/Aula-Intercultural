@@ -275,8 +275,8 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         source: "Físico",
         category: "Exclusión de identidad (Perpetuo extranjero)",
         mechanism: "Se invalida la nacionalidad del estudiante asumiendo que la identidad nacional está exclusivamente ligada a rasgos fenotípicos caucásicos.",
-        impact: "Alienación, pérdida de pertenencia e invalidación de su identidad real.",
-        teacherResponse: "Cortar el interrogatorio: «Es español y es de aquí. La diversidad física es parte de nuestra sociedad; asimilar que solo hay un 'tipo' de español es un sesgo que debemos corregir.»"
+        impact: "Alienación, pérdida de pertenencia e invalidación de su identidad real como ciudadano de pleno derecho.",
+        teacherResponse: "Cortar el interrogatorio: «Es español y es de aquí. La diversidad física es parte de nuestra sociedad; asumir que solo hay un 'tipo' de español es un sesgo que debemos corregir.»"
       },
       {
         phrase: "«Jaja, me voy a disfrazar de [cultura minoritaria] para carnaval, será súper gracioso.»",
@@ -284,7 +284,7 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         category: "Apropiación y burla cultural",
         mechanism: "Se reduce una identidad cultural o religiosa compleja a una caricatura cómica temporal para el entretenimiento del grupo dominante.",
         impact: "Banaliza y ridiculiza la herencia cultural del alumno, generando humillación pública.",
-        teacherResponse: "Parar la banalización: «La cultura y la identidad de tus compañeros no son un disfraz de comedia. Burlarse de las raíces de otros es una falta de respeto inaceptable en este centro.»"
+        teacherResponse: "Parar la banalización: «La cultura y la fe de tus compañeros no son un disfraz de comedia. Burlarse de las raíces de otros es una falta de respeto inaceptable en este centro.»"
       },
       {
         phrase: "«Se lo ha tomado muy a pecho, los de su país es que son muy temperamentales.»",
@@ -292,7 +292,7 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         category: "Invalidación por estereotipo cultural",
         mechanism: "Gaslighting. Se desactiva la queja legítima del estudiante frente a un abuso, atribuyéndosela a un defecto genético o cultural.",
         impact: "Aísla a la víctima, le quita credibilidad y protege al agresor o provocador.",
-        teacherResponse: "Focalizar en el hecho: «No tiene nada que ver con su país. Se ha enfadado porque se le ha faltado al respeto. Exijo que dejemos de usar estereotipos para justificar agresiones.»"
+        teacherResponse: "Focalizar en el hecho: «No tiene nada que ver con su país. Se ha enfadado porque se le ha faltado al respeto. Dejemos de usar estereotipos para justificar agresiones.»"
       },
       {
         phrase: "«Madre mía, a la mínima os ofendéis, ahora ya no se puede decir nada.»",
@@ -301,6 +301,70 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         mechanism: "El agresor se posiciona como víctima de la 'censura', invisibilizando el daño real causado y negándose a asumir responsabilidad.",
         impact: "Silencia futuras denuncias por miedo a ser tachados de exagerados.",
         teacherResponse: "Reenfoque de responsabilidad: «Se puede decir de todo, menos insultar o discriminar. Que ahora los límites del respeto estén más claros es un avance, no un ataque hacia ti.»"
+      },
+      {
+        phrase: "«Como eres asiático, pásame tu examen de matemáticas, seguro sacas diez sin estudiar.»",
+        source: "Físico",
+        category: "La falacia de la minoría modelo",
+        mechanism: "Atribución estereotipada de capacidades intelectuales innatas que deshumaniza al individuo, reduciéndolo a una herramienta utilitaria basada en su origen étnico.",
+        impact: "Genera una presión académica insoportable, ansiedad por el rendimiento y sentimientos de alienación al no ser valorado por su esfuerzo personal.",
+        teacherResponse: "Desmontar el prejuicio: «Ese comentario invalida el esfuerzo personal de tu compañero. Las notas son fruto del trabajo y estudio de cada persona, no de su país de origen.»"
+      },
+      {
+        phrase: "«Si habláis en vuestro idioma en voz baja es porque estáis criticando a alguien en secreto.»",
+        source: "Físico",
+        category: "Sospecha y hostilidad lingüística",
+        mechanism: "Proyección paranoide de desconfianza ante idiomas ajenos, criminalizando el uso de la lengua materna en momentos de ocio.",
+        impact: "Genera inseguridad y vergüenza lingüística, haciendo que los estudiantes repriman su lengua materna para evitar el juicio ajeno.",
+        teacherResponse: "Validación lingüística: «Hablar en tu idioma materno con un amigo es completamente natural y un derecho. No proyectemos sospechas infundadas sobre las lenguas de los demás.»"
+      },
+      {
+        phrase: "«Qué pelo tan raro tienes, ¿puedo tocarlo? Parece lana de oveja.»",
+        source: "Físico",
+        category: "Exotización y transgresión corporal",
+        mechanism: "Curiosidad deshumanizante. Se trata el cuerpo o el cabello del alumno racializado como una atracción exótica o animalizada.",
+        impact: "Sensación de invasión física y vergüenza de los rasgos corporales propios.",
+        teacherResponse: "Establecer límites de respeto: «El cuerpo y el cabello de una persona no son un objeto de exhibición. Cada uno tiene derecho a su espacio personal y a ser tratado con dignidad.»"
+      },
+      {
+        phrase: "«Ha desaparecido una sudadera en el vestuario; que revisen primero a los del fondo.»",
+        source: "Físico",
+        category: "Presunción de culpabilidad sistemática",
+        mechanism: "Asociación automática del alumnado migrante o de barrios humildes con la delincuencia o el hurto.",
+        impact: "Estigmatización profunda y desconfianza hacia la justicia del centro educativo.",
+        teacherResponse: "Frenar el sesgo: «Las acusaciones sin pruebas basadas en prejuicios son inadmisibles. Si hay un objeto perdido, se busca con respeto y sin señalar a nadie por su origen.»"
+      },
+      {
+        phrase: "«Puaj, ¿qué llevas en el tupper? Huele rarísimo, qué asco de comida.»",
+        source: "Físico",
+        category: "Desprecio gastronómico y cultural",
+        mechanism: "Uso de la comida como marcador de otredad y rechazo, asociando los ingredientes tradicionales ajenos a suciedad o extrañeza.",
+        impact: "Vergüenza ante las costumbres familiares y renuncia a comer en público por miedo al señalamiento.",
+        teacherResponse: "Curiosidad gastronómica: «En el mundo existen miles de formas de cocinar ricas y deliciosas. Burlarse de la comida de los demás demuestra falta de mundo, no superioridad.»"
+      },
+      {
+        phrase: "«A ellos les dan todas las becas de comedor y a nosotros nada, qué morro tienen.»",
+        source: "Redes Sociales",
+        category: "Bulo de privilegios públicos imaginarios",
+        mechanism: "Difusión de falsedades sobre la adjudicación de ayudas públicas para alimentar el resentimiento social.",
+        impact: "Fractura de la convivencia vecinal y hostilidad directa contra menores becados en el comedor escolar.",
+        teacherResponse: "Pedagogía con baremos oficiales: «Las becas se conceden por nivel de renta demostrable de la familia, no por pasaporte o lugar de nacimiento. La precariedad no entiende de orígenes.»"
+      },
+      {
+        phrase: "«No le exijas tanto académicamente a ese estudiante, en su casa los estudios no son prioridad.»",
+        source: "Físico",
+        category: "Bajas expectativas docentes (Pigmalión negativo)",
+        mechanism: "Proyección de prejuicios clasistas y culturales sobre el interés educativo de familias de origen migrante.",
+        impact: "Abandono escolar prematuro y falta de orientación hacia estudios superiores o formación cualificada.",
+        teacherResponse: "Compromiso docente transformador: «Las familias migrantes a menudo hacen sacrificios enormes por el futuro de sus hijos. Nuestro deber es elevar las expectativas y brindar el máximo apoyo.»"
+      },
+      {
+        phrase: "«Son cosas de críos en el patio, siempre ha habido burlas, no hay que darle tanta importancia.»",
+        source: "Físico",
+        category: "Invisibilización de la violencia estructural",
+        mechanism: "Minimización institucional del acoso racista bajo la etiqueta genérica de 'juegos o riñas infantiles'.",
+        impact: "Indefensión aprendida de la víctima y escalada de la agresividad del grupo agresor al no percibir límites.",
+        teacherResponse: "Tolerancia cero: «Cuando la burla ataca la identidad o el origen de una persona, no es una riña casual: es acoso y discriminación. Actuemos con firmeza para proteger a la víctima.»"
       }
     ];
 

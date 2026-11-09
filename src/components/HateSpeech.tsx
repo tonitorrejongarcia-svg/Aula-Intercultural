@@ -38,7 +38,7 @@ const ALL_PHRASES = [
     category: "Bulocracia económica / Chivo expiatorio",
     mechanism: "Falsa generalización y desinformación distributiva viralizada en redes mediante infografías sesgadas o vídeos descontextualizados.",
     impact: "Genera desconfianza y xenofobia estructural. El alumnado asume que sus dificultades socioeconómicas familiares están directamente causadas por la población migrante.",
-    teacherResponse: "Utiliza datos verificados e interactivos: «Analicemos juntos los informes del INE y de la Seguridad Social en la pantalla. Las personas migrantes aportan más en cotizaciones e impuestos de lo que reciben en prestaciones. Cuestionar de dónde viene un bulo antes de compartirlo es de ser un ciudadano inteligente.»"
+    teacherResponse: "Utiliza datos verificados: «Analicemos juntos los informes oficiales de la Seguridad Social. Los datos demuestran que las personas migrantes aportan más en cotizaciones de lo que reciben en prestaciones. Desmontar bulos con datos es pensamiento crítico.»"
   },
   {
     id: 3,
@@ -84,6 +84,123 @@ const ALL_PHRASES = [
     mechanism: "Justificación biológica o 'natural' para no intervenir en un problema de exclusión social que se está produciendo dentro del aula por sesgos endogámicos.",
     impact: "Perpetúa guetos escolares, impidiendo la verdadera cohesión social. Los alumnos minorizados pierden oportunidades de capital social, integración lingüística y desarrollo de empatía.",
     teacherResponse: "Pedagogía de la mezcla: «La escuela es el último espacio donde podemos diseñar la convivencia. Como docentes, es nuestra responsabilidad forzar metodologías cooperativas heterogéneas para romper esas burbujas y construir puentes.»"
+  },
+  {
+    id: 8,
+    phrase: "«¿Pero de dónde eres de verdad? Porque español no pareces con esa cara.»",
+    source: "Físico",
+    category: "Exclusión de identidad (Perpetuo extranjero)",
+    mechanism: "Se invalida la nacionalidad del estudiante asumiendo que la identidad nacional está exclusivamente ligada a rasgos fenotípicos caucásicos.",
+    impact: "Alienación, pérdida de pertenencia e invalidación de su identidad real como ciudadano de pleno derecho.",
+    teacherResponse: "Cortar el interrogatorio: «Es español y es de aquí. La diversidad física es parte de nuestra sociedad; asumir que solo hay un 'tipo' de español es un sesgo que debemos corregir.»"
+  },
+  {
+    id: 9,
+    phrase: "«Como eres asiático, pásame tu examen de matemáticas, seguro sacaste diez sin estudiar.»",
+    source: "Físico",
+    category: "La falacia de la minoría modelo",
+    mechanism: "Atribución estereotipada de capacidades intelectuales innatas que deshumaniza al individuo, reduciéndolo a una herramienta utilitaria basada en su origen étnico.",
+    impact: "Genera una presión académica insoportable, ansiedad por el rendimiento y sentimientos de alienación al no ser valorado por su esfuerzo personal.",
+    teacherResponse: "Desmontar el prejuicio: «Ese comentario invalida el esfuerzo personal de tu compañero. Las notas son fruto del trabajo y estudio de cada persona, no de su país de origen.»"
+  },
+  {
+    id: 10,
+    phrase: "«Se lo ha tomado muy a pecho, los de su país es que son muy temperamentales.»",
+    source: "Redes Sociales",
+    category: "Invalidación por estereotipo cultural",
+    mechanism: "Gaslighting. Se desactiva la queja legítima del estudiante frente a un abuso, atribuyéndosela a un defecto genético o cultural.",
+    impact: "Aísla a la víctima, le quita credibilidad y protege al agresor o provocador.",
+    teacherResponse: "Focalizar en el hecho: «No tiene nada que ver con su procedencia. Se ha enfadado porque se le ha faltado al respeto. Dejemos de recurrir a estereotipos para justificar agresiones.»"
+  },
+  {
+    id: 11,
+    phrase: "«Madre mía, a la mínima os ofendéis, ahora ya no se puede decir nada.»",
+    source: "Redes Sociales",
+    category: "Victimismo del grupo dominante",
+    mechanism: "El emisor se posiciona como víctima de la 'censura', invisibilizando el daño real causado y negándose a asumir responsabilidad.",
+    impact: "Silencia futuras quejas por miedo a ser tachados de exagerados o problemáticos.",
+    teacherResponse: "Reenfoque de responsabilidad: «Se puede decir de todo, menos insultar o discriminar a otros. Que los límites del respeto estén más claros es una mejora para la convivencia de todos.»"
+  },
+  {
+    id: 12,
+    phrase: "«Si habláis en vuestro idioma en voz baja es porque estáis criticando a alguien en secreto.»",
+    source: "Físico",
+    category: "Sospecha y hostilidad lingüística",
+    mechanism: "Proyección paranoide de desconfianza ante idiomas ajenos, criminalizando el uso de la lengua materna en momentos de ocio.",
+    impact: "Genera inseguridad y vergüenza lingüística, haciendo que los estudiantes repriman su lengua materna para evitar el juicio ajeno.",
+    teacherResponse: "Validación lingüística: «Hablar en tu idioma materno con un amigo es completamente natural y un derecho. No proyectemos sospechas infundadas sobre las lenguas de los demás.»"
+  },
+  {
+    id: 13,
+    phrase: "«Jaja, me voy a disfrazar de [cultura minoritaria] para carnaval, será súper gracioso.»",
+    source: "Físico",
+    category: "Apropiación y burla cultural",
+    mechanism: "Se reduce una identidad cultural o religiosa compleja a una caricatura cómica temporal para el entretenimiento del grupo mayoritario.",
+    impact: "Banaliza y ridiculiza la herencia cultural del alumno, provocando humillación pública involuntaria.",
+    teacherResponse: "Parar la banalización: «La cultura y la fe de tus compañeros no son un disfraz de comedia. Burlarse de las raíces ajenas no tiene cabida en este centro escolar.»"
+  },
+  {
+    id: 14,
+    phrase: "«Qué pelo tan raro tienes, ¿puedo tocarlo? Parece lana de oveja.»",
+    source: "Físico",
+    category: "Exotización y transgresión corporal",
+    mechanism: "Curiosidad deshumanizante. Se trata el cuerpo o el cabello del alumno racializado como una atracción exótica o animalizada.",
+    impact: "Sensación de invasión física y vergüenza de los rasgos corporales propios.",
+    teacherResponse: "Establecer límites de respeto: «El cuerpo y el cabello de una persona no son un objeto de exhibición. Cada uno tiene derecho a su espacio personal y a ser tratado con dignidad.»"
+  },
+  {
+    id: 15,
+    phrase: "«Ha desaparecido una sudadera en el vestuario; que revisen primero a los del fondo.»",
+    source: "Físico",
+    category: "Presunción de culpabilidad sistemática",
+    mechanism: "Asociación automática del alumnado migrante o de barrios humildes con la delincuencia o el hurto.",
+    impact: "Estigmatización profunda y desconfianza hacia la justicia del centro educativo.",
+    teacherResponse: "Frenar el sesgo: «Las acusaciones sin pruebas basadas en prejuicios son inadmisibles. Si hay un objeto perdido, se busca con respeto y sin señalar a nadie por su origen.»"
+  },
+  {
+    id: 16,
+    phrase: "«Puaj, ¿qué llevas en el tupper? Huele rarísimo, qué asco de comida.»",
+    source: "Físico",
+    category: "Desprecio gastronómico y cultural",
+    mechanism: "Uso de la comida como marcador de otredad y rechazo, asociando los ingredientes tradicionales ajenos a suciedad o extrañeza.",
+    impact: "Vergüenza ante las costumbres familiares y renuncia a comer en público por miedo al señalamiento.",
+    teacherResponse: "Curiosidad gastronómica: «En el mundo existen miles de formas de cocinar ricas y deliciosas. Burlarse de la comida de los demás demuestra falta de mundo, no superioridad.»"
+  },
+  {
+    id: 17,
+    phrase: "«A ellos les dan todas las becas de comedor y a nosotros nada, qué morro tienen.»",
+    source: "Redes Sociales",
+    category: "Bulo de privilegios públicos imaginarios",
+    mechanism: "Difusión de falsedades sobre la adjudicación de ayudas públicas para alimentar el resentimiento social.",
+    impact: "Fractura de la convivencia vecinal y hostilidad directa contra menores becados en el comedor escolar.",
+    teacherResponse: "Pedagogía con baremos oficiales: «Las becas se conceden por nivel de renta demostrable de la familia, no por pasaporte o lugar de nacimiento. La precariedad no entiende de orígenes.»"
+  },
+  {
+    id: 18,
+    phrase: "«Si vives aquí tienes que adaptarte al 100% y olvidar tus costumbres de allá.»",
+    source: "Redes Sociales",
+    category: "Asimilación forzosa excluyente",
+    mechanism: "Exigencia de renuncia identitaria total como condición previa para ser aceptado como conciudadano.",
+    impact: "Conflicto identitario y desgarro emocional en jóvenes de familias migrantes nacidos o crecidos en el país.",
+    teacherResponse: "Enfoque intercultural: «Integrarse no es clonarse ni borrar quién eres. Integrarse es respetar las leyes comunes conviviendo desde la riqueza de identidades diversas.»"
+  },
+  {
+    id: 19,
+    phrase: "«No le exijas tanto académicamente a ese estudiante, en su casa los estudios no son prioridad.»",
+    source: "Físico",
+    category: "Bajas expectativas docentes (Pigmalión negativo)",
+    mechanism: "Proyección de prejuicios clasistas y culturales sobre el interés educativo de familias de origen migrante.",
+    impact: "Abandono escolar prematuro y falta de orientación hacia estudios superiores o formación cualificada.",
+    teacherResponse: "Compromiso docente transformador: «Las familias migrantes a menudo hacen sacrificios enormes por el futuro de sus hijos. Nuestro deber es elevar las expectativas y brindar el máximo apoyo.»"
+  },
+  {
+    id: 20,
+    phrase: "«Son cosas de críos en el patio, siempre ha habido burlas, no hay que darle tanta importancia.»",
+    source: "Físico",
+    category: "Invisibilización de la violencia estructural",
+    mechanism: "Minimización institucional del acoso racista bajo la etiqueta genérica de 'juegos o riñas infantiles'.",
+    impact: "Indefensión aprendida de la víctima y escalada de la agresividad del grupo agresor al no percibir límites.",
+    teacherResponse: "Tolerancia cero: «Cuando la burla ataca la identidad o el origen de una persona, no es una riña casual: es acoso y discriminación. Actuemos con firmeza para proteger a la víctima.»"
   }
 ];
 
@@ -116,27 +233,38 @@ export default function HateSpeech() {
     setErrorAI(null);
     setSelectedPhrase(null);
     try {
-      const response = await fetch('/api/generate-microviolences', { method: 'POST' });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4500);
+
+      const response = await fetch('/api/generate-microviolences', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
       const contentType = response.headers.get("content-type") || "";
-      if (!response.ok || !contentType.includes("application/json")) {
-        throw new Error("Respuesta no válida del servidor");
+      if (response.ok && contentType.includes("application/json")) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          const newPhrases = data.map((m: any, i: number) => ({
+            id: Date.now() + i,
+            phrase: m.phrase || m.statement || "Frase no disponible",
+            source: m.source || "Aula / Redes",
+            category: m.category || "Prejuicio cotidiano",
+            mechanism: m.mechanism || "Mecanismo de desinformación o sesgo.",
+            impact: m.impact || "Impacto negativo en la convivencia.",
+            teacherResponse: m.teacherResponse || "Intervención pedagógica recomendada."
+          }));
+          setDisplayPhrases(newPhrases);
+          return;
+        }
       }
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
       
-      const newPhrases = data.map((m: any, i: number) => ({
-        id: Date.now() + i,
-        phrase: m.phrase,
-        source: m.source,
-        category: m.category,
-        mechanism: m.mechanism,
-        impact: m.impact,
-        teacherResponse: m.teacherResponse
-      }));
-      setDisplayPhrases(newPhrases);
-    } catch (err: any) {
-      console.error(err);
-      setErrorAI("Hubo un fallo temporal al conectar con la IA. Se han cargado otras frases de reserva.");
+      // If server returned non-array, seamlessly pick 4 fresh phrases from ALL_PHRASES bank
+      setDisplayPhrases(shuffleAndPick(ALL_PHRASES, 4));
+    } catch {
+      // Smooth fallback to fresh pool without flashing error message
       setDisplayPhrases(shuffleAndPick(ALL_PHRASES, 4));
     } finally {
       setIsGenerating(false);
@@ -147,30 +275,26 @@ export default function HateSpeech() {
     {
       level: 4,
       title: "Nivel 4: Ciberacoso y Agresión Física",
-      subtitle: "Acoso digital sistemático, linchamientos virtuales, agresiones motivadas por odio.",
-      description: "El umbral donde el odio online u offline desemboca en daño físico, psicológico grave o acoso coordinado que inhabilita la vida académica y social del estudiante afectado.",
-      prevention: "Activación del protocolo oficial de acoso escolar y ciberacoso, preservación pericial de evidencias digitales, denuncia formal ante Fiscalía de Menores y acompañamiento psicológico integral."
+      description: "Acoso digital constante, linchamientos públicos en redes o agresiones físicas directas. Es el punto crítico donde el odio provoca un daño psicológico o físico grave que rompe por completo la vida escolar y personal del alumno afectado.",
+      prevention: "Activar de inmediato el protocolo oficial del centro contra el acoso y el ciberacoso, guardar todas las pruebas digitales posibles, dar parte formal si es necesario y ofrecer apoyo psicológico integral."
     },
     {
       level: 3,
-      title: "Nivel 3: Discriminación de Facto y Exclusión",
-      subtitle: "Bloqueo selectivo de grupos de chat, aislamiento en el patio, rechazo en dinámicas.",
-      description: "Las opiniones hostiles se traducen en comportamientos de aislamiento activo. Se priva al estudiante de su participación e inclusión legítima en la comunidad del centro.",
-      prevention: "Reestructuración docente de los grupos de trabajo mediante aprendizaje cooperativo, mediación intercultural obligatoria y asunción de responsabilidades colectivas de cuidado."
+      title: "Nivel 3: Discriminación y Exclusión",
+      description: "Dejar a alguien fuera de los grupos de WhatsApp, hacer vacío en el patio o rechazarlo en los trabajos de grupo. Las ideas hostiles pasan a la acción y aíslan activamente al alumno, impidiendo que forme parte de la comunidad.",
+      prevention: "Intervenir desde la docencia reorganizando los grupos de trabajo mediante aprendizaje cooperativo, fomentando la mediación y creando dinámicas donde todos se sientan responsables de cuidar a los demás."
     },
     {
       level: 2,
       title: "Nivel 2: Actos de Sesgo Tolerados",
-      subtitle: "Uso de apodos ofensivos en redes, burlas racistas bajo pretexto de humor negro.",
-      description: "Se normaliza la violencia verbal sutil. El alumnado que denuncia el malestar es tildado de excesivamente sensible, instalando la indefensión en las víctimas.",
-      prevention: "Límites explícitos inmediatos. Análisis lingüístico y ético de la 'broma' en tutoría para revelar el sesgo de superioridad cultural que oculta."
+      description: "Uso de motes ofensivos o chistes racistas camuflados de \"humor negro\". Se normaliza el insulto sutil y, si alguien se queja, se le acusa de \"exagerado\", dejando a la víctima sin apoyo.",
+      prevention: "Poner límites claros y al momento. Analizar en las tutorías qué hay detrás de esas \"bromas\" para desmontar el complejo de superioridad que intentan disimular."
     },
     {
       level: 1,
       title: "Nivel 1: Estereotipos y Rumores Sesgados",
-      subtitle: "Creencia en bulos de redes sociales, asunciones prejuiciosas sobre higiene o intelecto.",
-      description: "La base invisible. Ideas preconcebidas que el alumnado consume pasivamente de discursos mediáticos y familiares, que determinan su forma de mirar al compañero diverso.",
-      prevention: "Alfabetización mediática y digital en el aula. Análisis de 'fake news' xenófobas y talleres de contraste empírico de la información."
+      description: "Creencia en bulos de internet y prejuicios sobre el origen, la cultura o la forma de ser de los demás. Es la base invisible: ideas que los menores absorben sin darse cuenta en casa, en la calle o en las redes, y que condicionan cómo miran al compañero.",
+      prevention: "Alfabetización digital en clase. Analizar noticias falsas de carácter xenófobo y hacer talleres para comprobar si los datos que consumen son reales o inventados."
     }
   ];
 
@@ -720,7 +844,7 @@ export default function HateSpeech() {
                     id={`pyramid-level-btn-${lvl.level}`}
                   >
                     <span className="uppercase tracking-widest text-[9px] opacity-75 font-bold mb-0.5">Nivel {lvl.level}</span>
-                    <span className="font-extrabold leading-tight">{lvl.title.substring(9)}</span>
+                    <span className="font-extrabold leading-tight">{lvl.title.replace(/^Nivel \d+:\s*/, '')}</span>
                     {isSelected && (
                       <div className="absolute inset-x-0 bottom-0 h-1.5 bg-white/40" />
                     )}
@@ -755,19 +879,21 @@ export default function HateSpeech() {
                     <h4 className="font-sans font-black text-lg md:text-xl text-slate-900 mt-1">
                       {pyramidLevels.find(l => l.level === activePyramidLevel)?.title}
                     </h4>
-                    <p className="font-sans text-xs text-rose-500 font-semibold mt-1">
-                      {pyramidLevels.find(l => l.level === activePyramidLevel)?.subtitle}
-                    </p>
                   </div>
 
-                  <div className="space-y-3 font-sans text-xs sm:text-sm">
-                    <p className="text-slate-600 leading-relaxed">
-                      {pyramidLevels.find(l => l.level === activePyramidLevel)?.description}
-                    </p>
+                  <div className="space-y-4 font-sans text-xs sm:text-sm">
+                    <div className="space-y-1.5">
+                      <span className="font-bold text-slate-800 text-[11px] uppercase tracking-wider block">
+                        Qué pasa:
+                      </span>
+                      <p className="text-slate-600 leading-relaxed">
+                        {pyramidLevels.find(l => l.level === activePyramidLevel)?.description}
+                      </p>
+                    </div>
                     
                     <div className="bg-slate-50 border border-slate-150 p-4 rounded-xl space-y-1.5">
-                      <span className="font-bold text-orange-700 text-[11px] uppercase tracking-wider block">
-                        🛡 Acción de ruptura preventiva:
+                      <span className="font-bold text-orange-700 text-[11px] uppercase tracking-wider block flex items-center gap-1.5">
+                        🛡 Cómo frenarlo a tiempo:
                       </span>
                       <p className="text-slate-700 leading-relaxed italic">
                         {pyramidLevels.find(l => l.level === activePyramidLevel)?.prevention}
@@ -816,12 +942,14 @@ export default function HateSpeech() {
                 let borderStyle = 'border-slate-200 bg-white hover:bg-slate-50';
                 if (showFeedback) {
                   if (opt.correct) {
-                    borderStyle = 'border-orange-500 bg-orange-50/30 text-orange-900';
+                    borderStyle = 'border-emerald-500 bg-emerald-50/80 text-emerald-950 ring-2 ring-emerald-500/20 font-medium shadow-sm';
                   } else if (isSelected) {
-                    borderStyle = 'border-rose-500 bg-rose-50/30 text-rose-900';
+                    borderStyle = 'border-rose-500 bg-rose-50/80 text-rose-950 ring-2 ring-rose-500/20 shadow-sm';
+                  } else {
+                    borderStyle = 'border-slate-200 bg-slate-50 text-slate-400 opacity-60';
                   }
                 } else if (isSelected) {
-                  borderStyle = 'border-emerald-600 bg-emerald-50/30 text-indigo-950';
+                  borderStyle = 'border-emerald-600 bg-emerald-50/30 text-emerald-950';
                 }
 
                 return (
@@ -829,22 +957,22 @@ export default function HateSpeech() {
                     key={opt.id}
                     disabled={showFeedback}
                     onClick={() => handleSelectOption(opt.id)}
-                    className={`w-full p-4 rounded-xl border text-left font-sans text-xs sm:text-sm transition-all flex items-start gap-3 outline-none ${borderStyle} ${showFeedback ? '' : 'cursor-pointer'}`}
+                    className={`w-full p-4 rounded-xl border text-left font-sans text-xs sm:text-sm transition-all flex items-start gap-3 outline-none ${borderStyle} ${showFeedback ? '' : 'cursor-pointer hover:border-slate-300'}`}
                     id={`exercise-opt-btn-${opt.id}`}
                   >
                     <div className="mt-0.5 shrink-0">
                       {showCheckSymbol && (
-                        <div className="w-5 h-5 rounded-full bg-orange-500 text-white flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs">
                           <Check className="w-3.5 h-3.5" />
                         </div>
                       )}
                       {showCrossSymbol && (
-                        <div className="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-xs">
                           <X className="w-3.5 h-3.5" />
                         </div>
                       )}
                       {!showCheckSymbol && !showCrossSymbol && (
-                        <div className={`w-5 h-5 rounded-full border text-[10px] font-sans font-bold flex items-center justify-center ${isSelected ? 'border-emerald-600 bg-emerald-600 text-white' : 'border-slate-300 text-slate-500'}`}>
+                        <div className={`w-5 h-5 rounded-full border text-[10px] font-sans font-bold flex items-center justify-center ${isSelected ? 'border-slate-700 bg-slate-700 text-white' : 'border-slate-300 text-slate-500'}`}>
                           {opt.id}
                         </div>
                       )}
@@ -857,16 +985,19 @@ export default function HateSpeech() {
 
             {/* Feedback Detail */}
             {showFeedback && selectedOption !== null && (
-              <div id="workshop-feedback-panel" className="animate-fadeIn p-4 rounded-xl border space-y-2 bg-white scroll-mt-24"
-                style={{
-                  borderColor: exercises[activeExercise].options.find(o => o.id === selectedOption)?.correct ? '#14b8a6' : '#f43f5e'
-                }}
+              <div id="workshop-feedback-panel" className={`animate-fadeIn p-4 rounded-xl border space-y-2 bg-white scroll-mt-24 ${exercises[activeExercise].options.find(o => o.id === selectedOption)?.correct ? 'border-emerald-300 bg-emerald-50/40' : 'border-rose-300 bg-rose-50/40'}`}
               >
                 <div className="flex items-center gap-2">
                   {exercises[activeExercise].options.find(o => o.id === selectedOption)?.correct ? (
-                    <span className="text-xs font-mono font-bold text-orange-700 uppercase tracking-widest bg-orange-100 px-2 py-0.5 rounded border border-orange-200">Enfoque Correcto</span>
+                    <span className="text-xs font-mono font-bold text-emerald-800 uppercase tracking-widest bg-emerald-100 px-2.5 py-0.5 rounded-md border border-emerald-300 inline-flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-emerald-700" />
+                      Enfoque Correcto
+                    </span>
                   ) : (
-                    <span className="text-xs font-mono font-bold text-rose-700 uppercase tracking-widest bg-rose-100 px-2 py-0.5 rounded border border-rose-200">Enfoque a mejorar</span>
+                    <span className="text-xs font-mono font-bold text-rose-800 uppercase tracking-widest bg-rose-100 px-2.5 py-0.5 rounded-md border border-rose-300 inline-flex items-center gap-1.5">
+                      <X className="w-3.5 h-3.5 text-rose-700" />
+                      Enfoque a mejorar
+                    </span>
                   )}
                 </div>
                 <p className="font-sans text-xs sm:text-sm text-slate-700 leading-relaxed">
