@@ -17,92 +17,92 @@ interface AuditQuestion {
 const ALL_QUESTIONS: AuditQuestion[] = [
   {
     id: 1,
-    text: '¿Cómo se aborda la presencia de colectivos diversos en tu programación docente?',
+    text: 'A la hora de hacer trabajos en grupo, ¿cómo se suelen organizar los equipos en tu clase?',
     options: [
-      { text: 'Se reduce a celebrar fechas señaladas, trajes típicos o gastronomía de forma esporádica.', score: 0, tip: 'Cuidado con el "Multiculturalismo Folclórico". Reducir la cultura a platos típicos petrifica los estereotipos.' },
-      { text: 'Se mencionan como ejemplos puntuales cuando encaja en alguna asignatura específica de geografía o tutoría.', score: 1, tip: 'Es un avance, pero sigue considerándose un "anexo" prescindible.' },
-      { text: 'Se integran sus aportes científicos, literarios e históricos de forma sistémica y natural, decolonizando el saber.', score: 2, tip: '¡Excelente! Así se enseña que la ciencia, las matemáticas y el arte son creaciones transnacionales simétricas.' }
+      { text: 'Dejo que se junten libremente con sus amigos de siempre para evitar roces y quejas.', score: 0, tip: 'Dejar libertad absoluta suele reforzar que se formen grupos cerrados y que el alumnado nuevo o más tímido quede aislado.' },
+      { text: 'A veces les sugiero que cambien de pareja, pero si insisten mucho les dejo elegir.', score: 1, tip: 'Es un buen intento, pero sin una pauta clara los grupos acaban siendo los mismos. Conviene fijar rotaciones naturales.' },
+      { text: 'Diseño yo los grupos combinando diferentes habilidades y perfiles, rotándolos a lo largo del curso.', score: 2, tip: '¡Excelente! Trabajar en equipo con compañeros distintos es la forma más directa de romper prejuicios y hacer nuevas amistades.' }
     ]
   },
   {
     id: 2,
-    text: '¿Se analizan críticamente las asimetrías de poder (privilegios, estatus legal, racismo)?',
+    text: 'Si escuchas en el aula una burla o comentario despectivo sobre el acento o el origen de alguien, ¿cómo actúas?',
     options: [
-      { text: 'No, preferimos centrar el foco en valores alegres y abstractos de tolerancia para evitar tensiones políticas.', score: 0, tip: 'La tolerancia abstracta perpetúa las desigualdades silenciadas.' },
-      { text: 'Se reflexiona sobre la empatía general y el racismo, pero sin profundizar en las barreras sistémicas del día a día.', score: 1, tip: 'El alumnado debe aprender a visibilizar y cuestionar el racismo institucional.' },
-      { text: 'Se examinan de frente, mediante dinámicas físicas o socioafectivas, los puntos de partida desiguales.', score: 2, tip: '¡Es la espina dorsal de la interculturalidad crítica! Capacitas al alumnado como agentes transformadores.' }
+      { text: 'Si parece una broma entre amigos no le doy mayor importancia para no cortar la lección.', score: 0, tip: 'Dejar pasar esas "bromas" transmite la idea de que reírse del origen o forma de hablar de un compañero está normalizado.' },
+      { text: 'Echo una reprimenda rápida en el momento, pido disculpas y continúo enseguida con la clase.', score: 1, tip: 'Cortar la falta es necesario, pero una disculpa forzada sin debate no evita que se repita en el recreo o en los pasillos.' },
+      { text: 'Paro la clase unos minutos para hablar con naturalidad de lo ocurrido y reflexionar sobre el peso de esas palabras.', score: 2, tip: '¡Gran práctica docente! Aprovechar el momento para dialogar ayuda a que todo el grupo comprenda el impacto real de esos comentarios.' }
     ]
   },
   {
     id: 3,
-    text: '¿Qué tipo de protagonismo asume el alumnado de diversas raíces étnicas en clase?',
+    text: 'Llega al aula un estudiante nuevo que apenas domina el idioma del colegio. ¿Qué sueles hacer?',
     options: [
-      { text: 'Papel pasivo o asimilado, donde se espera que actúen conforme a moldes o normas nacionales sin mayor relieve.', score: 0, tip: 'Esto promueve el "Asimilacionismo". Anula la autoestima identitaria.' },
-      { text: 'Se les pide que hablen o actúen como "portavoces oficiales" de su supuesto país de origen.', score: 1, tip: 'Cuidado con encasillarlos. Obligar a un alumno a "exhibirse" por su origen genera estrés.' },
-      { text: 'Son partícipes activos y colíderes que codiseñan proyectos, cooperando en pie de igualdad sin ser encasillados.', score: 2, tip: '¡Espléndido! Se crea un "tercer espacio" común donde las identidades fluyen.' }
+      { text: 'Le doy fichas sencillas individuales para que vaya haciendo lo que pueda mientras atiendo al resto.', score: 0, tip: 'Tenerle haciendo tareas aisladas al fondo de la clase frena su aprendizaje y aumenta su sensación de soledad.' },
+      { text: 'Intento hablarle más despacio y le pido a algún compañero que le traduzca cuando no entiende algo.', score: 1, tip: 'Es una ayuda práctica, pero conviene apoyarse también en imágenes, apoyos visuales y tareas colaborativas guiadas.' },
+      { text: 'Le asigno un compañero guía ("tutor entre iguales"), uso apoyos visuales y valoro también palabras de su lengua materna.', score: 2, tip: '¡Perfecto! El apoyo entre iguales y validar su idioma de origen acelera la adaptación y mejora enormemente su autoestima.' }
     ]
   },
   {
     id: 4,
-    text: '¿Cómo involucras a las familias provenientes de entornos vulnerables o minorizados?',
+    text: 'Cuando pones ejemplos, lecturas o personajes en tu asignatura, ¿qué referentes utilizas?',
     options: [
-      { text: 'Apenas asisten ni se involucran por barreras horarias, lingüísticas o falta de comunicación.', score: 0, tip: 'La escuela debe dar el primer paso y flexibilizar sus formatos.' },
-      { text: 'Se les invita a asistir de manera puntual a eventos lúdicos escolares, festivales del centro o ferias gastronómicas.', score: 1, tip: 'Tienen presencia pero sin protagonismo escolar efectivo.' },
-      { text: 'Se articulan desayunos pedagógicos y saberes compartidos integrados en el currículo.', score: 2, tip: '¡Perfecto! Cuando la herencia familiar recibe reconocimiento formal, mejora la vinculación.' }
+      { text: 'Únicamente los ejemplos y figuras que vienen por defecto en el libro de texto oficial.', score: 0, tip: 'Los libros tradicionales a menudo olvidan aportaciones valiosas de muchas culturas. Buscar otros ejemplos amplía la mirada de todos.' },
+      { text: 'Alguna vez comento algo de otros países si coincide con algún día especial o festivo del calendario.', score: 1, tip: 'Está bien como detalle puntual, pero resulta mucho más enriquecedor si se nota de forma natural durante todo el curso.' },
+      { text: 'Procuro incluir a científicos, escritoras o figuras históricas de diferentes culturas en el temario ordinario.', score: 2, tip: '¡Genial! Mostrar que personas de todos los orígenes han contribuido a la ciencia, la historia o el arte inspira a toda la clase.' }
     ]
   },
   {
     id: 5,
-    text: '¿Existe una evaluación holística de las actitudes y asunción del conflicto en el centro?',
+    text: 'Una familia de origen extranjero no acude a las tutorías ni responde notas escritas. ¿Qué haces?',
     options: [
-      { text: 'No, solo se evalúan contenidos teóricos tradicionales y se sanciona disciplinariamente la mala conducta.', score: 0, tip: 'El examen de contenidos fomenta el aprendizaje memorístico, ignorando el factor relacional.' },
-      { text: 'Se valoran las dinámicas de grupo, pero no hay espacios fijos de descompresión y debates simétricos.', score: 1, tip: 'Es conveniente contar con protocolos fijos estructurados para la resolución de conflictos.' },
-      { text: 'Contamos con asambleas ordinarias de debate reflexivo y dinámicas activas donde el conflicto se aborda pedagógicamente.', score: 2, tip: '¡Brillante! El conflicto se canaliza como material de crecimiento ético mutuo.' }
+      { text: 'Asumo que no tienen interés en el colegio y me centro en las familias que sí participan.', score: 0, tip: 'Cuidado con prejuzgar: a menudo hay turnos laborales muy duros, miedo a la burocracia o dificultad con el idioma escrito.' },
+      { text: 'Insisto enviando más avisos por escrito o por la app del centro esperando que alguien conteste.', score: 1, tip: 'Si el canal escrito no funciona por barreras de idioma o tiempo, repetir el mismo método rara vez da resultado.' },
+      { text: 'Busco alternativas: una llamada breve, notas con lenguaje sencillo o apoyarme en mediadores y traductores del centro.', score: 2, tip: '¡Exacto! Acercar posturas con canales accesibles y empatía suele cambiar radicalmente la relación y confianza con las familias.' }
     ]
   },
   {
     id: 6,
-    text: 'Cuando surge un incidente discriminatorio o un comentario sesgado en el aula, ¿cuál es tu reacción habitual?',
+    text: 'En el aula conviven alumnos con diferentes tradiciones o religiones (Navidad, Ramadán, etc.). ¿Cómo lo tratas?',
     options: [
-      { text: 'Lo ignoro si es sutil o aplico un castigo rápido si es grave, para no perder tiempo de clase.', score: 0, tip: 'Silenciar el problema valida la agresión ante el resto del grupo.' },
-      { text: 'Detengo la clase un momento para decir que "eso no está bien" y pido disculpas formales.', score: 1, tip: 'Las disculpas forzadas no generan reflexión profunda ni cambio de actitud.' },
-      { text: 'Pauso la clase y utilizo el incidente como momento pedagógico (micro-debate) para analizar el peso de las palabras.', score: 2, tip: '¡Magistral! Convertir la crisis en currículo es la esencia de la docencia crítica.' }
+      { text: 'Hacemos lo de siempre de la cultura mayoritaria; si alguien tiene otra costumbre, que la celebre en su casa.', score: 0, tip: 'Hacer como si todos fueran iguales deja fuera a una parte de la clase y pierde la oportunidad de educar en convivencia real.' },
+      { text: 'Les felicitamos el día de su fiesta si nos acordamos, pero sin cambiar ninguna actividad del aula.', score: 1, tip: 'Es un detalle respetuoso, aunque podemos dar un paso más y aprovecharlo como curiosidad cultural para toda la clase.' },
+      { text: 'Aprovechamos para que compartan cómo lo celebran en familia y adaptamos ritmos si alguien está en ayuno o fiesta.', score: 2, tip: '¡Fantástico! Conocer las costumbres de los compañeros desmonta mitos y crea un clima de empatía y respeto mutuo.' }
     ]
   },
   {
     id: 7,
-    text: '¿Qué referentes literarios, audiovisuales o históricos sueles emplear en tus explicaciones?',
+    text: 'En excursiones, meriendas o talleres surgen restricciones alimentarias (halal, vegetarianas, alergias). ¿Cómo reaccionas?',
     options: [
-      { text: 'Principalmente el canon occidental tradicional; es lo que marcan los libros de texto.', score: 0, tip: 'El currículo eurocéntrico deja sin espejos donde mirarse a gran parte del alumnado.' },
-      { text: 'El canon tradicional, pero dedico algún apartado o lectura optativa a autores/as de otras culturas.', score: 1, tip: 'Es un avance, pero sigue transmitiendo que esa diversidad es "alternativa" u opcional.' },
-      { text: 'He reconstruido mis materiales para que la pluralidad de voces sea estructural, no un anexo.', score: 2, tip: 'La pluralidad estructural enseña que el conocimiento universal tiene muchos acentos.' }
+      { text: 'Me parece una complicación innecesaria; quien no pueda comer el menú estándar que se traiga su comida.', score: 0, tip: 'Apartar al que come diferente en los momentos de ocio o comida genera rechazo y sensación de no pertenecer al grupo.' },
+      { text: 'Aviso a cocina o secretaría para que preparen una bandeja aparte, sin darle más vueltas.', score: 1, tip: 'Resuelve el tema práctico, pero es una buena ocasión para explicar con normalidad la diversidad gastronómica y cultural.' },
+      { text: 'Aseguro que todos tengan opciones apetecibles e iguales y explico a la clase con normalidad por qué cada uno come distinto.', score: 2, tip: '¡Muy bien! Compartir la mesa respetando a cada uno es una de las lecciones de convivencia más potentes en la escuela.' }
     ]
   },
   {
     id: 8,
-    text: '¿Cómo gestionas las diferencias lingüísticas (alumnado que no domina el idioma vehicular)?',
+    text: 'Cuando se habla de un país o cultura concreta, ¿cómo interactúas con un alumno que tiene raíces en ese lugar?',
     options: [
-      { text: 'Se les deriva a aulas de enlace o apoyo y se espera que se integren cuando aprendan el idioma.', score: 0, tip: 'La segregación lingüística prolongada genera aislamiento social severo.' },
-      { text: 'Están en el aula ordinaria, intento simplificar mis explicaciones y uso algo de apoyo visual.', score: 1, tip: 'Bien, pero sigues enfocándolo como un déficit a compensar.' },
-      { text: 'Fomento la ayuda entre iguales, valoro sus lenguas maternas como riqueza y uso metodologías visuales cooperativas.', score: 2, tip: '¡Excelente! Validar su lengua materna acelera el aprendizaje del idioma vehicular.' }
+      { text: 'Le pongo de pie delante de todos para que nos explique cómo se vive en "su país".', score: 0, tip: 'Forzar a un niño a ser el "portavoz" de toda una cultura puede hacerle sentir expuesto, incómodo o señalado ante el grupo.' },
+      { text: 'No le pregunto nada en absoluto para no hacerle pasar vergüenza.', score: 1, tip: 'Es prudente, pero a veces el alumno querría aportar si se le da la oportunidad de forma cercana y voluntaria.' },
+      { text: 'Le pregunto primero en privado o le invito a participar de forma voluntaria, sin presiones ni dar nada por hecho.', score: 2, tip: '¡Sensibilidad docente impecable! Dar la opción sin presionar respeta su ritmo personal y valida sus experiencias si desea compartirlas.' }
     ]
   },
   {
     id: 9,
-    text: '¿Cómo abordas el tema de las religiones o creencias en el entorno escolar?',
+    text: 'Dos estudiantes de diferentes orígenes discuten acaloradamente tras un juego en el recreo. ¿Cómo intervienes?',
     options: [
-      { text: 'No se habla de ello; asumimos un calendario y rutinas hegemónicas (Navidad, etc.) sin adaptaciones.', score: 0, tip: 'La "neutralidad" aparente a menudo impone la cultura mayoritaria por defecto.' },
-      { text: 'Permitimos ausencias justificadas por festividades de otras religiones, pero no se integran en la vida del aula.', score: 1, tip: 'La tolerancia pasiva respeta el derecho, pero pierde la oportunidad de conocimiento mutuo.' },
-      { text: 'Invisibilizamos la jerarquía: felicitamos y aprendemos de las diversas festividades y adaptamos ritmos (ej. Ramadán).', score: 2, tip: '¡Fantástico! Flexibilizar el ritmo escolar ante realidades diversas es equidad real.' }
+      { text: 'Les pongo un castigo o parte a los dos por igual y les mando a su sitio para zanjar la discusión.', score: 0, tip: 'Castigar sin escuchar qué ha pasado deja la rabia guardada y el conflicto se repetirá en la siguiente esquina.' },
+      { text: 'Les obligo a darse la mano y pedirse perdón en el momento para cerrar el problema rápidamente.', score: 1, tip: 'Las paces forzadas por orden del profesor no resuelven el malentendido ni enseñan a ponerse en el lugar del otro.' },
+      { text: 'Me siento con los dos con calma, escucho ambas versiones y les guío para que entiendan qué ha ofendido al otro.', score: 2, tip: '¡Mediación de diez! Enseñar a resolver discusiones hablando y escuchando es una de las competencias más valiosas para la vida.' }
     ]
   },
   {
     id: 10,
-    text: 'Frente a la formación de "guetos" o grupos cerrados en el patio, ¿qué papel juegas?',
+    text: 'Observas que en los recreos los estudiantes tienden a formar pandillas cerradas por origen o idioma. ¿Qué haces?',
     options: [
-      { text: 'Ninguno. El patio es tiempo libre y los estudiantes tienen derecho a juntarse con quien quieran.', score: 0, tip: 'La segregación espacial suele reflejar miedos y prejuicios que la escuela debe mediar.' },
-      { text: 'Les sugiero de vez en cuando que se mezclen, pero rara vez intervengo de forma directiva.', score: 1, tip: 'Las sugerencias verbales no suelen superar la comodidad de los grupos afines.' },
-      { text: 'Diseño agrupaciones cooperativas rotativas en clase que acaban rompiendo barreras afectivas también en el patio.', score: 2, tip: '¡Exacto! El roce estructurado y positivo en el aula destruye muros fuera de ella.' }
+      { text: 'Nada, el recreo es tiempo libre y cada cual tiene derecho a juntarse con quien le apetezca.', score: 0, tip: 'El recreo es libre, pero si siempre se aíslan los mismos suele haber miedos o falta de puentes que el centro puede apoyar.' },
+      { text: 'Me acerco y les digo de palabra que deberían jugar todos juntos al fútbol o charlar más.', score: 1, tip: 'La intención es buena, pero las sugerencias verbales rara vez rompen la inercia de los grupos ya hechos.' },
+      { text: 'Fomento en el centro juegos cooperativos en los recreos y dinámicas en clase que faciliten que jueguen juntos fuera.', score: 2, tip: '¡Estrategia brillante! Si en clase aprenden a colaborar y reírse juntos, las barreras del patio se caen solas.' }
     ]
   }
 ];
@@ -110,6 +110,7 @@ const ALL_QUESTIONS: AuditQuestion[] = [
 export default function InclusiveAudit() {
   const [activeQuestions, setActiveQuestions] = useState<AuditQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [selectedOptionIndices, setSelectedOptionIndices] = useState<Record<number, number>>({});
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [showResults, setShowResults] = useState<boolean>(false);
 
@@ -136,6 +137,7 @@ export default function InclusiveAudit() {
 
     setActiveQuestions(questionsWithOptionsShuffled);
     setAnswers({});
+    setSelectedOptionIndices({});
     setCurrentStep(0);
     setShowResults(false);
   };
@@ -144,10 +146,15 @@ export default function InclusiveAudit() {
     startNewAudit();
   }, []);
 
-  const handleSelectOption = (score: number) => {
-    setAnswers({ ...answers, [currentStep]: score });
+  const handleSelectOption = (index: number, score: number) => {
+    if (selectedOptionIndices[currentStep] !== undefined) return;
+    setSelectedOptionIndices(prev => ({ ...prev, [currentStep]: index }));
+    setAnswers(prev => ({ ...prev, [currentStep]: score }));
+  };
+
+  const handleNextStep = () => {
     if (currentStep < activeQuestions.length - 1) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(prev => prev + 1);
       if (window.innerWidth < 1024) {
         setTimeout(() => {
           document.getElementById('inclusive-audit-box')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -175,27 +182,27 @@ export default function InclusiveAudit() {
   const getEvaluationRange = () => {
     if (totalScore <= 3) {
       return {
-        title: 'Asimilacionismo Inconsciente',
-        desc: 'Tu enfoque aún promueve que el alumnado se amolde forzadamente a la cultura dominante. Es común reducir la diversidad a folclore, silenciando desequilibrios reales de privilegios.',
+        title: 'Enfoque Tradicional (Con margen de mejora)',
+        desc: 'Tus clases funcionan con las rutinas habituales, pero todavía hay muchas oportunidades cotidianas para que la diversidad sume y evitar que las diferencias pasen desapercibidas o generen roces silenciosos.',
         color: 'text-rose-600 bg-rose-50 border-rose-200',
         barColor: 'bg-rose-500',
-        radarDetail: 'Recomendación crucial: Empieza por decolonizar el temario. No esperes a un "día puntual" e introduce dinámicas para detonar debates.'
+        radarDetail: 'Consejo práctico: Empieza por cosas sencillas del día a día: rota las parejas de trabajo en clase y aprovecha cualquier incidente espontáneo para charlar 5 minutos sobre respeto y convivencia.'
       };
     } else if (totalScore <= 7) {
       return {
-        title: 'Multiculturalismo Activo',
-        desc: '¡Buen punto de partida! Tu programación da la bienvenida a la diversidad, abriendo puertas a la empatía. Falta analizar con valentía las asimetrías y crear debates fijos.',
-        color: 'text-slate-600 bg-amber-50 border-amber-200',
-        barColor: 'bg-slate-500',
-        radarDetail: 'Recomendación: Atraviesa la marea del iceberg. Reta a tus alumnos a desenmascarar prejuicios con dinámicas sobre la brecha de oportunidades.'
+        title: 'Enfoque Abierto y Sensible (En buen camino)',
+        desc: '¡Buen punto de partida! Te preocupas por la convivencia y ya das pasos prácticos en clase. El siguiente reto es pasar de los gestos puntuales a dinámicas estructuradas que fomenten empatía y colaboración continua.',
+        color: 'text-slate-700 bg-amber-50 border-amber-200',
+        barColor: 'bg-amber-500',
+        radarDetail: 'Consejo práctico: Prueba a acercarte a las familias con canales más directos y organiza actividades cooperativas en clase que rompan las pandillas cerradas del recreo.'
       };
     } else {
       return {
-        title: 'Interculturalidad Crítica Avanzada',
-        desc: '¡Espectacular! Tu programación es un modelo de justicia social y empoderamiento mutuo de identidades. Tratas el conflicto como combustible pedagógico inestimable.',
+        title: 'Aula Inclusiva y Dialogante (Excelente práctica)',
+        desc: '¡Enhorabuena! Gestionas el aula con empatía, cercanía y sentido pedagógico. Conviertes las diferencias en un motor de aprendizaje cooperativo y creas un espacio seguro donde nadie sobra.',
         color: 'text-emerald-700 bg-emerald-50 border-emerald-200',
         barColor: 'bg-emerald-600',
-        radarDetail: 'Recomendación: Tu aula ya teje puentes reales. ¡Comparte tus propuestas en la pestaña "Contacto" para inspirar a otros docentes!'
+        radarDetail: 'Consejo práctico: Tu forma de trabajar en el aula es un modelo inspirador. ¡Anímate a compartir tus dinámicas en la sección de Contacto para inspirar a otros docentes!'
       };
     }
   };
@@ -253,18 +260,118 @@ export default function InclusiveAudit() {
           </div>
 
           <div className="grid grid-cols-1 gap-3">
-            {activeQuestions[currentStep].options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => handleSelectOption(opt.score)}
-                className="w-full text-left p-4 bg-white hover:bg-orange-50/20 border border-slate-200 hover:border-orange-500 rounded-2xl transition-all font-sans text-xs sm:text-sm text-slate-700 leading-relaxed group outline-none focus:ring-2 focus:ring-orange-500/30 flex justify-between items-center gap-3"
-                id={`audit-opt-${currentStep}-${i}`}
-              >
-                <span>{opt.text}</span>
-                <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-orange-600 group-hover:translate-x-1 transition-all shrink-0" />
-              </button>
-            ))}
+            {activeQuestions[currentStep].options.map((opt, i) => {
+              const isAnswered = selectedOptionIndices[currentStep] !== undefined;
+              const isSelected = selectedOptionIndices[currentStep] === i;
+              const isBestOption = opt.score === 2;
+
+              let buttonStyles = "w-full text-left p-4 rounded-2xl transition-all font-sans text-xs sm:text-sm leading-relaxed border-2 flex flex-col gap-2.5 ";
+
+              if (!isAnswered) {
+                buttonStyles += "bg-white hover:bg-orange-50/25 border-slate-200 hover:border-orange-500 text-slate-700 cursor-pointer shadow-2xs hover:shadow-xs";
+              } else {
+                if (isSelected) {
+                  if (opt.score === 2) {
+                    buttonStyles += "bg-emerald-50/90 border-emerald-500 text-emerald-950 shadow-md ring-2 ring-emerald-500/20";
+                  } else if (opt.score === 1) {
+                    buttonStyles += "bg-amber-50/90 border-amber-500 text-amber-950 shadow-md ring-2 ring-amber-500/20";
+                  } else {
+                    buttonStyles += "bg-rose-50/90 border-rose-500 text-rose-950 shadow-md ring-2 ring-rose-500/20";
+                  }
+                } else if (isBestOption) {
+                  buttonStyles += "bg-emerald-50/40 border-emerald-400 text-emerald-900 border-dashed";
+                } else {
+                  buttonStyles += "bg-slate-50 border-slate-200 text-slate-400 opacity-60";
+                }
+              }
+
+              return (
+                <div key={i} className="flex flex-col">
+                  <button
+                    onClick={() => handleSelectOption(i, opt.score)}
+                    disabled={isAnswered}
+                    className={buttonStyles}
+                    id={`audit-opt-${currentStep}-${i}`}
+                  >
+                    <div className="flex justify-between items-start gap-3 w-full">
+                      <span className="font-medium text-left leading-relaxed">{opt.text}</span>
+                      {isAnswered && isSelected && (
+                        opt.score === 2 ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0 shadow-2xs">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            ¡Correcta! (+2)
+                          </span>
+                        ) : opt.score === 1 ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300 shrink-0 shadow-2xs">
+                            <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                            Parcial (+1)
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-300 shrink-0 shadow-2xs">
+                            <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
+                            Incorrecta (0)
+                          </span>
+                        )
+                      )}
+                      {isAnswered && !isSelected && isBestOption && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shrink-0">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                          Opción óptima
+                        </span>
+                      )}
+                      {!isAnswered && (
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-orange-600 shrink-0 mt-0.5" />
+                      )}
+                    </div>
+
+                    {/* Feedback rationale tip */}
+                    {isAnswered && isSelected && (
+                      <div className={`mt-1.5 p-3 rounded-xl text-xs leading-relaxed flex items-start gap-2.5 border ${
+                        opt.score === 2 
+                          ? 'bg-emerald-100/80 text-emerald-950 border-emerald-300' 
+                          : opt.score === 1 
+                          ? 'bg-amber-100/80 text-amber-950 border-amber-300' 
+                          : 'bg-rose-100/80 text-rose-950 border-rose-300'
+                      }`}>
+                        <Lightbulb className={`w-4 h-4 shrink-0 mt-0.5 ${
+                          opt.score === 2 ? 'text-emerald-700' : opt.score === 1 ? 'text-amber-700' : 'text-rose-700'
+                        }`} />
+                        <div>
+                          <strong className="block font-bold mb-0.5">
+                            {opt.score === 2 ? 'Fundamento pedagógico:' : opt.score === 1 ? 'Matiz clave:' : 'Alerta pedagógica:'}
+                          </strong>
+                          <span>{opt.tip}</span>
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              );
+            })}
           </div>
+
+          {/* Action button to advance once answered */}
+          {selectedOptionIndices[currentStep] !== undefined && (
+            <div className="pt-2 animate-fadeIn">
+              <button
+                onClick={handleNextStep}
+                className="w-full py-3.5 px-6 bg-orange-600 hover:bg-orange-700 text-white font-sans font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5 focus:ring-4 focus:ring-orange-500/20"
+                id="audit-next-btn"
+              >
+                {currentStep < activeQuestions.length - 1 ? (
+                  <>
+                    <span>Siguiente pregunta ({currentStep + 2} de {activeQuestions.length})</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>Ver Dictamen y Resultados Finales</span>
+                    <Award className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
+          )}
           
           <div className="flex justify-between items-center pt-2">
             <span className="text-[10px] font-mono text-slate-400 italic">Respuestas anónimas recopiladas localmente</span>
@@ -278,7 +385,7 @@ export default function InclusiveAudit() {
                     }, 100);
                   }
                 }}
-                className="text-xs font-sans font-bold text-orange-600 hover:underline"
+                className="text-xs font-sans font-bold text-orange-600 hover:underline cursor-pointer"
               >
                 ← Volver atrás
               </button>

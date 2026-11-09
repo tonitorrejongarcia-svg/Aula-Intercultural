@@ -261,17 +261,15 @@ export default function Conceptual() {
                 >
                   <div className="space-y-4 w-full">
                     {/* Header */}
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center justify-between w-full min-h-[22px]">
                       <span className="font-mono text-[9px] uppercase tracking-wider font-extrabold text-slate-400">
                         {item.conceptName}
                       </span>
-                      <span className={`px-2.5 py-0.5 rounded-full font-sans font-bold text-[9px] border uppercase ${
-                        isRevealed 
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
-                          : 'bg-rose-50 text-rose-800 border-rose-200'
-                      }`}>
-                        {isRevealed ? 'REALIDAD REVELADA' : 'FASE: MITO'}
-                      </span>
+                      {isRevealed && (
+                        <span className="px-2.5 py-0.5 rounded-full font-sans font-bold text-[9px] border uppercase bg-emerald-50 text-emerald-800 border-emerald-200 animate-fadeIn">
+                          Realidad revelada
+                        </span>
+                      )}
                     </div>
 
                     {/* Content change based on click state with smooth transition styling */}

@@ -381,10 +381,10 @@ export default function App() {
                       </div>
                     </li>
                     <li className="flex items-start gap-2.5 rounded-xl bg-slate-50/50 p-3 border border-slate-100">
-                      <span className="text-rose-500 font-bold text-sm leading-none mt-0.5">⏱</span>
+                      <span className="text-emerald-600 font-bold text-sm leading-none mt-0.5">🎯</span>
                       <div>
-                        <strong className="text-slate-900 block mb-0.5">Cronómetro Integrado</strong>
-                        <span>Controla las fases de juego sin perder el ritmo ni requerir apps auxiliares o interrupciones.</span>
+                        <strong className="text-slate-900 block mb-0.5">Dinámicas Guiadas Paso a Paso</strong>
+                        <span>Fases estructuradas, objetivos pedagógicos y preguntas de reflexión listas para el aula.</span>
                       </div>
                     </li>
                     <li className="flex items-start gap-2.5 rounded-xl bg-slate-50/50 p-3 border border-slate-100">

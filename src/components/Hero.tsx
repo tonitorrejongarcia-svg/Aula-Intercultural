@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { BookOpen, Sparkles, Clock, Users, ArrowRight, Lightbulb, HeartHandshake } from 'lucide-react';
+import { BookOpen, Sparkles, Users, ArrowRight, Lightbulb, HeartHandshake } from 'lucide-react';
 
 interface HeroProps {
   setActiveTab: (tab: string) => void;
