@@ -14,8 +14,53 @@
     <meta property="og:title" content="Aula Intercultural" />
     <meta property="og:description" content="Recursos didácticos, dinámicas interactivas y material conceptual sobre Educación Intercultural para docentes de todas las etapas (Infantil, Primaria, Secundaria)." />
     <script>
-      // Suppress benign Vite WebSocket disconnect notices in iframe preview
+      // Mock Vite HMR WebSocket so that @vite/client in Cloud Run iframe never fails with "WebSocket closed without opened"
       (function() {
+        if (typeof window !== 'undefined' && window.WebSocket) {
+          var NativeWebSocket = window.WebSocket;
+          function ViteHmrWebSocket(url, protocols) {
+            if (protocols === 'vite-hmr' || (typeof url === 'string' && (url.indexOf('token=') !== -1 || url.indexOf('24678') !== -1))) {
+              this.url = url;
+              this.readyState = 1;
+              this.listeners = {};
+              var self = this;
+              setTimeout(function() {
+                if (self.listeners['open']) {
+                  self.listeners['open'].forEach(function(cb) { cb({}); });
+                }
+              }, 0);
+            } else {
+              return new NativeWebSocket(url, protocols);
+            }
+          }
+          ViteHmrWebSocket.prototype.addEventListener = function(event, callback) {
+            if (!this.listeners) this.listeners = {};
+            if (!this.listeners[event]) this.listeners[event] = [];
+            this.listeners[event].push(callback);
+            if (event === 'open' && this.readyState === 1) {
+              setTimeout(function() { callback({}); }, 0);
+            }
+          };
+          ViteHmrWebSocket.prototype.removeEventListener = function(event, callback) {
+            if (!this.listeners || !this.listeners[event]) return;
+            this.listeners[event] = this.listeners[event].filter(function(cb) { return cb !== callback; });
+          };
+          ViteHmrWebSocket.prototype.send = function() {};
+          ViteHmrWebSocket.prototype.close = function() {
+            this.readyState = 3;
+          };
+          ViteHmrWebSocket.OPEN = 1;
+          ViteHmrWebSocket.CONNECTING = 0;
+          ViteHmrWebSocket.CLOSING = 2;
+          ViteHmrWebSocket.CLOSED = 3;
+          ViteHmrWebSocket.prototype.OPEN = 1;
+          ViteHmrWebSocket.prototype.CONNECTING = 0;
+          ViteHmrWebSocket.prototype.CLOSING = 2;
+          ViteHmrWebSocket.prototype.CLOSED = 3;
+
+          window.WebSocket = ViteHmrWebSocket;
+        }
+
         var origConsoleError = console.error;
         console.error = function() {
           var firstArg = arguments.length > 0 ? String(arguments[0]) : '';
@@ -25,19 +70,21 @@
           }
           return origConsoleError.apply(console, arguments);
         };
+
+        window.addEventListener('error', function (e) {
+          if (e && e.message && (e.message.indexOf('WebSocket') !== -1 || e.message.indexOf('[vite]') !== -1)) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+          }
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+          var reasonStr = (e && e.reason) ? String(e.reason.message || e.reason) : '';
+          if (reasonStr.indexOf('WebSocket') !== -1 || reasonStr.indexOf('[vite]') !== -1) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+          }
+        });
       })();
-      window.addEventListener('error', function (e) {
-        if (e && e.message && (e.message.indexOf('WebSocket') !== -1 || e.message.indexOf('[vite]') !== -1)) {
-          e.stopImmediatePropagation();
-        }
-      });
-      window.addEventListener('unhandledrejection', function (e) {
-        var reasonStr = (e && e.reason) ? String(e.reason.message || e.reason) : '';
-        if (reasonStr.indexOf('WebSocket') !== -1 || reasonStr.indexOf('[vite]') !== -1) {
-          e.stopImmediatePropagation();
-          e.preventDefault();
-        }
-      });
     </script>
   </head>
   <body>

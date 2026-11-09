@@ -136,25 +136,25 @@ export default function Conceptual() {
   const pillars = [
     {
       title: "1. Reconocimiento de la Diversidad",
-      description: "Supera la vieja máxima asimilacionista que abogaba por la 'neutralidad' o la homogeneidad. Reconocer la diversidad implica legitimar las distintas lenguas, procedencias e historias como tesoros comunitarios insustituibles en el aula.",
+      description: "Dejamos atrás la idea de que todos tienen que encajar en el mismo molde. Reconocer la diversidad significa darle un valor real a las diferentes lenguas, procedencias e historias de cada alumno, convirtiéndolas en una riqueza compartida para toda la clase.",
       icon: Users,
       academicQuote: "La identidad no se anula por la igualdad de derechos; se consolida en ella."
     },
     {
       title: "2. Justicia Social y Equidad",
-      description: "Combate la idea falaz de la meritocracia ciega. Reconoce activamente que existen abismos legales, prejuicios lingüísticos y barreras raciales de partida. Dispone recursos específicos para equilibrar las oportunidades efectivas de aprendizaje de todo el grupo.",
+      description: "Rompe con el mito de que \"todos parten exactamente desde el mismo punto\". Este pilar reconoce que existen barreras reales, prejuicios o dificultades de partida. Por eso, pone el foco en ofrecer los apoyos necesarios para que las oportunidades de aprender sean justas e iguales para todos.",
       icon: ShieldAlert,
       academicQuote: "Dar a todos lo mismo es igualdad; dar a cada uno lo que necesita para prosperar es justicia."
     },
     {
       title: "3. Diálogo Simétrico y Horizontal",
-      description: "Promueve relaciones donde ninguna cosmovisión se erige como dueña o jueza absoluta del saber. El aula se concibe como un foro inclusivo permanente centrado en el respeto mutuo, donde se desbaratan las relaciones jerárquicas coloniales de la ciencia tradicional.",
+      description: "Aquí nadie tiene la verdad absoluta ni una cultura superior a las demás. El aula se convierte en un espacio de conversación abierta y de respeto mutuo, donde todas las voces se escuchan y se valoran por igual, rompiendo con las jerarquías tradicionales.",
       icon: ArrowRightLeft,
       academicQuote: "El diálogo real no asimila al interlocutor; genera un tercer espacio compartido."
     },
     {
       title: "4. Transversalidad Curricular",
-      description: "Rechaza el modelo de 'añadir un anexo' temporal al temario escolar. Exige rehacer las unidades didácticas principales del curso (historia, literatura, matemáticas, ciencias) incorporando de raíz los aportes intelectuales de civilizaciones no occidentales.",
+      description: "No se trata de hacer una actividad aislada solo porque \"se acerque una fecha señalada\". Este pilar exige integrar la perspectiva intercultural de raíz en el día a día de las asignaturas (en historia, literatura, ciencias...), abriendo la mirada a aportes de todo el mundo.",
       icon: BookOpenCheck,
       academicQuote: "El saber escolar debe dejar de tener un único centro geográfico de validez."
     }

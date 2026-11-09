@@ -104,6 +104,141 @@ const ALL_QUESTIONS: AuditQuestion[] = [
       { text: 'Me acerco y les digo de palabra que deberían jugar todos juntos al fútbol o charlar más.', score: 1, tip: 'La intención es buena, pero las sugerencias verbales rara vez rompen la inercia de los grupos ya hechos.' },
       { text: 'Fomento en el centro juegos cooperativos en los recreos y dinámicas en clase que faciliten que jueguen juntos fuera.', score: 2, tip: '¡Estrategia brillante! Si en clase aprenden a colaborar y reírse juntos, las barreras del patio se caen solas.' }
     ]
+  },
+  {
+    id: 11,
+    text: 'Un alumno tiene un nombre extranjero que te cuesta pronunciar al pasar lista los primeros días. ¿Qué haces?',
+    options: [
+      { text: 'Le busco un apodo corto o castellanizo su nombre para que sea más fácil para todos.', score: 0, tip: 'El nombre es parte central de la identidad de un niño. Cambiárselo sin su consentimiento puede hacerle sentir que su origen estorba.' },
+      { text: 'Lo pronuncio como puedo rápidamente y paso al siguiente para no llamar la atención.', score: 1, tip: 'Aunque no quieras incomodar, pasar por alto la pronunciación correcta transmite cierto desinterés por quién es.' },
+      { text: 'Le pregunto con naturalidad cómo se pronuncia correctamente y practico hasta decirlo bien.', score: 2, tip: '¡Detalle crucial! Esforzarse por pronunciar bien su nombre transmite respeto, bienvenida y cercanía desde el primer día.' }
+    ]
+  },
+  {
+    id: 12,
+    text: 'Te enteras de que en el grupo de WhatsApp de la clase circulan memes o stickers burlándose de un compañero por su procedencia. ¿Cómo respondes?',
+    options: [
+      { text: 'No intervengo; lo que hagan fuera del horario escolar en sus teléfonos privados no es responsabilidad del centro.', score: 0, tip: 'El ciberacoso y las burlas en redes impactan directamente en el aula. Mirar a otro lado agrava la indefensión de la víctima.' },
+      { text: 'Pongo una queja al equipo directivo para que sancionen a los administradores del grupo.', score: 1, tip: 'La vía punitiva frena el síntoma de inmediato, pero no educa sobre el daño psicológico del acoso digital.' },
+      { text: 'Abro una sesión de tutoría sobre huella digital, ciberconvivencia y empatía, trabajando el impacto del humor dañino.', score: 2, tip: '¡Pedagogía preventiva excelente! Formar el pensamiento crítico ante los memes ayuda a que los propios compañeros frenen las faltas de respeto.' }
+    ]
+  },
+  {
+    id: 13,
+    text: 'Un alumno de familia migrante en situación económica precaria tiene dificultades al inicio de curso. ¿Qué expectativas te planteas?',
+    options: [
+      { text: 'Asumo que bastante tiene con aprobar raspando y no le exijo demasiado para no frustrarle.', score: 0, tip: 'Bajar el listón por compasión limita su futuro. Las bajas expectativas del profesor se convierten en una profecía autocumplida.' },
+      { text: 'Le aplico las mismas exigencias sin contemplaciones; el que quiera salir adelante tiene que esforzarse igual.', score: 1, tip: 'Exigir sin acompañar ni entender su punto de partida desigual genera frustración y abandono escolar.' },
+      { text: 'Mantengo altas expectativas sobre su potencial, pero adapto los apoyos y refuerzos necesarios para que alcance su máximo.', score: 2, tip: '¡Confianza docente transformadora! Creer en su capacidad y darle herramientas personalizadas es la clave del éxito escolar.' }
+    ]
+  },
+  {
+    id: 14,
+    text: 'Una alumna comienza a llevar prendas o símbolos tradicionales (como hiyab) y notas miradas y cuchicheos en los pasillos. ¿Qué haces?',
+    options: [
+      { text: 'Le sugiero discretamente que evite prendas llamativas para que no se busque problemas con los compañeros.', score: 0, tip: 'Responsabilizar a la alumna de los prejuicios ajenos vulnera su libertad y refuerza la intolerancia del grupo.' },
+      { text: 'Ignoro los comentarios mientras no haya un insulto directo o una agresión física.', score: 1, tip: 'La hostilidad sutil también aísla y genera angustia en la alumna antes de que estalle un conflicto mayor.' },
+      { text: 'Abordo con normalidad la diversidad de vestimentas y símbolos en tutoría, promoviendo el respeto a las decisiones personales.', score: 2, tip: '¡Convivencia informada! Cuando se normaliza la diversidad con información rigurosa, los cuchicheos pierden toda su fuerza.' }
+    ]
+  },
+  {
+    id: 15,
+    text: 'Echas un vistazo a las paredes y pasillos de tu aula o centro educativo. ¿Qué mensajes e imágenes predominan?',
+    options: [
+      { text: 'Solo carteles con normas de disciplina, horarios oficiales y decoración genérica de papelería escolar.', score: 0, tip: 'Un entorno neutro o frío desaprovecha el poder del espacio visual para hacer que todos los alumnos se sientan representados y acogidos.' },
+      { text: 'Tenemos banderas del mundo o fotos de trajes típicos que pusimos para el Día de la Paz o alguna fiesta escolar.', score: 1, tip: 'Es un detalle colorido, pero sigue transmitiendo que la diversidad es una postal turística de días festivos.' },
+      { text: 'Carteles de bienvenida en varios idiomas, trabajos del alumnado sobre sus biografías y frases de autores universales diversos.', score: 2, tip: '¡Espacio educativo vivo! Un aula que refleja la pluralidad en sus paredes genera un sentido inmediato de pertenencia comunitaria.' }
+    ]
+  },
+  {
+    id: 16,
+    text: 'Dos alumnos conversan en su idioma materno durante el recreo o en voz baja en clase. ¿Cómo reaccionas?',
+    options: [
+      { text: 'Les prohíbo tajantemente hablar en otro idioma: "¡Aquí en el colegio solo se habla español!".', score: 0, tip: 'Prohibir su lengua materna genera humillación innecesaria. La lengua de origen no compite con el castellano; es parte de su afecto y cognición.' },
+      { text: 'Les pido que no lo hagan porque los demás pueden pensar que están hablando mal de ellos o criticando a alguien.', score: 1, tip: 'Proyectar sospechas sobre otro idioma alimenta la desconfianza infundada entre compañeros.' },
+      { text: 'Lo respeto con total naturalidad fuera de las explicaciones lectivas y muestro curiosidad por cómo se dicen palabras en su lengua.', score: 2, tip: '¡Hospitalidad lingüística ejemplar! Sentir que su lengua materna es valorada y no motivo de sospecha afianza su integración escolar.' }
+    ]
+  },
+  {
+    id: 17,
+    text: 'Un alumno no trae el material escolar básico, la ropa de deporte o el dinero para una excursión. ¿Cuál es tu enfoque?',
+    options: [
+      { text: 'Le pongo una falta o un punto negativo en su agenda cada día que viene sin el material pedido.', score: 0, tip: 'Castigar al menor por la precariedad económica de su familia genera vergüenza y no soluciona la falta de recursos.' },
+      { text: 'Le dejo material de mi propio estuche con cara de resignación y le digo que avise a sus padres una vez más.', score: 1, tip: 'Ayuda en lo inmediato, pero el tono de reproche puede hacerle sentir culpable de la situación de su hogar.' },
+      { text: 'Hablo discretamente con orientación o dirección para buscar vías de ayuda del centro (banco de libros, becas) sin señalarle.', score: 2, tip: '¡Equidad efectiva! Proteger la dignidad del alumno mientras se gestionan recursos del centro es pura justicia educativa.' }
+    ]
+  },
+  {
+    id: 18,
+    text: 'Al seleccionar un vídeo o cortometraje para reflexionar en tutoría, ¿qué tipo de historias y personajes eliges?',
+    options: [
+      { text: 'Los vídeos clásicos de valores genéricos donde todos los protagonistas son del mismo entorno cultural mayoritario.', score: 0, tip: 'Si los protagonistas siempre tienen el mismo perfil, el alumnado diverso nunca se ve reflejado en historias valiosas.' },
+      { text: 'Vídeos donde las personas migrantes siempre aparecen como víctimas desvalidas que necesitan caridad.', score: 1, tip: 'La mirada paternalista o compasiva reduce a colectivos enteros a personas indefensas, restándoles dignidad y capacidad de iniciativa.' },
+      { text: 'Historias donde personas diversas tienen iniciativa, resuelven problemas y aportan a su comunidad en pie de igualdad.', score: 2, tip: '¡Impecable! Mostrar referentes diversos como personas activas y capaces fortalece la autoestima y derriba la mirada compasiva.' }
+    ]
+  },
+  {
+    id: 19,
+    text: 'Un estudiante de otra cultura casi nunca levanta la mano ni opina en las asambleas o puestas en común. ¿Cómo lo interpretas?',
+    options: [
+      { text: 'Pienso que es desinteresado, tímido sin remedio o que no tiene nada que aportar al grupo.', score: 0, tip: 'El silencio a menudo no es desinterés, sino prudencia aprendida, respeto jerárquico a la autoridad del profesor o miedo al juicio lingüístico.' },
+      { text: 'Le obligo a hablar de improviso señalándole con el dedo para que "se suelte" ante toda la clase.', score: 1, tip: 'Forzar la exposición en frío ante todo el grupo suele disparar la ansiedad y bloquear aún más al alumno.' },
+      { text: 'Le ofrezco canales más cómodos: reflexionar primero en parejas, participar por escrito o hacerle preguntas cerradas y amables.', score: 2, tip: '¡Pedagogía respetuosa! Diseñar puentes graduales de participación permite que las voces más prudentes ganen confianza a su ritmo.' }
+    ]
+  },
+  {
+    id: 20,
+    text: 'Llega el momento de repartir cargos en clase (delegado, encargado de material, mediador de patio). ¿Cómo se asignan?',
+    options: [
+      { text: 'Suelen ser siempre los alumnos con mejor expediente y mayor facilidad de palabra los que asumen los cargos.', score: 0, tip: 'Concentrar los liderazgos en el alumnado más extrovertido refuerza jerarquías de prestigio y excluye a perfiles más discretos o minorizados.' },
+      { text: 'Por votación popular directa, aunque casi siempre ganan los mismos de la pandilla más numerosa.', score: 1, tip: 'La votación sin reflexión previa suele convertirse en un concurso de popularidad que margina a minorías.' },
+      { text: 'Establezco cargos rotativos obligatorios para que todos los alumnos asuman responsabilidades de liderazgo y servicio al grupo.', score: 2, tip: '¡Liderazgo democrático real! Dar a cada alumno la oportunidad de ser referente y cuidar del aula potencia su autonomía y sentido de comunidad.' }
+    ]
+  },
+  {
+    id: 21,
+    text: 'En una reunión de claustro un compañero dice: "Yo en clase trato a todos exactamente igual, no miro colores ni orígenes". ¿Qué opinas?',
+    options: [
+      { text: 'Estoy de acuerdo; diferenciar a los alumnos por su origen es la verdadera discriminación.', score: 0, tip: 'La falsa "ceguera al color" invisibiliza que no todos parten de las mismas oportunidades ni viven las mismas realidades fuera del colegio.' },
+      { text: 'Es una buena intención para evitar favoritismos, aunque a veces haya que tener paciencia con los que no saben el idioma.', score: 1, tip: 'Tratar a todos por igual es igualdad formal; dar a cada uno el apoyo que necesita para prosperar es verdadera justicia.' },
+      { text: 'Tratar con justicia exige reconocer la diversidad de puntos de partida y ofrecer apoyos diferentes para alcanzar metas comunes.', score: 2, tip: '¡Brillante claridad conceptual! La equidad no consiste en dar lo mismo a todos, sino en dar a cada uno lo que necesita para triunfar.' }
+    ]
+  },
+  {
+    id: 22,
+    text: 'Un libro de texto describe a ciertas regiones del mundo únicamente asociadas a pobreza, catástrofes o animales salvajes. ¿Qué haces?',
+    options: [
+      { text: 'Sigo el libro al pie de la letra; el currículo oficial es lo que entra en los exámenes y no tengo tiempo de corregirlo.', score: 0, tip: 'Transmitir visiones reduccionistas del mundo refuerza la idea errónea de que ciertos países solo son miseria y atraso.' },
+      { text: 'Menciono de pasada que "también hay ciudades modernas", pero sin profundizar en el tema.', score: 1, tip: 'Un comentario al vuelo se olvida rápido si no se confronta con datos y ejemplos visuales reales.' },
+      { text: 'Muestro imágenes de universidades, centros tecnológicos y arte contemporáneo de esas regiones para desmontar la mirada única.', score: 2, tip: '¡Mirada crítica universal! Desmontar el relato de la miseria crónica enseña a tu alumnado a mirar el mundo sin complejos de superioridad.' }
+    ]
+  },
+  {
+    id: 23,
+    text: 'Un alumno se ausenta de clase durante tres días porque su familia debe renovar documentación de residencia en otra ciudad. ¿Cómo reaccionas?',
+    options: [
+      { text: 'Le computo las faltas como injustificadas y le advierto que acumular ausencias bajará su nota de actitud.', score: 0, tip: 'La carrera de obstáculos burocrática de la Ley de Extranjería no es culpa del menor; penalizarle añade angustia a un proceso ya duro.' },
+      { text: 'Acepto el justificante sin más, pero no le doy facilidades para recuperar lo que se explicó en su ausencia.', score: 1, tip: 'El alumno se queda descolgado del ritmo de clase y acumula retraso académico por una causa ajena a su voluntad.' },
+      { text: 'Justifico la ausencia con comprensión, le preparo un resumen de tareas y le asigno un compañero de apoyo a su vuelta.', score: 2, tip: '¡Acompañamiento empático de diez! Ayudarle a reengancharse sin reproches amortigua el impacto del estrés administrativo en su aprendizaje.' }
+    ]
+  },
+  {
+    id: 24,
+    text: 'Escuchas a varios alumnos repetir frases oídas en redes o en casa: "Es que a ellos les dan todas las becas de comedor y a nosotros nada". ¿Qué haces?',
+    options: [
+      { text: 'Les mando callar de inmediato diciendo que "de política no se habla en el colegio".', score: 0, tip: 'Censurar el rumor sin rebatirlo con datos hace que los estudiantes crean que es una verdad incómoda que se les oculta.' },
+      { text: 'Digo que no es verdad de forma vaga, pero sin entrar en detalles numéricos.', score: 1, tip: 'Desmentir sin datos objetivos deja viva la sospecha del bulo entre el alumnado y en sus familias.' },
+      { text: 'Aprovecho la tutoría o la clase de matemáticas para explicar con transparencia cómo funcionan los baremos de renta pública para becas.', score: 2, tip: '¡Educación contra bulos magistral! Usar datos oficiales y criterios de renta desarma los prejuicios con pedagogía rigurosa y calma.' }
+    ]
+  },
+  {
+    id: 25,
+    text: 'Un grupo de alumnos justifica un mote despectivo diciendo: "¡Si a él no le importa, se ríe con nosotros y nos llevamos bien!". ¿Cómo intervienes?',
+    options: [
+      { text: 'Si el afectado sonríe y no se queja formalmente, doy por bueno que es una broma inocente entre amigos.', score: 0, tip: 'Muchas veces la víctima se ríe por pura autodefensa o miedo a ser excluida del grupo si protesta.' },
+      { text: 'Prohíbo decir ese mote en mi presencia, pero sin explicar las razones de fondo.', score: 1, tip: 'La prohibición formal solo desplaza el mote a los pasillos o a los chats donde el profesor no mira.' },
+      { text: 'Hablo a solas con el alumno aludido para saber cómo se siente de verdad y abordo con el grupo la diferencia entre reírse juntos y reírse de alguien.', score: 2, tip: '¡Cuidado emocional profundo! Crear un espacio seguro para expresar el malestar real y educar la empatía grupal erradica el acoso invisible.' }
+    ]
   }
 ];
 
