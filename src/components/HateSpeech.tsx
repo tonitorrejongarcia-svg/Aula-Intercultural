@@ -311,18 +311,18 @@ export default function HateSpeech() {
           </div>
 
           <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Box 1: Discurso de Odio (Hate Speech) */}
+            {/* Box 1: Discurso de Odio */}
             {(activeTab === 'all' || activeTab === 'speech') && (
               <div className="space-y-6 flex flex-col justify-between p-6 rounded-2xl bg-slate-50 border border-slate-150 animate-fadeIn">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-slate-600">
                     <MessageSquare className="w-5 h-5 shrink-0" />
                     <h4 className="font-sans font-black text-lg text-slate-900 uppercase tracking-tight text-[15px]">
-                      Discurso de Odio (Hate Speech)
+                      Discurso de Odio
                     </h4>
                   </div>
                   <p className="font-sans text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Expresión de carácter discriminatorio, propagación de estereotipos hostiles, burlas denigrantes o deshumanización sutil dirigidas a minorías protegidas. Aunque daña gravemente la dignidad humana y la convivencia pacífica, <strong className="text-slate-900">no siempre reúne las características penales para ser sancionado en un juzgado criminal</strong> debido a la colisión con el derecho a la libertad de expresión.
+                    Son comentarios, burlas, insultos sutiles, difusiones de estereotipos o mensajes que desprecian a ciertos colectivos o minorías. Aunque hacen mucho daño a la convivencia y a las personas, muchas veces se quedan en el terreno de lo social o verbal y no siempre acaban en un juzgado, ya que a menudo se escudan (y chocan) bajo el derecho a la libertad de expresión.
                   </p>
                   
                   <div className="space-y-2 pt-2">
@@ -358,7 +358,7 @@ export default function HateSpeech() {
                     </div>
                     <div className="p-2.5 bg-white rounded-lg border border-slate-200">
                       <strong className="text-slate-900 block mb-0.5">2. Reportar en plataformas</strong>
-                      Utiliza los canales internos de reporte (TikTok, Instagram, WhatsApp) bajo el motivo 'Hate speech' o 'Acoso'.
+                      Utiliza los canales internos de reporte (TikTok, Instagram, WhatsApp) bajo el motivo 'Discurso de odio' o 'Acoso'.
                     </div>
                     <div className="p-2.5 bg-white rounded-lg border border-slate-200">
                       <strong className="text-slate-900 block mb-0.5">3. Contranarrativa asertiva</strong>
@@ -373,18 +373,18 @@ export default function HateSpeech() {
               </div>
             )}
 
-            {/* Box 2: Delito de Odio (Hate Crime) */}
+            {/* Box 2: Delito de Odio */}
             {(activeTab === 'all' || activeTab === 'crime') && (
               <div className="space-y-6 flex flex-col justify-between p-6 rounded-2xl bg-rose-50/40 border border-rose-150 animate-fadeIn">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 text-rose-650">
                     <Scale className="w-5 h-5 shrink-0" />
                     <h4 className="font-sans font-black text-lg text-slate-900 uppercase tracking-tight text-[15px]">
-                      Delito de Odio (Hate Crime)
+                      Delito de Odio
                     </h4>
                   </div>
                   <p className="font-sans text-xs sm:text-sm text-slate-600 leading-relaxed">
-                    Acción delictiva tipificada en el <strong className="text-slate-950">Código Penal (ej: Art. 510, 511 o 512 en España)</strong> donde el autor selecciona intencionadamente a la víctima por su pertenencia (real o atribuida) a un grupo específico: etnia, origen nacional, religión, orientación sexual, género, enfermedad o discapacidad. Supone una vulneración directa de bienes jurídicos protegidos.
+                    Aquí ya se cruza la línea de la ley. Es una agresión, amenaza o acción ilegal castigada por el Código Penal en la que se ataca a alguien a propósito solo por lo que es: su origen, su raza, su religión, su orientación sexual, su discapacidad, etc. A diferencia del discurso, esto ya supone un delito grave contra la ley y los derechos fundamentales de la persona.
                   </p>
                   
                   <div className="space-y-2 pt-2">
@@ -446,13 +446,13 @@ export default function HateSpeech() {
                 La Cámara de Eco Algorítmica
               </span>
               <h3 className="font-sans font-black text-2xl md:text-3xl text-slate-900 tracking-tight">
-                El Ciberodio en Redes Sociales
+                El ciberodio en redes: un caldo de cultivo perfecto
               </h3>
             </div>
           </div>
           
           <p className="font-sans text-xs sm:text-sm text-slate-500 max-w-4xl leading-relaxed">
-            Las redes sociales no solo transportan el discurso de odio; actúan como catalizadores mecánicos. El anonimato percibido, el distanciamiento físico de la pantalla y los algoritmos diseñados para premiar la indignación moral y retener la atención del usuario crean un entorno fértil para la radicalización rápida de menores.
+            Las redes sociales no son solo un altavoz para el odio, sino que actúan como un acelerador. El falso anonimato, la distancia de estar detrás de una pantalla y unos algoritmos diseñados para premiar el enfado crean el terreno perfecto para que los menores se radicalicen sin apenas darse cuenta.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -462,7 +462,7 @@ export default function HateSpeech() {
               </div>
               <h4 className="font-sans font-extrabold text-sm text-slate-900 uppercase tracking-tight">Desinhibición Tóxica</h4>
               <p className="font-sans text-xs text-slate-600 leading-relaxed">
-                El efecto de pantalla disminuye la empatía inmediata. No ver la cara o el llanto de la víctima en tiempo real reduce el freno moral natural del agresor adolescente.
+                El escudo de la pantalla. Al no ver la cara ni la reacción de la otra persona en directo, se pierde la empatía. Es mucho más fácil decir barbaridades cuando no ves el daño real que provocas al otro lado.
               </p>
             </div>
 
@@ -472,7 +472,7 @@ export default function HateSpeech() {
               </div>
               <h4 className="font-sans font-extrabold text-sm text-slate-900 uppercase tracking-tight">Mecanización del Algoritmo</h4>
               <p className="font-sans text-xs text-slate-600 leading-relaxed">
-                El contenido extremista e intolerante genera oleadas de comentarios de confrontación. Los algoritmos detectan esta interacción y priorizan su viralidad exponencial.
+                El negocio de la polémica. Las publicaciones extremistas o intolerantes generan discusiones masivas. Las redes detectan ese salseo, ven que nos engancha y deciden mostrarlo a mucha más gente para que se viralice todavía más.
               </p>
             </div>
 
@@ -482,7 +482,7 @@ export default function HateSpeech() {
               </div>
               <h4 className="font-sans font-extrabold text-sm text-slate-900 uppercase tracking-tight">Humorización del Prejuicio</h4>
               <p className="font-sans text-xs text-slate-600 leading-relaxed">
-                El uso sistemático de memes de 'ironía oscura' o 'shittyposting' permite camuflar la discriminación de modo que quien protesta sea ridiculizado por 'no entender la broma'.
+                "Si solo era una broma". Se abusa de memes con humor negro o comentarios absurdos para camuflar el racismo o la discriminación. Si alguien se queja, se le ridiculiza tachándole de aburrido o de "no pillar el chiste".
               </p>
             </div>
           </div>
@@ -497,7 +497,7 @@ export default function HateSpeech() {
                 Guía de Actuación ante Ciberodio en Redes Sociales
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed">
-                ¿Qué hacer exactamente cuando detectamos un hilo, un vídeo o una publicación que atenta contra un colectivo o compañero de forma sistemática?
+                ¿Qué hacer exactamente cuando detectamos un hilo, un vídeo o una publicación que atenta contra un colectivo o un compañero de forma sistemática?
               </p>
             </div>
 
@@ -506,23 +506,23 @@ export default function HateSpeech() {
               {[
                 {
                   step: "A",
-                  title: "Bloquea y Reporta de inmediato a la Plataforma",
-                  desc: "Usa las herramientas nativas de reporte. No comentes para insultar, eso le da más peso a la publicación ante los ojos de los motores de recomendación."
+                  title: "Bloquea y reporta de inmediato",
+                  desc: "Utiliza las herramientas de denuncia de la propia red social. Muy importante: no entres a comentar para insultar o rebatir con enfado, ya que eso le dice al algoritmo que la publicación es popular y hace que se muestre a mucha más gente."
                 },
                 {
                   step: "B",
-                  title: "Preserva URLs sólidas y perfiles directos",
-                  desc: "Asegúrate de copiar el enlace directo del perfil de los implicados. Los nombres de usuario pueden cambiarse fácilmente, pero las IDs internas de la cuenta permanecen."
+                  title: "Guarda pruebas (URLs y perfiles)",
+                  desc: "Copia siempre el enlace directo de la publicación y de los perfiles implicados. Los nombres de usuario se cambian en un segundo, pero las direcciones internas de las cuentas y los enlaces de los posts se quedan fijos como prueba."
                 },
                 {
                   step: "C",
-                  title: "Despliega contranarrativas con cautela",
-                  desc: "Aporta facts verificados y asépticos. No participes en discusiones emocionales extremas. Tu objetivo es educar a los espectadores del debate, no convencer al troll radicalizado."
+                  title: "Lanza contranarrativas con cabeza",
+                  desc: "Si decides responder, hazlo aportando datos reales, contrastados y con calma. No entres en peleas emocionales. Ten en cuenta que tu objetivo no es cambiar la opinión del troll (que está radicalizado), sino desmontar el bulo para los cientos de personas que están leyendo en silencio."
                 },
                 {
                   step: "D",
-                  title: "Informa y coordina con el equipo docente del centro",
-                  desc: "Si los implicados son miembros del centro, notifícalo. Gran parte del ciberodio nocturno repercute directamente en la convivencia diurna escolar del día siguiente."
+                  title: "Coordínate con el equipo docente",
+                  desc: "Si los implicados forman parte de tu centro educativo, avisa al equipo docente o de orientación. No olvides que todo lo que pasa en las redes por la noche acaba repercutiendo de lleno en la convivencia y el ambiente de las aulas al día siguiente."
                 }
               ].map((item, idx) => (
                 <div key={idx} className="flex items-start gap-4 p-3 bg-slate-800/50 rounded-xl border border-slate-750">
@@ -548,7 +548,7 @@ export default function HateSpeech() {
             </h3>
           </div>
           <p className="font-sans text-xs sm:text-sm text-slate-500 max-w-3xl leading-relaxed">
-            A menudo, el prejuicio no se presenta de manera explícita, sino camuflado en expresiones rápidas o de pantalla. Selecciona cada una para desgranar su engranaje desinformador y descubrir su respuesta deconstructiva.
+            El racismo y la discriminación cotidiana se camuflan a menudo en frases hechas o en bromas digitales. Pincha en cada una para analizar qué hay detrás y descubrir la mejor forma de desmontarlas.
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pt-2">
