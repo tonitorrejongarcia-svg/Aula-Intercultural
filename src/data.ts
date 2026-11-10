@@ -1121,12 +1121,36 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     word: 'Transculturalidad',
     definition: 'Fenómeno que ocurre cuando diferentes grupos culturales interactúan de manera tan intensa y prolongada que se generan nuevas realidades y expresiones culturales híbridas, que no pertenecen exclusivamente a ninguno de los grupos originarios. Es el resultado más profundo de la interculturalidad.',
     pedagogicalTip: 'Investiga con la clase ejemplos de música (como el flamenco, el jazz o el reguetón) o gastronomía que sean producto de la fusión histórica de múltiples culturas.'
+  },
+  {
+    word: 'Bulo / Fake News (o Desinformación)',
+    definition: 'Difusión deliberada o masiva de contenidos falsos, descontextualizados o manipulados con la intención de engañar, polarizar o sembrar hostilidad hacia colectivos específicos (como minorías étnicas o personas migrantes). Se distingue del simple error fortuito porque responde a intereses ideológicos, económicos o de descrédito social.',
+    etymology: 'Término "bulo" de probable origen caló ("bul", falsedad o engaño). "Fake news" del inglés (noticias falsas).',
+    pedagogicalTip: 'Trabaja en tutoría la regla de las 3 preguntas antes de compartir: ¿Quién es la fuente? ¿Presenta pruebas contrastables o solo busca generar miedo o indignación? ¿Aparece contrastada en plataformas oficiales de verificación (fact-checking)?'
+  },
+  {
+    word: 'Efecto Cazall (o Cámara de Eco)',
+    definition: 'Fenómeno psicosocial y comunicativo en entornos digitales donde los algoritmos y la selección individual exponen a los usuarios únicamente a informaciones y opiniones afines a sus propios sesgos, silenciando visiones divergentes. Esta retroalimentación constante refuerza radicalmente los prejuicios y normaliza discursos hostiles al hacer creer que "todo el mundo piensa así".',
+    etymology: 'Metáfora acústica del eco (del griego "ēchṓ", repetición sonora), donde las propias ideas rebotan continuamente sin contraste externo.',
+    pedagogicalTip: 'Propón que dos alumnos intercambien durante unos minutos sus pantallas de "Para ti" o "Explorar" en redes sociales: descubrirán de manera práctica cómo los algoritmos construyen percepciones de la realidad totalmente opuestas para cada individuo.'
+  },
+  {
+    word: 'Contranarrativa',
+    definition: 'Estrategia comunicativa y pedagógica orientada a desarmar, refutar y transformar los discursos de odio y los relatos estigmatizantes. En lugar de limitarse a denunciar el insulto o la falsedad, propone relatos alternativos basados en evidencias, derechos humanos, justicia social e historias positivas de convivencia.',
+    etymology: 'Del prefijo latino "contra-" (en oposición o respuesta) y "narrativa" (relato de sucesos).',
+    pedagogicalTip: 'Plantea al alumnado retos para diseñar sus propias "micro-contranarrativas": vídeos breves de 30 segundos, infografías o carteles para redes que respondan con humor inteligente y datos reales a los bulos más repetidos en su entorno.'
+  },
+  {
+    word: 'Resiliencia (o Agencia Juvenil)',
+    definition: 'Capacidad individual y comunitaria para afrontar, resistir y sobreponerse a situaciones de discriminación, vulnerabilidad o choque sociocultural, saliendo fortalecido del proceso. La agencia juvenil complementa este concepto al reconocer que los jóvenes no son sujetos pasivos de la educación, sino actores con voz y capacidad de transformar y mejorar la convivencia en su propio centro educativo.',
+    etymology: 'Del latín "resilire" (rebotar, volver atrás). "Agencia" del latín "agere" (actuar, impulsar la acción).',
+    pedagogicalTip: 'Evita enfocar la resiliencia como una exigencia individual de "aguantar en silencio". Promueve la agencia colectiva mediante equipos de mediación entre iguales y asambleas donde los propios alumnos propongan mejoras para el instituto.'
   }
 ];
 
 export const FAQS: FAQItem[] = [
   {
-    question: '¿Cómo puedo abordar un microconcierto de racismo o prejuicio en mi aula de forma inmediata?',
+    question: '¿Cómo puedo abordar un microrracismo o comentario prejuicioso en mi aula de forma inmediata?',
     answer: 'La clave radica en evitar el sermoneo moralizante, que suele generar actitudes defensivas corporales. En su lugar, utiliza la mayéutica activa: formula preguntas abiertas que obliguen al estudiante emisor a desmenuzar su propio prejuicio. Emplea técnicas como detener la clase un momento, escribir las palabras ofensivas en la pizarra despojándolas del contexto personal y pedir al grupo entero que analice las raíces de ese concepto. La dinámica interactiva de "El Teléfono Estropeado" es maravillosa para demostrar cómo los rumores sesgados se retroalimentan rápidamente.',
     category: 'Pedagogía Aplicada'
   },

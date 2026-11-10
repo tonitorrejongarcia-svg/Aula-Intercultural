@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { GlossaryTerm } from '../types';
-import { Search, Globe, BookOpen, Lightbulb, GraduationCap } from 'lucide-react';
+import { Search, Globe, BookOpen, Lightbulb, GraduationCap, Check, ShieldCheck } from 'lucide-react';
 
 interface GlossaryProps {
   glossaryTerms?: GlossaryTerm[];
@@ -56,7 +56,7 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
             Diccionario Crítico Intercultural
           </h2>
           <p className="font-sans text-slate-650 text-sm sm:text-base leading-relaxed">
-            Un repositorio terminológico con rigor sociológico y ético. Evita el uso confuso o superficial de términos clave, proveyendo de herramientas conceptuales robustas para el diálogo y las programaciones de centro.
+            Las palabras importan. Aquí encontrarás definiciones claras y rigurosas de los términos clave para evitar confusiones y contar con una base sólida a la hora de trabajar en el aula.
           </p>
         </div>
 
@@ -171,15 +171,40 @@ export default function Glossary({ glossaryTerms = [] }: GlossaryProps) {
         )}
 
         {/* Didactic Quote Section inside Glossary */}
-        <div className="p-6 md:p-8 bg-orange-600 text-white rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-xs">
-          <div className="space-y-2 max-w-2xl">
-            <h4 className="font-sans font-extrabold text-white text-lg flex items-center gap-1.5">
-              <GraduationCap className="w-5 h-5" />
+        <div className="p-5 md:py-6 md:px-7 bg-gradient-to-br from-orange-600 to-orange-700 text-white rounded-2xl shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-center border border-orange-500/20">
+          <div className="lg:col-span-7 space-y-2.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/15 text-white text-[11px] font-bold uppercase tracking-wider font-sans backdrop-blur-xs border border-white/20">
+              <GraduationCap className="w-3.5 h-3.5 text-orange-200" />
+              Reflexión Pedagógica
+            </div>
+            <h3 className="font-sans font-bold text-white text-lg md:text-xl tracking-tight leading-snug">
               ¿Por qué cuidar la terminología?
-            </h4>
-            <p className="font-sans text-xs sm:text-sm text-orange-50/90 leading-relaxed">
-              "El lenguaje no sólo nombra la realidad, la crea. Desatascar la confusión terminológica entre multiculturalidad e interculturalidad dota a el alumnado de herramientas reales contra las fake-news de exclusión."
+            </h3>
+            <p className="font-sans text-xs sm:text-sm text-orange-50/90 leading-relaxed font-normal">
+              «El lenguaje no solo nombra la realidad, también la construye. Despejar la confusión terminológica dota al alumnado de herramientas de pensamiento crítico para reconocer y desmontar los discursos de exclusión.»
             </p>
+          </div>
+
+          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
+            <div className="p-3 rounded-xl bg-white/10 border border-white/15 backdrop-blur-xs space-y-1">
+              <strong className="text-white text-xs font-bold flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-orange-200 shrink-0" />
+                Claridad y Rigor en el Aula
+              </strong>
+              <p className="text-[11px] text-orange-100/85 leading-relaxed">
+                Permite debatir con conceptos precisos sin caer en tópicos folclóricos o superficiales.
+              </p>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white/10 border border-white/15 backdrop-blur-xs space-y-1">
+              <strong className="text-white text-xs font-bold flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-orange-200 shrink-0" />
+                Desarme de Bulos y Prejuicios
+              </strong>
+              <p className="text-[11px] text-orange-100/85 leading-relaxed">
+                Ayuda al alumnado a identificar términos manipulados o estigmatizantes en redes sociales.
+              </p>
+            </div>
           </div>
         </div>
 

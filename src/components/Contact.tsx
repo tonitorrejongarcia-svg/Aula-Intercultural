@@ -384,7 +384,10 @@ export default function Contact({
                       <span>Enviando propuesta...</span>
                     </>
                   ) : (
-                    <span>🚀 Crear y Publicar Dinámica</span>
+                    <>
+                      <Plus className="w-4 h-4 stroke-[2.5]" />
+                      <span>Crear y Publicar Dinámica</span>
+                    </>
                   )}
                 </button>
               </form>

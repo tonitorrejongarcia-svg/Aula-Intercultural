@@ -130,7 +130,7 @@ export default function Resources({ activities }: ResourcesProps) {
             Recursos y Dinámicas de Aula
           </h2>
           <p className="text-lg text-slate-600 font-sans leading-relaxed">
-            Explora nuestro banco de actividades interactivas. Fichas metodológicas desglosadas para facilitar su aplicación inmediata en el aula. Sigue los pasos detallados para liderar cada fase de juego.
+            Explora nuestro banco de actividades prácticas. Fichas metodológicas desglosadas para aplicar de forma inmediata en clase, con instrucciones paso a paso para guiar cada sesión.
           </p>
         </div>
 

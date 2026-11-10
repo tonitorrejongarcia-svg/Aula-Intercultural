@@ -173,21 +173,43 @@ export default function App() {
       // 3. FAQs
       const storedFaqs = localStorage.getItem('intercultural_faqs_all');
       if (storedFaqs) {
-        let parsed = JSON.parse(storedFaqs);
+        let parsed: FAQItem[] = JSON.parse(storedFaqs);
         
+        // Replace outdated "microconcierto" phrasing with the corrected question
+        parsed = parsed.map(f => {
+          if (f.question.includes('microconcierto')) {
+            return {
+              ...f,
+              question: '¿Cómo puedo abordar un microrracismo o comentario prejuicioso en mi aula de forma inmediata?'
+            };
+          }
+          return f;
+        });
+
+        // Deduplicate FAQs by question text (ignoring case & whitespace)
+        const seenFaqs = new Set<string>();
+        const deduplicatedFaqs: FAQItem[] = [];
+        for (const item of parsed) {
+          const key = item.question.trim().toLowerCase();
+          if (!seenFaqs.has(key)) {
+            seenFaqs.add(key);
+            deduplicatedFaqs.push(item);
+          }
+        }
+        parsed = deduplicatedFaqs;
+
         // Merge missing new default faqs from FAQS
         let updated = false;
         FAQS.forEach(defaultFaq => {
-           if (!parsed.some(f => f.question === defaultFaq.question)) {
-               parsed.push(defaultFaq);
-               updated = true;
-           }
+          const key = defaultFaq.question.trim().toLowerCase();
+          if (!seenFaqs.has(key)) {
+            seenFaqs.add(key);
+            parsed.push(defaultFaq);
+            updated = true;
+          }
         });
         
-        if (updated) {
-           localStorage.setItem('intercultural_faqs_all', JSON.stringify(parsed));
-        }
-
+        localStorage.setItem('intercultural_faqs_all', JSON.stringify(parsed));
         setFaqs(parsed);
       } else {
         setFaqs(FAQS);
