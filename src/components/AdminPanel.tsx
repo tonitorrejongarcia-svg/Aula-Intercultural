@@ -1384,8 +1384,18 @@ ${supportEmail}`
             {/* RIGHT COLUMN: Permanent Form */}
             <form onSubmit={handleSaveActivity} className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 space-y-5 shadow-sm font-sans text-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                <h3 className="font-sans font-black text-base text-slate-900">
-                  {editingActivity && editingActivity.id !== 'new' ? '📝 Editar Ficha Didáctica' : '✨ Crear Nueva Dinámica'}
+                <h3 className="font-sans font-black text-base text-slate-900 flex items-center gap-1.5">
+                  {editingActivity && editingActivity.id !== 'new' ? (
+                    <>
+                      <Edit3 className="w-4 h-4 text-orange-600" />
+                      <span>Editar Ficha Didáctica</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 text-orange-600" />
+                      <span>Crear Nueva Dinámica</span>
+                    </>
+                  )}
                 </h3>
                 {editingActivity && (
                   <button
@@ -1510,9 +1520,10 @@ ${supportEmail}`
 
               <button
                 type="submit"
-                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg text-center"
+                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
-                💾 {editingActivity && editingActivity.id !== 'new' ? 'Guardar Cambios en Dinámica' : 'Crear y Añadir Dinámica'}
+                <Save className="w-4 h-4 text-white stroke-[2.5]" />
+                <span>{editingActivity && editingActivity.id !== 'new' ? 'Guardar Cambios en Dinámica' : 'Crear y Añadir Dinámica'}</span>
               </button>
             </form>
           </div>
@@ -1579,8 +1590,18 @@ ${supportEmail}`
             {/* RIGHT COLUMN: Glossary Form */}
             <form onSubmit={handleSaveGlossary} className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-6 space-y-5 shadow-sm font-sans text-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                <h3 className="font-sans font-black text-base text-slate-900">
-                  {editingGlossary && editingGlossary.word !== '' ? '📝 Editar Vocablo' : '✨ Crear Término de Glosario'}
+                <h3 className="font-sans font-black text-base text-slate-900 flex items-center gap-1.5">
+                  {editingGlossary && editingGlossary.word !== '' ? (
+                    <>
+                      <Edit3 className="w-4 h-4 text-orange-600" />
+                      <span>Editar Vocablo</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 text-orange-600" />
+                      <span>Crear Término de Glosario</span>
+                    </>
+                  )}
                 </h3>
                 {editingGlossary && (
                   <button
@@ -1649,9 +1670,10 @@ ${supportEmail}`
 
               <button
                 type="submit"
-                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg text-center"
+                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
-                💾 {editingGlossary && editingGlossary.word !== '' ? 'Guardar Cambios en Término' : 'Crear y Añadir al Glosario'}
+                <Save className="w-4 h-4 text-white stroke-[2.5]" />
+                <span>{editingGlossary && editingGlossary.word !== '' ? 'Guardar Cambios en Término' : 'Crear y Añadir al Glosario'}</span>
               </button>
             </form>
           </div>
@@ -1720,8 +1742,18 @@ ${supportEmail}`
             {/* RIGHT COLUMN: FAQ Form */}
             <form onSubmit={handleSaveFAQ} className="lg:col-span-5 bg-white border-2 border-slate-200 rounded-3xl p-6 space-y-5 shadow-sm font-sans text-xs">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                <h3 className="font-sans font-black text-base text-slate-900">
-                  {editingFAQ && editingFAQ.question !== '' ? '📝 Editar FAQ' : '✨ Crear Consulta FAQ'}
+                <h3 className="font-sans font-black text-base text-slate-900 flex items-center gap-1.5">
+                  {editingFAQ && editingFAQ.question !== '' ? (
+                    <>
+                      <Edit3 className="w-4 h-4 text-orange-600" />
+                      <span>Editar FAQ</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4 text-orange-600" />
+                      <span>Crear Consulta FAQ</span>
+                    </>
+                  )}
                 </h3>
                 {editingFAQ && (
                   <button
@@ -1779,9 +1811,10 @@ ${supportEmail}`
 
               <button
                 type="submit"
-                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg text-center"
+                className="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
-                💾 {editingFAQ && editingFAQ.question !== '' ? 'Guardar Cambios en FAQ' : 'Crear y Añadir FAQ'}
+                <Save className="w-4 h-4 text-white stroke-[2.5]" />
+                <span>{editingFAQ && editingFAQ.question !== '' ? 'Guardar Cambios en FAQ' : 'Crear y Añadir FAQ'}</span>
               </button>
             </form>
           </div>
@@ -2187,10 +2220,11 @@ ${supportEmail}`
 
               <button
                 type="submit"
-                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-md hover:shadow-lg border-2 border-slate-900"
+                className="w-full py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-sans font-black text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-md hover:shadow-lg border-2 border-slate-900 flex items-center justify-center gap-2"
                 id="admin-save-texts-btn"
               >
-                💾 Actualizar Textos Globales de la Web
+                <Save className="w-4 h-4 text-white stroke-[2.5]" />
+                <span>Actualizar Textos Globales de la Web</span>
               </button>
             </form>
 
