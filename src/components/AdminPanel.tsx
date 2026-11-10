@@ -830,7 +830,7 @@ ${supportEmail}`
                       setRecoverySuccess(false);
                       setPassword('');
                     }}
-                    className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
+                    className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
                   >
                     Volver al Inicio de Sesión
                   </button>
@@ -855,7 +855,7 @@ ${supportEmail}`
                       placeholder="Introduce el correo para recibir el código..."
                       value={recoveryEmailInput}
                       onChange={(e) => setRecoveryEmailInput(e.target.value)}
-                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-550 font-sans focus:outline-none focus:ring-2 focus:ring-orange-500/40"
+                      className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-555 font-sans focus:outline-none focus:ring-2 focus:ring-orange-500/40"
                     />
                   </div>
 
@@ -870,9 +870,9 @@ ${supportEmail}`
                     <button
                       type="submit"
                       disabled={isSendingCode}
-                      className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
                     >
-                      <Send className="w-3.5 h-3.5" />
+                      <Send className="w-3.5 h-3.5 text-white" />
                       {isSendingCode ? 'Enviando código...' : 'Enviar Código de Seguridad'}
                     </button>
                     <button
@@ -951,9 +951,10 @@ ${supportEmail}`
                   <div className="pt-2 space-y-2">
                     <button
                       type="submit"
-                      className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md"
+                      className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-white font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md flex items-center justify-center gap-2"
                     >
-                      💾 Guardar Nueva Contraseña y Acceder
+                      <Save className="w-3.5 h-3.5 text-white" />
+                      <span>Guardar Nueva Contraseña y Acceder</span>
                     </button>
 
                     <div className="flex items-center justify-between text-[11px] pt-1 text-slate-400">
@@ -1099,10 +1100,17 @@ ${supportEmail}`
                 <button
                   type="submit"
                   disabled={isLocked}
-                  className="w-full py-3 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full py-3.5 bg-orange-600 hover:bg-orange-500 text-white font-sans font-extrabold text-sm tracking-wide rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/20 flex items-center justify-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   id="admin-login-submit"
                 >
-                  {isLocked ? `🔒 Bloqueado (${countdown}s)` : '🔓 Iniciar Sesión Segura'}
+                  {isLocked ? (
+                    <>
+                      <Lock className="w-4 h-4 text-white stroke-[2.5]" />
+                      <span>Bloqueado ({countdown}s)</span>
+                    </>
+                  ) : (
+                    <span>Iniciar Sesión Segura</span>
+                  )}
                 </button>
               </form>
             </>
@@ -2254,7 +2262,7 @@ ${supportEmail}`
 
                   <button
                     type="submit"
-                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10"
+                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-500 text-white font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10"
                   >
                     Establecer Nueva Contraseña
                   </button>
@@ -2299,7 +2307,7 @@ ${supportEmail}`
 
                   <button
                     type="submit"
-                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-500 text-slate-900 font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10"
+                    className="py-2.5 px-5 bg-orange-600 hover:bg-orange-500 text-white font-sans font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md hover:shadow-orange-500/10"
                   >
                     Guardar Correo de Recuperación
                   </button>

@@ -415,19 +415,19 @@ export default function HateSpeech() {
             <div className="flex bg-slate-800 p-1 rounded-xl self-start md:self-center">
               <button
                 onClick={() => setActiveTab('all')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'all' ? 'bg-orange-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'all' ? 'bg-orange-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
               >
                 Ver Ambos
               </button>
               <button
                 onClick={() => setActiveTab('speech')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'speech' ? 'bg-orange-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'speech' ? 'bg-orange-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
               >
                 Discurso de Odio
               </button>
               <button
                 onClick={() => setActiveTab('crime')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'crime' ? 'bg-orange-600 text-slate-900' : 'text-slate-400 hover:text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${activeTab === 'crime' ? 'bg-orange-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
               >
                 Delito de Odio
               </button>
