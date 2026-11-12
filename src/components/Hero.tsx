@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { BookOpen, Sparkles, Users, ArrowRight, Lightbulb, HeartHandshake } from 'lucide-react';
+import { BookOpen, Users, ArrowRight, Lightbulb, HeartHandshake } from 'lucide-react';
 
 interface HeroProps {
   setActiveTab: (tab: string) => void;
@@ -168,7 +168,7 @@ export default function Hero({ setActiveTab, heroTitle, heroSubtitle }: HeroProp
         {/* Texts and CTAs */}
         <div className="lg:col-span-7 space-y-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100/60 text-orange-800 text-xs font-semibold uppercase tracking-wider font-sans">
-            <Sparkles className="w-3.5 h-3.5 text-orange-600" />
+            <BookOpen className="w-3.5 h-3.5 text-orange-600" />
             Recursos Didácticos Interactivos
           </div>
 
@@ -268,11 +268,10 @@ export default function Hero({ setActiveTab, heroTitle, heroSubtitle }: HeroProp
                 <button
                   onClick={handleInspirePill}
                   disabled={isGenerating}
-                  className="flex items-center justify-center gap-2 w-full py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-150 font-sans font-semibold text-xs rounded-xl transition-colors focus:outline-none cursor-pointer disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 font-sans font-semibold text-xs rounded-xl transition-colors focus:outline-none cursor-pointer disabled:opacity-50"
                   id="inspire-fact-button"
                 >
                   Inspirar otra píldora
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                 </button>
               </div>
             </div>

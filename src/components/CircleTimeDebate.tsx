@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, FormEvent } from 'react';
-import { Sparkles, MessageSquare, Plus, Trash2, Volume2, RotateCw, BrainCircuit } from 'lucide-react';
+import { MessageSquare, Plus, Trash2, Volume2, RotateCw, BrainCircuit } from 'lucide-react';
 
 export default function CircleTimeDebate() {
   const [questions, setQuestions] = useState<string[]>([
@@ -186,8 +186,7 @@ export default function CircleTimeDebate() {
           id="btn-spin-debate"
         >
           <RotateCw className={`w-4 h-4 group-hover:rotate-45 transition-transform ${isSpinning ? 'animate-spin' : ''}`} />
-          Girar Ruleta Intercultural
-          <Sparkles className={`w-4 h-4 ${isGenerating ? 'animate-pulse text-white' : 'text-amber-300'}`} />
+          <span>Girar Ruleta Intercultural</span>
         </button>
       </div>
 

@@ -175,6 +175,26 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
         conceptName: "El mito del esfuerzo",
         myth: "Si te esfuerzas, triunfas en los estudios, sin importar de dónde vengas ni qué acento tengas.",
         reality: "El mito del esfuerzo aislado ignora que el racismo sistémico, la pobreza y las expectativas actúan como frenos estructurales."
+      },
+      {
+        conceptName: "Identidad Bicultural",
+        myth: "Los jóvenes de familias migrantes viven siempre desgarrados en un conflicto irreconciliable entre dos culturas.",
+        reality: "La mayoría de los jóvenes desarrollan competencias biculturales enriquecedoras, combinando lo mejor de sus raíces y de su entorno cotidiano."
+      },
+      {
+        conceptName: "Ventaja Multilingüe",
+        myth: "Hablar otra lengua en casa confunde al estudiante y frena su aprendizaje del idioma escolar.",
+        reality: "El multilingüismo potencia la plasticidad cerebral y la capacidad de abstracción. La lengua materna es un activo cognitivo fundamental."
+      },
+      {
+        conceptName: "El Racismo Invisible",
+        myth: "En nuestro instituto no existen problemas de racismo porque nunca se han registrado agresiones físicas.",
+        reality: "El racismo opera cotidianamente a través de microviolencias, chistes normalizados, expectativas sesgadas y exclusión sutil en el patio."
+      },
+      {
+        conceptName: "Barreras de Participación",
+        myth: "Las familias migrantes que no acuden a las reuniones de centro muestran desinterés educativo.",
+        reality: "La inasistencia suele responder a turnos laborales incompatibles o barreras de idioma, nunca a una falta de compromiso con sus hijos."
       }
     ];
 
@@ -237,31 +257,6 @@ IMPORTANTE: Evita topicazos como "la diversidad es riqueza". Busca un dato, conc
       res.json(myths);
     } catch (error: any) {
       console.error("Error generating myths:", error);
-      // Fallback myths if AI fails
-      const fallbackMyths = [
-        {
-          conceptName: "Falsa Ceguera al Color",
-          myth: "Tratar a todos por igual requiere 'no ver colores' ni diferencias culturales en clase.",
-          reality: "Ignorar las diferencias reales silencia las desigualdades sistémicas. Tratar con verdadera equidad exige reconocer y validar las identidades."
-        },
-        {
-          conceptName: "La Minoría Modelo",
-          myth: "Decir que los alumnos asiáticos son muy buenos en matemáticas es un elogio, no racismo.",
-          reality: "Los prejuicios 'buenos' deshumanizan, generan ansiedad académica y borran la individualidad del estudiante, encasillándolo en expectativas irreales."
-        },
-        {
-          conceptName: "Relegación al Anexo",
-          myth: "La inclusión y diversidad son temas transversales ideales para tratar el viernes a última hora en tutoría.",
-          reality: "Si solo está en tutoría, es un mero accesorio. La educación intercultural debe empapar transversalmente matemáticas, literatura e historia."
-        },
-        {
-          conceptName: "El mito del esfuerzo",
-          myth: "Si te esfuerzas, triunfas en los estudios, sin importar de dónde vengas ni qué acento tengas.",
-          reality: "El mito del esfuerzo aislado ignora que el racismo sistémico, la pobreza y las expectativas actúan como frenos estructurales."
-        }
-      ];
-      
-      // select 3 random fallbacks
       const shuffled = fallbackMyths.sort(() => 0.5 - Math.random());
       res.json(shuffled.slice(0, 3));
     }

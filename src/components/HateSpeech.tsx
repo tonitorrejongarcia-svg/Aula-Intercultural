@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { 
-  ShieldAlert, RefreshCw, AlertTriangle, HeartHandshake, Sparkles, 
+  ShieldAlert, RefreshCw, AlertTriangle, HeartHandshake, 
   Check, X, ArrowRight, MessageSquare, Info, ShieldCheck, 
   HelpCircle, Scale, Share2, FileText, Shield, Users, 
   ExternalLink, Phone, Smartphone, ChevronRight, Eye, Flag, Copy
@@ -217,7 +217,6 @@ export default function HateSpeech() {
 
     const [displayPhrases, setDisplayPhrases] = useState<HateSpeechPhrase[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [errorAI, setErrorAI] = useState<string | null>(null);
 
   const shuffleAndPick = (array: HateSpeechPhrase[], n: number) => {
     const shuffled = [...array].sort(() => 0.5 - Math.random());
@@ -230,7 +229,6 @@ export default function HateSpeech() {
 
   const handleGenerateAI = async () => {
     setIsGenerating(true);
-    setErrorAI(null);
     setSelectedPhrase(null);
     try {
       const controller = new AbortController();
@@ -724,16 +722,12 @@ export default function HateSpeech() {
               {isGenerating ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  Decodificando nuevas frases...
+                  <span>Decodificando nuevas frases...</span>
                 </>
               ) : (
-                <>
-                  <Sparkles className="w-4 h-4 text-orange-400" />
-                  Descubrir 4 nuevas frases
-                </>
+                <span>Descubrir 4 nuevas frases</span>
               )}
             </button>
-            {errorAI && <span className="text-[10px] text-rose-500 font-sans">{errorAI}</span>}
           </div>
             </div>
 

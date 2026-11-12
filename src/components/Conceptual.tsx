@@ -4,8 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
-import { Award, ShieldAlert, Sparkles, HelpCircle, ArrowRightLeft, BookOpenCheck, BrainCircuit, Users, Eye, HelpCircle as HelpIcon } from 'lucide-react';
+import { Award, ShieldAlert, HelpCircle, ArrowRightLeft, BookOpenCheck, BrainCircuit, Users, Eye, RefreshCw } from 'lucide-react';
 import icebergTheoryImg from '../assets/images/iceberg_theory_1789554406116.jpg';
 
 const ALL_MYTHS = [
@@ -74,6 +73,36 @@ const ALL_MYTHS = [
     myth: "La inclusión y diversidad son temas transversales ideales para tratar el viernes a última hora en tutoría.",
     reality: "Inclusión como Anexo. Si solo está en tutoría, es un mero accesorio. La educación intercultural debe empapar transversalmente los problemas de matemáticas, las lecturas de literatura y la selección de figuras en la clase de historia.",
     conceptName: "Relegación al Anexo"
+  },
+  {
+    id: "m12",
+    myth: "Los jóvenes de familias migrantes viven siempre en un conflicto irreconciliable y desgarrado entre dos culturas.",
+    reality: "Identidad Bicultural. Lejos de vivir en conflicto perpetuo, la mayoría de los jóvenes desarrollan competencias biculturales flexibles y ricas, combinando lo mejor de sus raíces y de su entorno para crear identidades dinámicas.",
+    conceptName: "Identidad Bicultural"
+  },
+  {
+    id: "m13",
+    myth: "Hablar otra lengua en casa confunde al estudiante y frena su aprendizaje del idioma escolar vehicular.",
+    reality: "Ventaja Multilingüe. La neurociencia y la lingüística aplicada demuestran que el multilingüismo potencia la plasticidad cerebral, la capacidad de abstracción y el aprendizaje. La lengua materna es un puente, nunca un lastre.",
+    conceptName: "Ventaja Multilingüe"
+  },
+  {
+    id: "m14",
+    myth: "En nuestro instituto no existen problemas de racismo ni discriminación porque nunca ha habido agresiones físicas.",
+    reality: "El Racismo Invisible. El odio rara vez empieza con agresiones físicas; habita en microviolencias cotidianas, chistes normalizados, expectativas bajas y vacíos en el patio que erosionan el bienestar del alumnado.",
+    conceptName: "El Racismo Invisible"
+  },
+  {
+    id: "m15",
+    myth: "Organizar una jornada gastronómica internacional al año es suficiente para cubrir la educación intercultural.",
+    reality: "Superación del Folclore. Degustar platos típicos sin abordar la igualdad de oportunidades, la deconstrucción de prejuicios ni la justicia social reduce las culturas a souvenirs exóticos sin transformar la escuela.",
+    conceptName: "Superación del Folclore"
+  },
+  {
+    id: "m16",
+    myth: "Las familias migrantes que no acuden con frecuencia a las reuniones de centro muestran desinterés educativo.",
+    reality: "Barreras Estructurales. La inasistencia suele responder a turnos laborales incompatibles, barreras de idioma o temor al juicio escolar, no a una falta de cariño o compromiso con el futuro de sus hijos.",
+    conceptName: "Barreras de Participación"
   }
 ];
 
@@ -83,9 +112,8 @@ export default function Conceptual() {
 
   const [displayMyths, setDisplayMyths] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [errorAI, setErrorAI] = useState<string | null>(null);
 
-  // Helper function to pick 3 random myths
+  // Helper function to pick n random myths
   const shuffleAndPick = (array: any[], n: number) => {
     const shuffled = [...array].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, n);
@@ -106,28 +134,44 @@ export default function Conceptual() {
 
   const handleGenerateAI = async () => {
     setIsGenerating(true);
-    setErrorAI(null);
     setRevealedMyths({}); // Reset reveals
     try {
-      const response = await fetch('/api/generate-myths', { method: 'POST' });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+      const response = await fetch('/api/generate-myths', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
       const contentType = response.headers.get("content-type") || "";
-      if (!response.ok || !contentType.includes("application/json")) {
-        throw new Error("Respuesta no válida del servidor");
+      if (response.ok && contentType.includes("application/json")) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length >= 3) {
+          const newMyths = data.slice(0, 3).map((m: any, i: number) => ({
+            id: `ai-${Date.now()}-${i}`,
+            myth: m.myth,
+            reality: m.reality,
+            conceptName: m.conceptName
+          }));
+          setDisplayMyths(newMyths);
+          return;
+        }
       }
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
       
-      const newMyths = data.map((m: any, i: number) => ({
-        id: `ai-${Date.now()}-${i}`,
-        myth: m.myth,
-        reality: m.reality,
-        conceptName: m.conceptName
-      }));
-      setDisplayMyths(newMyths);
-    } catch (err: any) {
-      console.error(err);
-      setErrorAI("Hubo un fallo temporal al conectar con la IA. Se han cargado otros mitos de reserva.");
-      setDisplayMyths(shuffleAndPick(ALL_MYTHS, 3));
+      // Fallback: pick 3 fresh myths excluding currently displayed ones
+      const currentNames = new Set(displayMyths.map(m => m.conceptName || m.id));
+      const available = ALL_MYTHS.filter(m => !currentNames.has(m.conceptName) && !currentNames.has(m.id));
+      const pool = available.length >= 3 ? available : ALL_MYTHS;
+      setDisplayMyths(shuffleAndPick(pool, 3));
+    } catch {
+      // Seamless fallback without displaying any error banner
+      const currentNames = new Set(displayMyths.map(m => m.conceptName || m.id));
+      const available = ALL_MYTHS.filter(m => !currentNames.has(m.conceptName) && !currentNames.has(m.id));
+      const pool = available.length >= 3 ? available : ALL_MYTHS;
+      setDisplayMyths(shuffleAndPick(pool, 3));
     } finally {
       setIsGenerating(false);
     }
@@ -313,21 +357,17 @@ export default function Conceptual() {
             <button
               onClick={handleGenerateAI}
               disabled={isGenerating}
-              className="flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-sans font-bold rounded-xl transition-all shadow-md focus:ring-4 focus:ring-slate-900/10 cursor-pointer"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white text-xs font-sans font-bold rounded-xl transition-all shadow-md focus:ring-4 focus:ring-slate-900/10 cursor-pointer"
             >
               {isGenerating ? (
                 <>
                   <RefreshCw className="w-4 h-4 animate-spin" />
-                  Analizando falacias inéditas...
+                  <span>Analizando falacias inéditas...</span>
                 </>
               ) : (
-                <>
-                  <Sparkles className="w-4 h-4 text-orange-400" />
-                  Descubrir 3 nuevos mitos
-                </>
+                <span>Descubrir 3 nuevos mitos</span>
               )}
             </button>
-            {errorAI && <span className="text-[10px] text-rose-500 font-sans">{errorAI}</span>}
           </div>
         </div>
 
@@ -390,7 +430,7 @@ export default function Conceptual() {
 
               <div className="mt-8 pt-6 border-t border-slate-100 bg-slate-50/50 rounded-xl p-4 italic">
                 <p className="font-sans text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1.5 flex items-center gap-1">
-                  <Sparkles className="w-3.5 h-3.5 text-slate-500" /> Reflexión sugerida
+                  <BrainCircuit className="w-3.5 h-3.5 text-slate-500" /> Reflexión sugerida
                 </p>
                 <p className="font-sans text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">
                   "{pillars[activePillar].academicQuote}"
